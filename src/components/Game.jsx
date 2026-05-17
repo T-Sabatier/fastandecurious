@@ -7,7 +7,7 @@ import {
   fitCard,
   fitBig,
 } from '../utils';
-import { WINNING_SCORE, YELLOW, PINK } from '../cards';
+import { WINNING_SCORE, YELLOW, PINK, colorHex, colorFg } from '../cards';
 import {
   Heart,
   HeartCrack,
@@ -32,6 +32,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   }));
   const playerById = Object.fromEntries(players.map((p) => [p.id, p]));
   const boss = room.bossId ? playerById[room.bossId] : null;
+  const bossColor = colorHex(boss?.color);
 
   const myHandCardIds = Object.keys(room.hands?.[playerId] || {});
   const pool = room.pool || {};
@@ -165,7 +166,12 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
       // Reset scores, clear game state, go back to lobby
       const playersReset = {};
       players.forEach((p) => {
-        playersReset[p.id] = { name: p.name, score: 0, joinedAt: p.joinedAt };
+        playersReset[p.id] = {
+          name: p.name,
+          score: 0,
+          joinedAt: p.joinedAt,
+          ...(p.color ? { color: p.color } : {}),
+        };
       });
       await update(ref(db, `rooms/${roomCode}`), {
         phase: 'lobby',
@@ -238,26 +244,34 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         {players.map((p) => {
           const isPlayerBoss = p.id === room.bossId;
           const isMe = p.id === playerId;
+          const pColor = colorHex(p.color);
+          const bg = pColor || (isPlayerBoss ? '#000' : '#FFF');
+          const fg = pColor ? colorFg(p.color) : (isPlayerBoss ? YELLOW : '#000');
+          const outline = isPlayerBoss
+            ? '3px solid ' + YELLOW
+            : isMe
+              ? '2px solid ' + PINK
+              : 'none';
           return (
             <div
               key={p.id}
               style={{
-                backgroundColor: isPlayerBoss ? '#000' : '#FFF',
-                color: isPlayerBoss ? YELLOW : '#000',
+                backgroundColor: bg,
+                color: fg,
                 fontFamily: '"Anton", sans-serif',
-                outline: isMe ? '2px solid ' + PINK : 'none',
+                outline,
                 outlineOffset: '1px',
               }}
               className="border-2 border-black px-2 py-1 flex items-center gap-2 whitespace-nowrap shrink-0"
             >
               <span className="uppercase text-xs leading-none">
+                {isPlayerBoss && '👑 '}
                 {p.name}
-                {isMe && ' (toi)'}
               </span>
               <span
                 style={{
-                  backgroundColor: isPlayerBoss ? YELLOW : '#000',
-                  color: isPlayerBoss ? '#000' : YELLOW,
+                  backgroundColor: '#000',
+                  color: YELLOW,
                 }}
                 className="text-[10px] leading-none px-1.5 py-0.5"
               >
@@ -394,6 +408,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               fontFamily: '"Anton", sans-serif',
               lineHeight: 0.9,
               fontSize: fitBig(boss.name),
+              color: bossColor || '#000',
             }}
             className="uppercase mb-2 break-words"
           >
@@ -450,12 +465,15 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 .filter((p) => p.id !== room.bossId)
                 .map((p) => {
                   const hasPlayed = !!playedObj[p.id];
+                  const pColor = colorHex(p.color);
+                  const bg = pColor || (hasPlayed ? '#000' : '#FFF');
+                  const fg = pColor ? colorFg(p.color) : (hasPlayed ? YELLOW : '#000');
                   return (
                     <div
                       key={p.id}
                       style={{
-                        backgroundColor: hasPlayed ? '#000' : '#FFF',
-                        color: hasPlayed ? YELLOW : '#000',
+                        backgroundColor: bg,
+                        color: fg,
                         opacity: hasPlayed ? 1 : 0.5,
                         fontFamily: '"Anton", sans-serif',
                       }}
@@ -545,7 +563,9 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 style={{ fontFamily: '"Space Mono", monospace' }}
                 className="text-[10px] uppercase tracking-widest opacity-60 mb-1"
               >
-                Le boss {boss.name} veut
+                Le boss{' '}
+                <span style={{ color: bossColor || '#000' }}>{boss.name}</span>{' '}
+                veut
               </div>
               <div
                 style={{
@@ -593,7 +613,8 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.9 }}
               className="text-2xl uppercase"
             >
-              Boss {boss.name} →
+              Boss{' '}
+              <span style={{ color: bossColor || '#000' }}>{boss.name}</span> →
             </div>
             <div
               style={{
@@ -770,6 +791,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               fontFamily: '"Anton", sans-serif',
               lineHeight: 0.9,
               fontSize: fitBig(boss.name),
+              color: bossColor || '#000',
             }}
             className="uppercase mb-2 break-words"
           >
@@ -837,6 +859,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               fontFamily: '"Anton", sans-serif',
               lineHeight: 0.9,
               fontSize: fitBig(winnerP?.name || ''),
+              color: colorHex(winnerP?.color) || '#000',
             }}
             className="uppercase mb-2 break-words"
           >
@@ -912,6 +935,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               fontFamily: '"Anton", sans-serif',
               lineHeight: 0.85,
               fontSize: fitBig(champ?.name || ''),
+              color: colorHex(champ?.color) || '#000',
             }}
             className="uppercase mb-8 break-words"
           >
@@ -919,38 +943,43 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
           </div>
 
           <div className="w-full max-w-sm space-y-2 mb-8">
-            {ranked.map((p, i) => (
-              <div
-                key={p.id}
-                style={{
-                  backgroundColor: i === 0 ? '#000' : '#FFF',
-                  color: i === 0 ? YELLOW : '#000',
-                  boxShadow: '4px 4px 0 #000',
-                }}
-                className="border-4 border-black px-4 py-3 flex items-center justify-between"
-              >
-                <div className="flex items-center gap-3">
-                  <span
-                    style={{ fontFamily: '"Space Mono", monospace' }}
-                    className="text-xs opacity-70"
-                  >
-                    #{i + 1}
-                  </span>
+            {ranked.map((p, i) => {
+              const pColor = colorHex(p.color);
+              const bg = pColor || (i === 0 ? '#000' : '#FFF');
+              const fg = pColor ? colorFg(p.color) : (i === 0 ? YELLOW : '#000');
+              return (
+                <div
+                  key={p.id}
+                  style={{
+                    backgroundColor: bg,
+                    color: fg,
+                    boxShadow: '4px 4px 0 #000',
+                  }}
+                  className="border-4 border-black px-4 py-3 flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      style={{ fontFamily: '"Space Mono", monospace' }}
+                      className="text-xs opacity-70"
+                    >
+                      #{i + 1}
+                    </span>
+                    <span
+                      style={{ fontFamily: '"Anton", sans-serif' }}
+                      className="text-xl uppercase leading-none"
+                    >
+                      {p.name}
+                    </span>
+                  </div>
                   <span
                     style={{ fontFamily: '"Anton", sans-serif' }}
-                    className="text-xl uppercase leading-none"
+                    className="text-2xl"
                   >
-                    {p.name}
+                    {p.score || 0}
                   </span>
                 </div>
-                <span
-                  style={{ fontFamily: '"Anton", sans-serif' }}
-                  className="text-2xl"
-                >
-                  {p.score || 0}
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {isHost ? (

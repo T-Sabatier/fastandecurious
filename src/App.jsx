@@ -9,12 +9,20 @@ import {
 import Home from './components/Home.jsx';
 import Lobby from './components/Lobby.jsx';
 import Game from './components/Game.jsx';
+import Admin from './components/Admin.jsx';
 
 export default function App() {
+  const isAdminRoute =
+    typeof window !== 'undefined' && window.location.pathname === '/admin';
+
   const [playerId] = useState(getOrCreatePlayerId);
   const [roomCode, setRoomCode] = useState(getStoredRoom);
   const [room, setRoom] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  if (isAdminRoute) {
+    return <Admin />;
+  }
 
   useEffect(() => {
     if (!roomCode) {

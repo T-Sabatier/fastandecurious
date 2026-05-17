@@ -1,4 +1,4 @@
-export const ALL_CARDS = [
+export const DEFAULT_CARDS = [
   // BOUFFE
   ['Pizza', 'bouffe'], ['Sushis', 'bouffe'], ['Kebab', 'bouffe'],
   ['Tacos', 'bouffe'], ['Burger', 'bouffe'], ['Pâtes carbo', 'bouffe'],
@@ -26,15 +26,17 @@ export const ALL_CARDS = [
   ['Airbnb', 'voyages'], ['Palace 5 étoiles', 'voyages'], ['Camping sauvage', 'voyages'],
 
   // MUSIQUE
-  ['Damso', 'musique'], ['Booba', 'musique'], ['PNL', 'musique'],
-  ['Ninho', 'musique'], ['Aya Nakamura', 'musique'], ['Angèle', 'musique'],
-  ['Stromae', 'musique'], ['Orelsan', 'musique'], ['Jul', 'musique'],
-  ['SCH', 'musique'], ['Drake', 'musique'], ['Kendrick Lamar', 'musique'],
-  ['Taylor Swift', 'musique'], ['Beyoncé', 'musique'], ['The Weeknd', 'musique'],
-  ['Lana Del Rey', 'musique'], ['Billie Eilish', 'musique'], ['Daft Punk', 'musique'],
-  ['Indochine', 'musique'], ['Vald', 'musique'], ['Lomepal', 'musique'],
-  ['Niska', 'musique'], ['Gazo', 'musique'], ['Tiakola', 'musique'],
+  ['Taylor Swift', 'musique'], ['Beyoncé', 'musique'], ['Daft Punk', 'musique'],
+  ['The Beatles', 'musique'], ['Queen', 'musique'], ['Michael Jackson', 'musique'],
+  ['Madonna', 'musique'], ['Pink Floyd', 'musique'], ['Led Zeppelin', 'musique'],
+  ['AC/DC', 'musique'], ['Nirvana', 'musique'], ['Coldplay', 'musique'],
+  ['Adele', 'musique'], ['Bruno Mars', 'musique'], ['Ed Sheeran', 'musique'],
+  ['Dua Lipa', 'musique'], ['Lady Gaga', 'musique'], ['Arctic Monkeys', 'musique'],
+  ['Radiohead', 'musique'], ['ABBA', 'musique'], ['Elvis Presley', 'musique'],
+  ['David Bowie', 'musique'], ['Karaoké', 'musique'],
   ['Concert intimiste', 'musique'], ['Festival géant', 'musique'],
+  ['Lil Pump', 'musique'], ['6ix9ine', 'musique'],
+  ['Maître Gims', 'musique'], ['Lartiste', 'musique'],
 
   // CINÉ & SÉRIES
   ['Marvel', 'cine'], ['Star Wars', 'cine'], ['Harry Potter', 'cine'],
@@ -140,3 +142,22 @@ export const HAND_SIZE = 7;
 export const WINNING_SCORE = 5;
 export const YELLOW = '#FFE600';
 export const PINK = '#FF2D6F';
+
+export const PLAYER_COLORS = [
+  { id: 'yellow', hex: '#EBF704', fg: '#000' },
+  { id: 'red',    hex: '#FF0040', fg: '#000' },
+  { id: 'blue',   hex: '#00B0FF', fg: '#000' },
+  { id: 'green',  hex: '#00E676', fg: '#000' },
+  { id: 'violet', hex: '#D500F9', fg: '#000' },
+  { id: 'orange', hex: '#FF6D00', fg: '#000' },
+  { id: 'pink',   hex: '#FF1493', fg: '#000' },
+  { id: 'lime',   hex: '#39FF14', fg: '#000' },
+];
+
+export function colorHex(id) {
+  return PLAYER_COLORS.find((c) => c.id === id)?.hex || null;
+}
+
+export function colorFg(id) {
+  return PLAYER_COLORS.find((c) => c.id === id)?.fg || '#FFF';
+}

@@ -1,29 +1,49 @@
 import { ref, set, remove, update } from 'firebase/database';
 import { db } from '../firebase';
 import { shuffle } from '../utils';
-import { ALL_CARDS, CATEGORIES, HAND_SIZE, YELLOW, PINK } from '../cards';
+import { CATEGORIES, HAND_SIZE, YELLOW, PINK, PLAYER_COLORS, colorHex, colorFg } from '../cards';
+import { subscribeCards, seedDefaultsIfEmpty } from '../cardsStore';
 import { ChevronRight, X, LogOut, Copy, Check } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Lobby({ room, roomCode, playerId, onLeave }) {
   const isHost = room.host === playerId;
   const players = Object.entries(room.players || {}).map(([id, p]) => ({ id, ...p }));
   const cats = room.settings?.cats || {};
-  const totalAvailable = ALL_CARDS.filter((c) => cats[c.cat]).length;
+  const [copied, setCopied] = useState(false);
+  const [allCards, setAllCards] = useState([]);
+
+  useEffect(() => {
+    seedDefaultsIfEmpty().catch(() => {});
+    const unsub = subscribeCards(setAllCards);
+    return () => unsub();
+  }, []);
+
+  const totalAvailable = allCards.filter((c) => cats[c.cat]).length;
   const enoughPlayers = players.length >= 3;
   const enoughCards = totalAvailable >= players.length * HAND_SIZE + 8;
-  const canStart = enoughPlayers && enoughCards;
-  const [copied, setCopied] = useState(false);
+  const canStart = enoughPlayers && enoughCards && allCards.length > 0;
 
   async function toggleCat(id) {
     if (!isHost) return;
     await set(ref(db, `rooms/${roomCode}/settings/cats/${id}`), !cats[id]);
   }
 
+  const myColor = room.players?.[playerId]?.color || null;
+  const takenColors = new Set(
+    players.filter((p) => p.id !== playerId && p.color).map((p) => p.color)
+  );
+
+  async function pickColor(colorId) {
+    if (takenColors.has(colorId)) return;
+    const next = myColor === colorId ? null : colorId;
+    await set(ref(db, `rooms/${roomCode}/players/${playerId}/color`), next);
+  }
+
   async function startGame() {
     if (!isHost || !canStart) return;
 
-    const enabled = ALL_CARDS.filter((c) => cats[c.cat]);
+    const enabled = allCards.filter((c) => cats[c.cat]);
     const shuffled = shuffle(enabled).map((c, i) => ({ ...c, id: `c${i}` }));
     const poolObj = Object.fromEntries(
       shuffled.map((c) => [c.id, { t: c.t, cat: c.cat, spicy: !!c.spicy }])
@@ -41,6 +61,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
         name: p.name,
         score: 0,
         joinedAt: p.joinedAt,
+        ...(p.color ? { color: p.color } : {}),
       };
     });
 
@@ -160,12 +181,15 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
             {players.map((p) => {
               const isMe = p.id === playerId;
               const isTheHost = p.id === room.host;
+              const pColor = colorHex(p.color);
+              const bg = pColor || (isMe ? '#000' : '#FFF');
+              const fg = pColor ? colorFg(p.color) : (isMe ? YELLOW : '#000');
               return (
                 <div
                   key={p.id}
                   style={{
-                    backgroundColor: isMe ? '#000' : '#FFF',
-                    color: isMe ? YELLOW : '#000',
+                    backgroundColor: bg,
+                    color: fg,
                     boxShadow: '3px 3px 0 #000',
                   }}
                   className="border-2 border-black px-3 py-1.5 flex items-center gap-2"
@@ -189,6 +213,46 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
                     </span>
                   )}
                 </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mb-8">
+          <div
+            style={{ fontFamily: '"Anton", sans-serif' }}
+            className="text-2xl uppercase mb-1"
+          >
+            Ta couleur
+          </div>
+          <div
+            style={{ fontFamily: '"Space Mono", monospace' }}
+            className="text-[10px] uppercase tracking-widest mb-3 opacity-70"
+          >
+            Choisis-en une avant de lancer · une seule par joueur
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {PLAYER_COLORS.map((c) => {
+              const taken = takenColors.has(c.id);
+              const selected = myColor === c.id;
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => pickColor(c.id)}
+                  disabled={taken}
+                  aria-label={c.id}
+                  style={{
+                    backgroundColor: c.hex,
+                    boxShadow: selected ? '5px 5px 0 #000' : '3px 3px 0 #000',
+                    transform: selected ? 'translate(-2px, -2px)' : 'none',
+                    opacity: taken ? 0.25 : 1,
+                    cursor: taken ? 'not-allowed' : 'pointer',
+                    width: 44,
+                    height: 44,
+                    transition: 'all 120ms',
+                  }}
+                  className="border-4 border-black"
+                />
               );
             })}
           </div>
