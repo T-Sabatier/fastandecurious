@@ -123,7 +123,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
           </button>
           <div
             style={{ fontFamily: '"Anton", sans-serif' }}
-            className="text-xl uppercase"
+            className="text-4xl uppercase"
           >
             Salon
           </div>
@@ -147,7 +147,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
                 color: YELLOW,
                 letterSpacing: '0.15em',
               }}
-              className="text-7xl uppercase"
+              className="text-5xl uppercase"
             >
               {roomCode}
             </div>
@@ -195,11 +195,11 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
                     color: fg,
                     boxShadow: '3px 3px 0 #000',
                   }}
-                  className="border-2 border-black px-3 py-1.5 flex items-center gap-2"
+                  className="border-2 border-black px-3.5 py-2 flex items-center gap-2"
                 >
                   <span
                     style={{ fontFamily: '"Anton", sans-serif' }}
-                    className="uppercase text-sm leading-none"
+                    className="uppercase text-xl leading-none"
                   >
                     {p.name}
                   </span>

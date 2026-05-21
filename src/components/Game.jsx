@@ -262,9 +262,9 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 outline,
                 outlineOffset: '1px',
               }}
-              className="border-2 border-black px-2 py-1 flex items-center gap-2 whitespace-nowrap shrink-0"
+              className="border-2 border-black px-2.5 py-1.5 flex items-center gap-2 whitespace-nowrap shrink-0"
             >
-              <span className="uppercase text-xs leading-none">
+              <span className="uppercase text-base leading-none">
                 {isPlayerBoss && '👑 '}
                 {p.name}
               </span>
@@ -273,7 +273,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                   backgroundColor: '#000',
                   color: YELLOW,
                 }}
-                className="text-[10px] leading-none px-1.5 py-0.5"
+                className="text-xs leading-none px-1.5 py-0.5"
               >
                 {p.score || 0}
               </span>
@@ -715,12 +715,13 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               </span>
             </div>
           </div>
-          <div className="flex-1 px-4 pb-6 overflow-y-auto">
+          <div className="flex-1 px-4 pb-32 overflow-y-auto">
             <div className="grid grid-cols-2 gap-3 mt-3">
               {playedEntries.map((entry, i) => {
                 const card = pool[entry.cardId];
                 if (!card) return null;
                 const isSpicy = card.spicy;
+                const isSel = selectedCard === entry.cardId;
                 const variants = [
                   { bg: '#FFF', fg: '#000' },
                   { bg: '#000', fg: YELLOW },
@@ -737,14 +738,19 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 return (
                   <button
                     key={i}
-                    onClick={() => bossPickWinner(entry)}
+                    onClick={() => setSelectedCard(entry.cardId)}
                     disabled={busy}
                     style={{
-                      backgroundColor: cv.bg,
-                      color: cv.fg,
-                      boxShadow: '5px 5px 0 #000',
-                      transform: `rotate(${rot})`,
+                      backgroundColor: isSel ? (isSpicy ? PINK : '#000') : cv.bg,
+                      color: isSel ? (isSpicy ? '#FFF' : YELLOW) : cv.fg,
+                      boxShadow: isSel ? '8px 8px 0 #000' : '5px 5px 0 #000',
+                      transform: isSel
+                        ? `rotate(${rot}) translate(-3px, -3px)`
+                        : `rotate(${rot})`,
+                      outline: isSel ? '4px solid ' + YELLOW : 'none',
+                      outlineOffset: isSel ? '2px' : '0',
                       minHeight: '120px',
+                      transition: 'all 120ms',
                     }}
                     className="border-4 border-black p-4 text-center flex items-center justify-center active:translate-x-[2px] active:translate-y-[2px]"
                   >
@@ -766,8 +772,33 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               style={{ fontFamily: '"Space Mono", monospace' }}
               className="text-[10px] uppercase tracking-widest opacity-50 mt-4 text-center"
             >
-              L'auteur·e sera révélé·e après ton choix
+              L'auteur·e sera révélé·e après ta validation
             </div>
+          </div>
+
+          <div
+            className="fixed bottom-0 left-0 right-0 p-4 border-t-4 border-black"
+            style={{ backgroundColor: YELLOW }}
+          >
+            <button
+              onClick={() => {
+                const entry = playedEntries.find((e) => e.cardId === selectedCard);
+                if (entry) bossPickWinner(entry);
+              }}
+              disabled={!selectedCard || busy}
+              className="w-full border-4 border-black bg-black text-white py-4 disabled:opacity-30 active:translate-x-[2px] active:translate-y-[2px]"
+              style={{ boxShadow: '6px 6px 0 #000' }}
+            >
+              <div className="flex items-center justify-center gap-3">
+                <span
+                  style={{ fontFamily: '"Anton", sans-serif' }}
+                  className="text-xl uppercase tracking-wide"
+                >
+                  {selectedCard ? 'Valider mon choix' : 'Choisis une carte'}
+                </span>
+                {selectedCard && <ChevronRight size={24} />}
+              </div>
+            </button>
           </div>
         </div>
       );
