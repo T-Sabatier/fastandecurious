@@ -113,25 +113,6 @@ export const DEFAULT_CARDS = [
   ['Vagues qui claquent', 'nature'], ['Forêt tropicale', 'nature'],
   ['Vent dans les feuilles', 'nature'],
 
-  // RED FLAGS
-  ['Répond après 3 jours', 'redflag'], ['Parle que de son ex', 'redflag'],
-  ['Toujours en retard', 'redflag'],
-  ['Ghost après 2 dates', 'redflag'], ['Dit "au final" tout le temps', 'redflag'],
-  ['Mange la bouche ouverte', 'redflag'], ['Drague tes potes', 'redflag'],
-  ['Jaloux maladif', 'redflag'], ['Aucun humour', 'redflag'],
-  ['Te répond "ok"', 'redflag'], ['Story Insta H24', 'redflag'],
-  ['Aime ses propres posts', 'redflag'], ['Bio "no drama"', 'redflag'],
-  ['Photo avec un tigre', 'redflag'],
-
-  // GREEN FLAGS
-  ['Potes depuis 10 ans', 'greenflag'], ['Sait cuisiner', 'greenflag'],
-  ['Lit des livres', 'greenflag'], ['Répond vite', 'greenflag'],
-  ['Aime les animaux', 'greenflag'], ['Drôle sans forcer', 'greenflag'],
-  ["Sait s'excuser", 'greenflag'], ['Te présente à ses potes', 'greenflag'],
-  ['Parle bien de son ex', 'greenflag'], ['Voyage seul', 'greenflag'],
-  ['Hygiène irréprochable', 'greenflag'], ['Écoute vraiment', 'greenflag'],
-  ['Plans seul le week-end', 'greenflag'],
-
   // MODE
   ['Crocs', 'mode'], ['Costume cintré', 'mode'],
   ['Survêt assorti', 'mode'], ['Sac Vuitton', 'mode'],
@@ -188,8 +169,6 @@ export const CATEGORIES = [
   { id: 'culture', label: 'Culture FR', emoji: '🇫🇷' },
   { id: 'absurde', label: 'Absurde', emoji: '🤪' },
   { id: 'nature', label: 'Nature', emoji: '🌿' },
-  { id: 'redflag', label: 'Red Flags', emoji: '🚩' },
-  { id: 'greenflag', label: 'Green Flags', emoji: '🟢' },
   { id: 'mode', label: 'Mode', emoji: '👕' },
   { id: 'gaming', label: 'Jeux vidéo', emoji: '🎮' },
   { id: 'cartoons', label: 'Dessins animés', emoji: '🧸' },

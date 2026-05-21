@@ -1,25 +1,33 @@
 import { ref, set, remove, update } from 'firebase/database';
 import { db } from '../firebase';
 import { shuffle } from '../utils';
-import { CATEGORIES, HAND_SIZE, YELLOW, PINK, PLAYER_COLORS, colorHex, colorFg } from '../cards';
+import { HAND_SIZE, YELLOW, PINK, PLAYER_COLORS, colorHex, colorFg } from '../cards';
 import { subscribeCards, seedDefaultsIfEmpty } from '../cardsStore';
+import { subscribeCategories, seedCategoriesIfEmpty } from '../categoriesStore';
 import { ChevronRight, X, LogOut, Copy, Check } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export default function Lobby({ room, roomCode, playerId, onLeave }) {
   const isHost = room.host === playerId;
   const players = Object.entries(room.players || {}).map(([id, p]) => ({ id, ...p }));
-  const storedCats = room.settings?.cats || {};
-  const cats = Object.fromEntries(
-    CATEGORIES.map((c) => [c.id, storedCats[c.id] ?? true])
-  );
   const [copied, setCopied] = useState(false);
   const [allCards, setAllCards] = useState([]);
+  const [allCategories, setAllCategories] = useState([]);
+
+  const storedCats = room.settings?.cats || {};
+  const cats = Object.fromEntries(
+    allCategories.map((c) => [c.id, storedCats[c.id] ?? true])
+  );
 
   useEffect(() => {
     seedDefaultsIfEmpty().catch(() => {});
-    const unsub = subscribeCards(setAllCards);
-    return () => unsub();
+    seedCategoriesIfEmpty().catch(() => {});
+    const unsubCards = subscribeCards(setAllCards);
+    const unsubCats = subscribeCategories(setAllCategories);
+    return () => {
+      unsubCards();
+      unsubCats();
+    };
   }, []);
 
   const totalAvailable = allCards.filter((c) => cats[c.cat]).length;
@@ -276,7 +284,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
             {!isHost && ' · Seul le host peut changer'}
           </div>
           <div className="grid grid-cols-2 gap-3">
-            {CATEGORIES.map((cat) => {
+            {allCategories.map((cat) => {
               const on = !!cats[cat.id];
               const isSpicy = cat.spicy;
               return (

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { CATEGORIES, YELLOW, PINK } from '../cards';
+import { YELLOW, PINK } from '../cards';
 import {
   subscribeCards,
   seedDefaultsIfEmpty,
@@ -7,6 +7,12 @@ import {
   updateCard,
   deleteCard,
 } from '../cardsStore';
+import {
+  subscribeCategories,
+  seedCategoriesIfEmpty,
+  addCategory,
+  deleteCategory,
+} from '../categoriesStore';
 import { Lock, Plus, Pencil, Trash2, Check, X, ArrowLeft } from 'lucide-react';
 
 const ADMIN_CODE = import.meta.env.VITE_ADMIN_CODE || '';
@@ -121,10 +127,11 @@ function LockScreen({ codeInput, setCodeInput, codeError, onSubmit }) {
 
 function Dashboard() {
   const [cards, setCards] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [filterCat, setFilterCat] = useState('all');
   const [search, setSearch] = useState('');
   const [newText, setNewText] = useState('');
-  const [newCat, setNewCat] = useState(CATEGORIES[0].id);
+  const [newCat, setNewCat] = useState('');
   const [newSpicy, setNewSpicy] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editText, setEditText] = useState('');
@@ -132,11 +139,28 @@ function Dashboard() {
   const [editSpicy, setEditSpicy] = useState(false);
   const [busy, setBusy] = useState(false);
 
+  // Categories CRUD state
+  const [newCatLabel, setNewCatLabel] = useState('');
+  const [newCatEmoji, setNewCatEmoji] = useState('');
+  const [newCatSpicy, setNewCatSpicy] = useState(false);
+  const [catsExpanded, setCatsExpanded] = useState(false);
+
   useEffect(() => {
     seedDefaultsIfEmpty().catch(() => {});
-    const unsub = subscribeCards(setCards);
-    return () => unsub();
+    seedCategoriesIfEmpty().catch(() => {});
+    const unsubCards = subscribeCards(setCards);
+    const unsubCats = subscribeCategories(setCategories);
+    return () => {
+      unsubCards();
+      unsubCats();
+    };
   }, []);
+
+  useEffect(() => {
+    if (!newCat && categories.length > 0) {
+      setNewCat(categories[0].id);
+    }
+  }, [categories, newCat]);
 
   const filtered = useMemo(() => {
     const s = search.trim().toLowerCase();
@@ -204,6 +228,54 @@ function Dashboard() {
     }
   }
 
+  function slugifyCatId(s) {
+    return (s || '')
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '')
+      .slice(0, 20);
+  }
+
+  async function handleAddCat() {
+    const label = newCatLabel.trim();
+    const emoji = newCatEmoji.trim();
+    if (!label || !emoji || busy) return;
+    const id = slugifyCatId(label);
+    if (!id) {
+      alert('Nom invalide');
+      return;
+    }
+    if (categories.some((c) => c.id === id)) {
+      alert('Une categorie avec ce nom existe deja');
+      return;
+    }
+    setBusy(true);
+    try {
+      await addCategory({ id, label, emoji, spicy: newCatSpicy });
+      setNewCatLabel('');
+      setNewCatEmoji('');
+      setNewCatSpicy(false);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleDeleteCat(cat) {
+    const n = countByCat[cat.id] || 0;
+    const msg =
+      n > 0
+        ? `Supprimer "${cat.label}" ? ${n} carte(s) lie(es) deviendront orphelines (toujours en base, plus selectionnables).`
+        : `Supprimer la categorie "${cat.label}" ?`;
+    if (!confirm(msg)) return;
+    setBusy(true);
+    try {
+      await deleteCategory(cat.id);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div style={{ backgroundColor: YELLOW, minHeight: '100vh' }} className="text-black">
       <div className="max-w-2xl mx-auto px-5 py-6">
@@ -233,6 +305,125 @@ function Dashboard() {
           className="border-4 border-black bg-white p-4 mb-6"
           style={{ boxShadow: '6px 6px 0 #000' }}
         >
+          <button
+            onClick={() => setCatsExpanded((v) => !v)}
+            className="w-full flex items-center justify-between"
+          >
+            <div
+              style={{ fontFamily: '"Anton", sans-serif' }}
+              className="text-xl uppercase"
+            >
+              Catégories ({categories.length})
+            </div>
+            <div
+              style={{ fontFamily: '"Space Mono", monospace' }}
+              className="text-[10px] uppercase tracking-widest"
+            >
+              {catsExpanded ? '− Replier' : '+ Gérer'}
+            </div>
+          </button>
+          {catsExpanded && (
+            <div className="mt-4">
+              <div className="space-y-2 mb-4">
+                {categories.map((c) => {
+                  const n = countByCat[c.id] || 0;
+                  return (
+                    <div
+                      key={c.id}
+                      className="border-2 border-black bg-white px-3 py-2 flex items-center gap-2"
+                      style={{ boxShadow: '3px 3px 0 #000' }}
+                    >
+                      <span className="text-xl">{c.emoji}</span>
+                      <span
+                        style={{ fontFamily: '"Anton", sans-serif' }}
+                        className="uppercase flex-1"
+                      >
+                        {c.label}
+                      </span>
+                      <span
+                        style={{
+                          backgroundColor: c.spicy ? PINK : '#000',
+                          color: c.spicy ? '#FFF' : YELLOW,
+                          fontFamily: '"Space Mono", monospace',
+                        }}
+                        className="text-[10px] uppercase tracking-widest px-1.5 py-0.5"
+                      >
+                        {n} cart{n > 1 ? 'es' : 'e'}
+                      </span>
+                      <button
+                        onClick={() => handleDeleteCat(c)}
+                        disabled={busy}
+                        className="border-2 border-black bg-black text-white p-1.5 active:opacity-60"
+                        aria-label="Supprimer"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+              <div
+                style={{ fontFamily: '"Anton", sans-serif' }}
+                className="text-base uppercase mb-2"
+              >
+                Nouvelle catégorie
+              </div>
+              <div className="flex flex-wrap gap-2 mb-2">
+                <input
+                  value={newCatEmoji}
+                  onChange={(e) => setNewCatEmoji(e.target.value)}
+                  placeholder="🎯"
+                  maxLength={4}
+                  className="w-16 border-4 border-black bg-white px-2 py-2 outline-none text-center text-xl"
+                  style={{ boxShadow: '3px 3px 0 #000' }}
+                />
+                <input
+                  value={newCatLabel}
+                  onChange={(e) => setNewCatLabel(e.target.value)}
+                  placeholder="Nom (ex: Politique)"
+                  maxLength={30}
+                  className="flex-1 min-w-[140px] border-4 border-black bg-white px-3 py-2 outline-none"
+                  style={{ boxShadow: '3px 3px 0 #000' }}
+                />
+              </div>
+              <div className="flex items-center justify-between gap-3 mb-1">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={newCatSpicy}
+                    onChange={(e) => setNewCatSpicy(e.target.checked)}
+                    className="w-5 h-5"
+                  />
+                  <span
+                    style={{ fontFamily: '"Space Mono", monospace' }}
+                    className="text-xs uppercase tracking-widest"
+                  >
+                    🌶️ Spicy
+                  </span>
+                </label>
+                <button
+                  onClick={handleAddCat}
+                  disabled={!newCatLabel.trim() || !newCatEmoji.trim() || busy}
+                  className="border-4 border-black bg-black text-white px-3 py-2 disabled:opacity-40 active:translate-x-[2px] active:translate-y-[2px] flex items-center gap-2"
+                  style={{ boxShadow: '3px 3px 0 #000' }}
+                >
+                  <Plus size={16} />
+                  <span
+                    style={{ fontFamily: '"Anton", sans-serif' }}
+                    className="uppercase text-sm"
+                  >
+                    Ajouter
+                  </span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div
+          className="border-4 border-black bg-white p-4 mb-6"
+          style={{ boxShadow: '6px 6px 0 #000' }}
+        >
           <div
             style={{ fontFamily: '"Anton", sans-serif' }}
             className="text-xl uppercase mb-3"
@@ -254,7 +445,7 @@ function Dashboard() {
               className="border-4 border-black bg-white px-2 py-2"
               style={{ boxShadow: '3px 3px 0 #000', fontFamily: '"Anton", sans-serif' }}
             >
-              {CATEGORIES.map((c) => (
+              {categories.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.emoji} {c.label}
                 </option>
@@ -300,7 +491,7 @@ function Dashboard() {
             style={{ boxShadow: '3px 3px 0 #000', fontFamily: '"Anton", sans-serif' }}
           >
             <option value="all">Toutes ({cards.length})</option>
-            {CATEGORIES.map((c) => (
+            {categories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.emoji} {c.label} ({countByCat[c.id] || 0})
               </option>
@@ -319,7 +510,7 @@ function Dashboard() {
           )}
           {filtered.map((c) => {
             const isEditing = editingId === c.id;
-            const cat = CATEGORIES.find((x) => x.id === c.cat);
+            const cat = categories.find((x) => x.id === c.cat);
             if (isEditing) {
               return (
                 <div

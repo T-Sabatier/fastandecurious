@@ -13,9 +13,17 @@ import {
   PINK,
   LIKE_GREEN,
   DISLIKE_RED,
+  CATEGORIES,
   colorHex,
   colorFg,
 } from '../cards';
+
+const CAT_EMOJI = Object.fromEntries(
+  CATEGORIES.map((c) => [c.id, c.emoji])
+);
+function catEmojiOf(card) {
+  return CAT_EMOJI[card?.cat] || '';
+}
 import {
   Heart,
   HeartCrack,
@@ -516,7 +524,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               Ta carte
             </div>
             <div
-              className="border-4 border-black p-5 mb-6 max-w-xs w-full"
+              className="border-4 border-black p-5 mb-6 max-w-xs w-full relative"
               style={{
                 backgroundColor: myCard?.spicy ? PINK : '#000',
                 color: myCard?.spicy ? '#FFF' : YELLOW,
@@ -524,6 +532,12 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 transform: 'rotate(-2deg)',
               }}
             >
+              <span
+                className="absolute top-2 left-3 text-2xl leading-none select-none"
+                aria-hidden
+              >
+                {catEmojiOf(myCard)}
+              </span>
               <div
                 style={{
                   fontFamily: '"Anton", sans-serif',
@@ -649,8 +663,14 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                     transition: 'all 120ms',
                     minHeight: '100px',
                   }}
-                  className="border-4 border-black p-3 text-center flex items-center justify-center"
+                  className="border-4 border-black p-3 text-center flex items-center justify-center relative"
                 >
+                  <span
+                    className="absolute top-1 left-2 text-lg leading-none opacity-70 select-none"
+                    aria-hidden
+                  >
+                    {catEmojiOf(card)}
+                  </span>
                   <div
                     style={{
                       fontFamily: '"Anton", sans-serif',
@@ -753,8 +773,14 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                       minHeight: '120px',
                       transition: 'all 120ms',
                     }}
-                    className="border-4 border-black p-4 text-center flex items-center justify-center active:translate-x-[2px] active:translate-y-[2px]"
+                    className="border-4 border-black p-4 text-center flex items-center justify-center active:translate-x-[2px] active:translate-y-[2px] relative"
                   >
+                    <span
+                      className="absolute top-1 left-2 text-lg leading-none opacity-70 select-none"
+                      aria-hidden
+                    >
+                      {catEmojiOf(card)}
+                    </span>
                     <div
                       style={{
                         fontFamily: '"Anton", sans-serif',
@@ -868,8 +894,14 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                     transform: `rotate(${rot})`,
                     minHeight: '120px',
                   }}
-                  className="border-4 border-black p-4 text-center flex items-center justify-center"
+                  className="border-4 border-black p-4 text-center flex items-center justify-center relative"
                 >
+                  <span
+                    className="absolute top-1 left-2 text-lg leading-none opacity-70 select-none"
+                    aria-hidden
+                  >
+                    {catEmojiOf(card)}
+                  </span>
                   <div
                     style={{
                       fontFamily: '"Anton", sans-serif',
@@ -915,7 +947,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
             Carte choisie
           </div>
           <div
-            className="border-4 border-black p-6 mb-6 max-w-sm w-full"
+            className="border-4 border-black p-6 mb-6 max-w-sm w-full relative"
             style={{
               backgroundColor: winnerCard?.spicy ? PINK : '#000',
               color: winnerCard?.spicy ? '#FFF' : YELLOW,
@@ -923,6 +955,12 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               transform: 'rotate(-2deg)',
             }}
           >
+            <span
+              className="absolute top-2 left-3 text-2xl leading-none select-none"
+              aria-hidden
+            >
+              {catEmojiOf(winnerCard)}
+            </span>
             <div
               style={{
                 fontFamily: '"Anton", sans-serif',
