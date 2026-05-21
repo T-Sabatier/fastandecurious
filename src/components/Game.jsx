@@ -297,7 +297,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
 
   const Scoreboard = () => (
     <div className="px-4 py-2 border-b-4 border-black bg-white/40">
-      <div className="flex items-center gap-2 overflow-x-auto max-w-xl mx-auto">
+      <div className="flex flex-wrap items-center justify-center gap-1.5 max-w-xl mx-auto">
         {players.map((p) => {
           const isPlayerBoss = p.id === room.bossId;
           const isMe = p.id === playerId;
@@ -319,9 +319,9 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 outline,
                 outlineOffset: '1px',
               }}
-              className="border-2 border-black px-2.5 py-1.5 flex items-center gap-2 whitespace-nowrap shrink-0"
+              className="border-2 border-black px-2 py-1 flex items-center gap-1.5 whitespace-nowrap shrink-0"
             >
-              <span className="uppercase text-base leading-none">
+              <span className="uppercase text-sm leading-none">
                 {isPlayerBoss && '👑 '}
                 {p.name}
               </span>
