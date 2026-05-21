@@ -773,35 +773,90 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
       );
     }
 
-    // Non-boss waiting for boss to pick
+    // Non-boss: voir les cartes posées (anonymes) pendant que le boss choisit
     return (
       <div style={baseWrap} className="text-black flex flex-col">
-        <TopBar />
+        <TopBar right={`${playedEntries.length} CARTES`} />
         <Scoreboard />
-        <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
-          <Clock size={64} strokeWidth={2.5} />
+        <div className="px-5 pt-3 pb-2">
           <div
             style={{ fontFamily: '"Space Mono", monospace' }}
-            className="text-[10px] uppercase tracking-widest opacity-60 mt-4 mb-2"
+            className="text-[10px] uppercase tracking-widest opacity-60"
           >
-            En attente
+            Cartes posées
+          </div>
+          <div className="flex items-baseline gap-2 mt-1 flex-wrap">
+            <div
+              style={{
+                fontFamily: '"Anton", sans-serif',
+                lineHeight: 0.9,
+                color: bossColor || '#000',
+              }}
+              className="text-2xl uppercase"
+            >
+              {boss.name}
+            </div>
+            <div
+              style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.9 }}
+              className="text-2xl uppercase"
+            >
+              choisit{' '}
+              <span style={{ color: room.mode === 'like' ? '#000' : PINK }}>
+                {room.mode === 'like' ? 'sa préférée' : "qu'il aime le moins"}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="flex-1 px-4 pb-6 overflow-y-auto">
+          <div className="grid grid-cols-2 gap-3 mt-3">
+            {playedEntries.map((entry, i) => {
+              const card = pool[entry.cardId];
+              if (!card) return null;
+              const isSpicy = card.spicy;
+              const variants = [
+                { bg: '#FFF', fg: '#000' },
+                { bg: '#000', fg: YELLOW },
+                { bg: isSpicy ? PINK : '#FFF', fg: isSpicy ? '#FFF' : '#000' },
+                { bg: '#FFF', fg: '#000' },
+                { bg: '#000', fg: YELLOW },
+                { bg: '#FFF', fg: '#000' },
+                { bg: '#000', fg: YELLOW },
+                { bg: '#FFF', fg: '#000' },
+                { bg: '#FFF', fg: '#000' },
+              ];
+              const cv = variants[i % variants.length];
+              const rot = i % 2 === 0 ? '-1.5deg' : '1.5deg';
+              return (
+                <div
+                  key={i}
+                  style={{
+                    backgroundColor: cv.bg,
+                    color: cv.fg,
+                    boxShadow: '5px 5px 0 #000',
+                    transform: `rotate(${rot})`,
+                    minHeight: '120px',
+                  }}
+                  className="border-4 border-black p-4 text-center flex items-center justify-center"
+                >
+                  <div
+                    style={{
+                      fontFamily: '"Anton", sans-serif',
+                      lineHeight: 0.95,
+                      fontSize: fitCard(card.t),
+                    }}
+                    className="uppercase"
+                  >
+                    {card.t}
+                  </div>
+                </div>
+              );
+            })}
           </div>
           <div
-            style={{
-              fontFamily: '"Anton", sans-serif',
-              lineHeight: 0.9,
-              fontSize: fitBig(boss.name),
-              color: bossColor || '#000',
-            }}
-            className="uppercase mb-2 break-words"
+            style={{ fontFamily: '"Space Mono", monospace' }}
+            className="text-[10px] uppercase tracking-widest opacity-50 mt-6 text-center"
           >
-            {boss.name}
-          </div>
-          <div
-            style={{ fontFamily: '"Anton", sans-serif' }}
-            className="text-xl uppercase opacity-80"
-          >
-            choisit la carte gagnante…
+            En attente du choix du boss…
           </div>
         </div>
       </div>
