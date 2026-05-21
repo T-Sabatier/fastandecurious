@@ -114,6 +114,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         mode: m,
         phase: 'play',
         played: null,
+        bossPick: null,
       });
     } finally {
       setBusy(false);
@@ -142,6 +143,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
       await update(ref(db, `rooms/${roomCode}`), {
         winnerInfo: { playerId: entry.playerId, cardId: entry.cardId },
         phase: 'result',
+        bossPick: null,
       });
     } finally {
       setBusy(false);
@@ -784,29 +786,21 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               {playedEntries.map((entry, i) => {
                 const card = pool[entry.cardId];
                 if (!card) return null;
-                const isSpicy = card.spicy;
-                const isSel = selectedCard === entry.cardId;
-                const variants = [
-                  { bg: '#FFF', fg: '#000' },
-                  { bg: '#000', fg: YELLOW },
-                  { bg: isSpicy ? PINK : '#FFF', fg: isSpicy ? '#FFF' : '#000' },
-                  { bg: '#FFF', fg: '#000' },
-                  { bg: '#000', fg: YELLOW },
-                  { bg: '#FFF', fg: '#000' },
-                  { bg: '#000', fg: YELLOW },
-                  { bg: '#FFF', fg: '#000' },
-                  { bg: '#FFF', fg: '#000' },
-                ];
-                const cv = variants[i % variants.length];
+                const isSel = room.bossPick === entry.cardId;
                 const rot = i % 2 === 0 ? '-1.5deg' : '1.5deg';
                 return (
                   <button
                     key={i}
-                    onClick={() => setSelectedCard(entry.cardId)}
+                    onClick={() => {
+                      set(
+                        ref(db, `rooms/${roomCode}/bossPick`),
+                        entry.cardId
+                      ).catch(() => {});
+                    }}
                     disabled={busy}
                     style={{
-                      backgroundColor: cv.bg,
-                      color: cv.fg,
+                      backgroundColor: '#FFF',
+                      color: '#000',
                       boxShadow: isSel ? '8px 8px 0 #000' : '5px 5px 0 #000',
                       transform: isSel
                         ? `rotate(${rot}) translate(-3px, -3px)`
@@ -847,10 +841,10 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
             <div className="max-w-xl mx-auto">
               <button
                 onClick={() => {
-                  const entry = playedEntries.find((e) => e.cardId === selectedCard);
+                  const entry = playedEntries.find((e) => e.cardId === room.bossPick);
                   if (entry) bossPickWinner(entry);
                 }}
-                disabled={!selectedCard || busy}
+                disabled={!room.bossPick || busy}
                 className="w-full border-4 border-black bg-black text-white py-4 disabled:opacity-30 active:translate-x-[2px] active:translate-y-[2px]"
                 style={{ boxShadow: '6px 6px 0 #000' }}
               >
@@ -859,9 +853,9 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                     style={{ fontFamily: '"Anton", sans-serif' }}
                     className="text-xl uppercase tracking-wide"
                   >
-                    {selectedCard ? 'Valider mon choix' : 'Choisis une carte'}
+                    {room.bossPick ? 'Valider mon choix' : 'Choisis une carte'}
                   </span>
-                  {selectedCard && <ChevronRight size={24} />}
+                  {room.bossPick && <ChevronRight size={24} />}
                 </div>
               </button>
             </div>
@@ -909,29 +903,22 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
             {playedEntries.map((entry, i) => {
               const card = pool[entry.cardId];
               if (!card) return null;
-              const isSpicy = card.spicy;
-              const variants = [
-                { bg: '#FFF', fg: '#000' },
-                { bg: '#000', fg: YELLOW },
-                { bg: isSpicy ? PINK : '#FFF', fg: isSpicy ? '#FFF' : '#000' },
-                { bg: '#FFF', fg: '#000' },
-                { bg: '#000', fg: YELLOW },
-                { bg: '#FFF', fg: '#000' },
-                { bg: '#000', fg: YELLOW },
-                { bg: '#FFF', fg: '#000' },
-                { bg: '#FFF', fg: '#000' },
-              ];
-              const cv = variants[i % variants.length];
+              const isBossPick = room.bossPick === entry.cardId;
               const rot = i % 2 === 0 ? '-1.5deg' : '1.5deg';
               return (
                 <div
                   key={i}
                   style={{
-                    backgroundColor: cv.bg,
-                    color: cv.fg,
-                    boxShadow: '5px 5px 0 #000',
-                    transform: `rotate(${rot})`,
+                    backgroundColor: '#FFF',
+                    color: '#000',
+                    boxShadow: isBossPick ? '8px 8px 0 #000' : '5px 5px 0 #000',
+                    transform: isBossPick
+                      ? `rotate(${rot}) translate(-3px, -3px)`
+                      : `rotate(${rot})`,
+                    outline: isBossPick ? `4px solid ${PINK}` : 'none',
+                    outlineOffset: isBossPick ? '3px' : '0',
                     minHeight: '120px',
+                    transition: 'all 120ms',
                   }}
                   className="border-4 border-black p-4 text-center flex items-center justify-center relative"
                 >
