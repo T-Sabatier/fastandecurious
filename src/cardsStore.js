@@ -13,30 +13,61 @@ export function subscribeCards(cb) {
   });
 }
 
+function slugify(s) {
+  return (s || '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_|_$/g, '')
+    .slice(0, 40);
+}
+
+function defaultId(cat, t) {
+  return `def_${slugify(cat)}_${slugify(t)}`;
+}
+
+let inFlight = null;
 export async function seedDefaultsIfEmpty() {
-  const snap = await get(ref(db, CARDS_PATH));
-  if (!snap.exists()) {
-    const obj = {};
-    DEFAULT_CARDS.forEach((c, i) => {
-      const id = 'd' + String(i).padStart(4, '0');
-      obj[id] = { t: c.t, cat: c.cat, spicy: !!c.spicy };
+  if (inFlight) return inFlight;
+  inFlight = (async () => {
+    const snap = await get(ref(db, CARDS_PATH));
+    if (!snap.exists()) {
+      const obj = {};
+      DEFAULT_CARDS.forEach((c) => {
+        obj[defaultId(c.cat, c.t)] = { t: c.t, cat: c.cat, spicy: !!c.spicy };
+      });
+      await set(ref(db, CARDS_PATH), obj);
+      return;
+    }
+    const existing = snap.val() || {};
+    const byKey = {};
+    for (const [id, c] of Object.entries(existing)) {
+      const key = `${c.cat}::${c.t}`;
+      (byKey[key] ||= []).push(id);
+    }
+    const updates = {};
+    for (const ids of Object.values(byKey)) {
+      if (ids.length > 1) {
+        ids.sort();
+        ids.slice(1).forEach((id) => { updates[id] = null; });
+      }
+    }
+    DEFAULT_CARDS.forEach((c) => {
+      const key = `${c.cat}::${c.t}`;
+      if (!byKey[key]) {
+        updates[defaultId(c.cat, c.t)] = { t: c.t, cat: c.cat, spicy: !!c.spicy };
+      }
     });
-    await set(ref(db, CARDS_PATH), obj);
-    return true;
+    if (Object.keys(updates).length > 0) {
+      await update(ref(db, CARDS_PATH), updates);
+    }
+  })();
+  try {
+    await inFlight;
+  } finally {
+    inFlight = null;
   }
-  const existing = snap.val() || {};
-  const seen = new Set(
-    Object.values(existing).map((c) => `${c.cat}::${c.t}`)
-  );
-  const missing = DEFAULT_CARDS.filter((c) => !seen.has(`${c.cat}::${c.t}`));
-  if (missing.length === 0) return false;
-  const updates = {};
-  missing.forEach((c) => {
-    const r = push(ref(db, CARDS_PATH));
-    updates[r.key] = { t: c.t, cat: c.cat, spicy: !!c.spicy };
-  });
-  await update(ref(db, CARDS_PATH), updates);
-  return true;
 }
 
 export async function addCard({ t, cat, spicy }) {

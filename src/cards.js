@@ -103,6 +103,16 @@ export const DEFAULT_CARDS = [
   ['Parler toutes les langues', 'absurde'],
   ['Jouer de tout instrument', 'absurde'], ['Pieds énormes', 'absurde'],
 
+  // NATURE
+  ['Coucher de soleil', 'nature'], ['Forêt en automne', 'nature'],
+  ['Pluie d\'orage', 'nature'], ['Neige fraîche', 'nature'],
+  ['Lac de montagne', 'nature'], ['Désert de sable', 'nature'],
+  ['Aurores boréales', 'nature'], ['Arc-en-ciel', 'nature'],
+  ['Champ de lavande', 'nature'], ['Cascade', 'nature'],
+  ['Brouillard épais', 'nature'], ['Ciel étoilé', 'nature'],
+  ['Vagues qui claquent', 'nature'], ['Forêt tropicale', 'nature'],
+  ['Vent dans les feuilles', 'nature'],
+
   // RED FLAGS
   ['Répond après 3 jours', 'redflag'], ['Parle que de son ex', 'redflag'],
   ['Toujours en retard', 'redflag'],
@@ -177,6 +187,7 @@ export const CATEGORIES = [
   { id: 'sport', label: 'Sport', emoji: '⚽' },
   { id: 'culture', label: 'Culture FR', emoji: '🇫🇷' },
   { id: 'absurde', label: 'Absurde', emoji: '🤪' },
+  { id: 'nature', label: 'Nature', emoji: '🌿' },
   { id: 'redflag', label: 'Red Flags', emoji: '🚩' },
   { id: 'greenflag', label: 'Green Flags', emoji: '🟢' },
   { id: 'mode', label: 'Mode', emoji: '👕' },
