@@ -32,11 +32,14 @@ let inFlight = null;
 export async function seedDefaultsIfEmpty() {
   if (inFlight) return inFlight;
   inFlight = (async () => {
-    const [cardsSnap, deletedSnap] = await Promise.all([
-      get(ref(db, CARDS_PATH)),
-      get(ref(db, DELETED_DEFAULTS_PATH)),
-    ]);
-    const tombstones = new Set(Object.keys(deletedSnap.val() || {}));
+    const cardsSnap = await get(ref(db, CARDS_PATH));
+    let tombstones = new Set();
+    try {
+      const deletedSnap = await get(ref(db, DELETED_DEFAULTS_PATH));
+      tombstones = new Set(Object.keys(deletedSnap.val() || {}));
+    } catch {
+      // Regles Firebase ne permettent pas la lecture, on continue sans
+    }
     if (!cardsSnap.exists()) {
       const obj = {};
       DEFAULT_CARDS.forEach((c) => {
@@ -98,7 +101,13 @@ export async function deleteCard(id) {
     );
     if (isDefault) {
       const tombstoneId = defaultId(c.cat, c.t);
-      await set(ref(db, `${DELETED_DEFAULTS_PATH}/${tombstoneId}`), true);
+      try {
+        await set(ref(db, `${DELETED_DEFAULTS_PATH}/${tombstoneId}`), true);
+      } catch (e) {
+        console.warn(
+          `Tombstone failed (regles Firebase ?). La carte reviendra au prochain seed. ${e.message}`
+        );
+      }
     }
   }
   await remove(ref(db, `${CARDS_PATH}/${id}`));
