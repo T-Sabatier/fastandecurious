@@ -76,6 +76,30 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     }
   }, [room.phase, playedCount, nonBossCount, roomCode]);
 
+  // Safety net: si bossId pointe vers un joueur disparu (boss qui a quitte
+  // sans nettoyer), le host reassigne le boss et reset la phase
+  useEffect(() => {
+    if (!isHost) return;
+    const inGamePhase = ['boss_choose', 'play', 'reveal'].includes(room.phase);
+    if (!inGamePhase) return;
+    if (room.bossId && playerById[room.bossId]) return;
+    if (players.length === 0) return;
+    runTransaction(ref(db, `rooms/${roomCode}`), (cur) => {
+      if (!cur) return undefined;
+      if (cur.bossId && cur.players?.[cur.bossId]) return undefined;
+      const remainingIds = Object.keys(cur.players || {});
+      if (remainingIds.length === 0) return undefined;
+      return {
+        ...cur,
+        bossId: remainingIds[0],
+        phase: 'boss_choose',
+        mode: null,
+        played: null,
+        winnerInfo: null,
+      };
+    });
+  }, [isHost, room.phase, room.bossId, players.length, playerById, roomCode]);
+
   // Reset local state on phase / round changes
   useEffect(() => {
     setSelectedCard(null);
@@ -213,13 +237,28 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     setBusy(true);
     try {
       const remaining = players.filter((p) => p.id !== playerId);
-      await remove(ref(db, `rooms/${roomCode}/players/${playerId}`));
-      await remove(ref(db, `rooms/${roomCode}/hands/${playerId}`));
+      const wasBoss = room.bossId === playerId;
+      const updates = {
+        [`players/${playerId}`]: null,
+        [`hands/${playerId}`]: null,
+        [`played/${playerId}`]: null,
+      };
       if (remaining.length === 0) {
         await remove(ref(db, `rooms/${roomCode}`));
-      } else if (isHost) {
-        await set(ref(db, `rooms/${roomCode}/host`), remaining[0].id);
+        onLeave();
+        return;
       }
+      if (isHost) {
+        updates.host = remaining[0].id;
+      }
+      if (wasBoss) {
+        updates.bossId = remaining[0].id;
+        updates.phase = 'boss_choose';
+        updates.mode = null;
+        updates.played = null;
+        updates.winnerInfo = null;
+      }
+      await update(ref(db, `rooms/${roomCode}`), updates);
       onLeave();
     } finally {
       setBusy(false);
@@ -325,12 +364,12 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               style={{
                 fontFamily: '"Anton", sans-serif',
                 lineHeight: 0.88,
-                fontSize: fitBig(boss.name),
+                fontSize: fitBig(boss?.name || ''),
                 color: bossColor || '#000',
               }}
               className="uppercase break-words mb-2"
             >
-              👑 {boss.name}
+              👑 {boss?.name || '…'}
             </div>
             <div
               style={{ fontFamily: '"Anton", sans-serif' }}
@@ -427,12 +466,12 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
             style={{
               fontFamily: '"Anton", sans-serif',
               lineHeight: 0.9,
-              fontSize: fitBig(boss.name),
+              fontSize: fitBig(boss?.name || ''),
               color: bossColor || '#000',
             }}
             className="uppercase mb-2 break-words"
           >
-            {boss.name}
+            {boss?.name || '…'}
           </div>
           <div
             style={{ fontFamily: '"Anton", sans-serif' }}
@@ -590,7 +629,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 className="text-3xl uppercase mb-2"
               >
                 👑{' '}
-                <span style={{ color: bossColor || '#000' }}>{boss.name}</span>{' '}
+                <span style={{ color: bossColor || '#000' }}>{boss?.name || '…'}</span>{' '}
                 veut
               </div>
               <div
@@ -634,7 +673,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
             className="text-3xl uppercase"
           >
             👑{' '}
-            <span style={{ color: bossColor || '#000' }}>{boss.name}</span>{' '}
+            <span style={{ color: bossColor || '#000' }}>{boss?.name || '…'}</span>{' '}
             →{' '}
             <span
               style={{
@@ -852,7 +891,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               }}
               className="text-2xl uppercase"
             >
-              {boss.name}
+              {boss?.name || '…'}
             </div>
             <div
               style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.9 }}
