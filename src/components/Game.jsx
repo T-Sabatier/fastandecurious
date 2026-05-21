@@ -799,12 +799,6 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 );
               })}
             </div>
-            <div
-              style={{ fontFamily: '"Space Mono", monospace' }}
-              className="text-[10px] uppercase tracking-widest opacity-50 mt-4 text-center"
-            >
-              L'auteur·e sera révélé·e après ta validation
-            </div>
           </div>
 
           <div
