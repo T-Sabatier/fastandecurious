@@ -9,7 +9,10 @@ import { useState, useEffect } from 'react';
 export default function Lobby({ room, roomCode, playerId, onLeave }) {
   const isHost = room.host === playerId;
   const players = Object.entries(room.players || {}).map(([id, p]) => ({ id, ...p }));
-  const cats = room.settings?.cats || {};
+  const storedCats = room.settings?.cats || {};
+  const cats = Object.fromEntries(
+    CATEGORIES.map((c) => [c.id, storedCats[c.id] ?? true])
+  );
   const [copied, setCopied] = useState(false);
   const [allCards, setAllCards] = useState([]);
 
