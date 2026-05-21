@@ -3,6 +3,7 @@ import { db } from './firebase';
 import { DEFAULT_CARDS } from './cards';
 
 const CARDS_PATH = 'cards';
+const DELETED_DEFAULTS_PATH = 'deletedDefaults';
 
 export function subscribeCards(cb) {
   const r = ref(db, CARDS_PATH);
@@ -31,16 +32,23 @@ let inFlight = null;
 export async function seedDefaultsIfEmpty() {
   if (inFlight) return inFlight;
   inFlight = (async () => {
-    const snap = await get(ref(db, CARDS_PATH));
-    if (!snap.exists()) {
+    const [cardsSnap, deletedSnap] = await Promise.all([
+      get(ref(db, CARDS_PATH)),
+      get(ref(db, DELETED_DEFAULTS_PATH)),
+    ]);
+    const tombstones = new Set(Object.keys(deletedSnap.val() || {}));
+    if (!cardsSnap.exists()) {
       const obj = {};
       DEFAULT_CARDS.forEach((c) => {
-        obj[defaultId(c.cat, c.t)] = { t: c.t, cat: c.cat, spicy: !!c.spicy };
+        const id = defaultId(c.cat, c.t);
+        if (!tombstones.has(id)) {
+          obj[id] = { t: c.t, cat: c.cat, spicy: !!c.spicy };
+        }
       });
       await set(ref(db, CARDS_PATH), obj);
       return;
     }
-    const existing = snap.val() || {};
+    const existing = cardsSnap.val() || {};
     const byKey = {};
     for (const [id, c] of Object.entries(existing)) {
       const key = `${c.cat}::${c.t}`;
@@ -55,8 +63,9 @@ export async function seedDefaultsIfEmpty() {
     }
     DEFAULT_CARDS.forEach((c) => {
       const key = `${c.cat}::${c.t}`;
-      if (!byKey[key]) {
-        updates[defaultId(c.cat, c.t)] = { t: c.t, cat: c.cat, spicy: !!c.spicy };
+      const id = defaultId(c.cat, c.t);
+      if (!byKey[key] && !tombstones.has(id)) {
+        updates[id] = { t: c.t, cat: c.cat, spicy: !!c.spicy };
       }
     });
     if (Object.keys(updates).length > 0) {
@@ -81,5 +90,16 @@ export async function updateCard(id, patch) {
 }
 
 export async function deleteCard(id) {
+  const snap = await get(ref(db, `${CARDS_PATH}/${id}`));
+  if (snap.exists()) {
+    const c = snap.val();
+    const isDefault = DEFAULT_CARDS.some(
+      (d) => d.cat === c.cat && d.t === c.t
+    );
+    if (isDefault) {
+      const tombstoneId = defaultId(c.cat, c.t);
+      await set(ref(db, `${DELETED_DEFAULTS_PATH}/${tombstoneId}`), true);
+    }
+  }
   await remove(ref(db, `${CARDS_PATH}/${id}`));
 }

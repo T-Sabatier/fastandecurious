@@ -741,14 +741,14 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                     onClick={() => setSelectedCard(entry.cardId)}
                     disabled={busy}
                     style={{
-                      backgroundColor: isSel ? (isSpicy ? PINK : '#000') : cv.bg,
-                      color: isSel ? (isSpicy ? '#FFF' : YELLOW) : cv.fg,
+                      backgroundColor: cv.bg,
+                      color: cv.fg,
                       boxShadow: isSel ? '8px 8px 0 #000' : '5px 5px 0 #000',
                       transform: isSel
                         ? `rotate(${rot}) translate(-3px, -3px)`
                         : `rotate(${rot})`,
-                      outline: isSel ? '4px solid ' + YELLOW : 'none',
-                      outlineOffset: isSel ? '2px' : '0',
+                      outline: isSel ? `4px solid ${PINK}` : 'none',
+                      outlineOffset: isSel ? '3px' : '0',
                       minHeight: '120px',
                       transition: 'all 120ms',
                     }}
