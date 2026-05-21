@@ -103,6 +103,48 @@ export const DEFAULT_CARDS = [
   ['Parler toutes les langues', 'absurde'],
   ['Jouer de tout instrument', 'absurde'], ['Pieds énormes', 'absurde'],
 
+  // RED FLAGS
+  ['Répond après 3 jours', 'redflag'], ['Parle que de son ex', 'redflag'],
+  ['Toujours en retard', 'redflag'],
+  ['Ghost après 2 dates', 'redflag'], ['Dit "au final" tout le temps', 'redflag'],
+  ['Mange la bouche ouverte', 'redflag'], ['Drague tes potes', 'redflag'],
+  ['Jaloux maladif', 'redflag'], ['Aucun humour', 'redflag'],
+  ['Te répond "ok"', 'redflag'], ['Story Insta H24', 'redflag'],
+  ['Aime ses propres posts', 'redflag'], ['Bio "no drama"', 'redflag'],
+  ['Photo avec un tigre', 'redflag'],
+
+  // GREEN FLAGS
+  ['Potes depuis 10 ans', 'greenflag'], ['Sait cuisiner', 'greenflag'],
+  ['Lit des livres', 'greenflag'], ['Répond vite', 'greenflag'],
+  ['Aime les animaux', 'greenflag'], ['Drôle sans forcer', 'greenflag'],
+  ["Sait s'excuser", 'greenflag'], ['Te présente à ses potes', 'greenflag'],
+  ['Parle bien de son ex', 'greenflag'], ['Voyage seul', 'greenflag'],
+  ['Hygiène irréprochable', 'greenflag'], ['Écoute vraiment', 'greenflag'],
+  ['Plans seul le week-end', 'greenflag'],
+
+  // MODE
+  ['Crocs', 'mode'], ['Costume cintré', 'mode'],
+  ['Survêt assorti', 'mode'], ['Sac Vuitton', 'mode'],
+  ['Tatouage tribal', 'mode'], ['Doudoune Moncler', 'mode'],
+  ['Air Force 1', 'mode'], ['Mocassins sans chaussettes', 'mode'],
+
+  // JEUX VIDÉO
+  ['Mario Kart', 'gaming'], ['GTA V', 'gaming'], ['Fortnite', 'gaming'],
+  ['Zelda', 'gaming'], ['League of Legends', 'gaming'], ['Candy Crush', 'gaming'],
+  ['Minecraft', 'gaming'], ['Call of Duty', 'gaming'], ['FIFA', 'gaming'],
+  ['The Sims', 'gaming'], ['Animal Crossing', 'gaming'], ['Elden Ring', 'gaming'],
+  ['Among Us', 'gaming'], ['Pokémon', 'gaming'], ['Tetris', 'gaming'],
+
+  // DESSINS ANIMÉS
+  ['Le Roi Lion', 'cartoons'], ['La Reine des Neiges', 'cartoons'],
+  ['Toy Story', 'cartoons'], ['Shrek', 'cartoons'],
+  ['Les Indestructibles', 'cartoons'], ["Bob l'éponge", 'cartoons'],
+  ['Tom et Jerry', 'cartoons'], ['Les Simpson', 'cartoons'],
+  ['South Park', 'cartoons'], ['Naruto', 'cartoons'],
+  ['One Piece', 'cartoons'], ['Dragon Ball Z', 'cartoons'],
+  ['Avatar (dernier maître)', 'cartoons'], ['Scooby-Doo', 'cartoons'],
+  ['Code Lyoko', 'cartoons'],
+
   // COQUIN
   ['Cheveux tirés', 'coquin'], ['Yeux bandés', 'coquin'],
   ['Mains attachées', 'coquin'], ['Mordre la lèvre', 'coquin'],
@@ -135,6 +177,11 @@ export const CATEGORIES = [
   { id: 'sport', label: 'Sport', emoji: '⚽' },
   { id: 'culture', label: 'Culture FR', emoji: '🇫🇷' },
   { id: 'absurde', label: 'Absurde', emoji: '🤪' },
+  { id: 'redflag', label: 'Red Flags', emoji: '🚩' },
+  { id: 'greenflag', label: 'Green Flags', emoji: '🟢' },
+  { id: 'mode', label: 'Mode', emoji: '👕' },
+  { id: 'gaming', label: 'Jeux vidéo', emoji: '🎮' },
+  { id: 'cartoons', label: 'Dessins animés', emoji: '🧸' },
   { id: 'coquin', label: 'Coquin', emoji: '🌶️', spicy: true },
 ];
 
