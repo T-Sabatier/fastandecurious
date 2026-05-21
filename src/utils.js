@@ -55,9 +55,9 @@ export function fitCard(text) {
 export function fitBig(text) {
   const len = text.length;
   if (len < 10) return '3.5rem';
-  if (len < 16) return '2.8rem';
-  if (len < 24) return '2.2rem';
-  return '1.7rem';
+  if (len < 16) return '2.6rem';
+  if (len < 24) return '1.8rem';
+  return '1.3rem';
 }
 
 // Safely convert a Firebase array/object into an array

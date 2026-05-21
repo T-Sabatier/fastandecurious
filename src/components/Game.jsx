@@ -229,34 +229,36 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   // ============ COMMON SUBCOMPONENTS ============
 
   const TopBar = ({ right }) => (
-    <div className="px-4 py-3 flex items-center justify-between border-b-4 border-black bg-yellow-300" style={{ backgroundColor: YELLOW }}>
-      <button onClick={leaveGame} className="flex items-center gap-1.5">
-        <LogOut size={16} />
-        <span
-          style={{ fontFamily: '"Space Mono", monospace' }}
-          className="text-[10px] uppercase tracking-widest"
+    <div className="px-4 py-3 border-b-4 border-black bg-yellow-300" style={{ backgroundColor: YELLOW }}>
+      <div className="flex items-center justify-between max-w-xl mx-auto">
+        <button onClick={leaveGame} className="flex items-center gap-1.5">
+          <LogOut size={16} />
+          <span
+            style={{ fontFamily: '"Space Mono", monospace' }}
+            className="text-[10px] uppercase tracking-widest"
+          >
+            Quitter
+          </span>
+        </button>
+        <div
+          style={{ fontFamily: '"Anton", sans-serif' }}
+          className="text-lg uppercase tracking-tight"
         >
-          Quitter
-        </span>
-      </button>
-      <div
-        style={{ fontFamily: '"Anton", sans-serif' }}
-        className="text-lg uppercase tracking-tight"
-      >
-        Room {roomCode}
-      </div>
-      <div
-        style={{ fontFamily: '"Space Mono", monospace' }}
-        className="text-[10px] uppercase tracking-widest text-right min-w-[60px]"
-      >
-        {right || ''}
+          Room {roomCode}
+        </div>
+        <div
+          style={{ fontFamily: '"Space Mono", monospace' }}
+          className="text-[10px] uppercase tracking-widest text-right min-w-[60px]"
+        >
+          {right || ''}
+        </div>
       </div>
     </div>
   );
 
   const Scoreboard = () => (
     <div className="px-4 py-2 border-b-4 border-black bg-white/40">
-      <div className="flex items-center gap-2 overflow-x-auto">
+      <div className="flex items-center gap-2 overflow-x-auto max-w-xl mx-auto">
         {players.map((p) => {
           const isPlayerBoss = p.id === room.bossId;
           const isMe = p.id === playerId;
@@ -312,7 +314,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         <div style={baseWrap} className="text-black flex flex-col">
           <TopBar right={`TOUR ${room.round || 1}`} />
           <Scoreboard />
-          <div className="flex-1 px-5 py-6 flex flex-col">
+          <div className="flex-1 px-5 py-6 flex flex-col max-w-xl mx-auto w-full">
             <div
               style={{ fontFamily: '"Space Mono", monospace' }}
               className="text-[10px] uppercase tracking-widest opacity-70"
@@ -343,15 +345,15 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               Les autres poseront en fonction
             </div>
 
-            <div className="flex flex-col gap-4 flex-1 justify-center">
+            <div className="flex flex-col gap-6 mt-2">
               <button
                 onClick={() => bossChooseMode('like')}
                 disabled={busy}
-                className="border-4 border-black p-6 active:translate-x-[3px] active:translate-y-[3px] flex items-center justify-between"
+                className="border-4 border-black p-4 active:translate-x-[3px] active:translate-y-[3px] flex items-center justify-between"
                 style={{
                   backgroundColor: LIKE_GREEN,
                   color: '#000',
-                  boxShadow: '8px 8px 0 #000',
+                  boxShadow: '6px 6px 0 #000',
                   transform: 'rotate(-1deg)',
                 }}
               >
@@ -364,22 +366,22 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                   </div>
                   <div
                     style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.9 }}
-                    className="text-5xl uppercase"
+                    className="text-3xl uppercase"
                   >
                     J'aime
                   </div>
                 </div>
-                <Heart size={48} fill="#000" strokeWidth={0} />
+                <Heart size={32} fill="#000" strokeWidth={0} />
               </button>
 
               <button
                 onClick={() => bossChooseMode('dislike')}
                 disabled={busy}
-                className="border-4 border-black p-6 active:translate-x-[3px] active:translate-y-[3px] flex items-center justify-between"
+                className="border-4 border-black p-4 active:translate-x-[3px] active:translate-y-[3px] flex items-center justify-between"
                 style={{
                   backgroundColor: DISLIKE_RED,
                   color: '#FFF',
-                  boxShadow: '8px 8px 0 #000',
+                  boxShadow: '6px 6px 0 #000',
                   transform: 'rotate(1deg)',
                 }}
               >
@@ -396,12 +398,12 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                       lineHeight: 0.9,
                       color: '#FFF',
                     }}
-                    className="text-5xl uppercase"
+                    className="text-3xl uppercase"
                   >
                     J'aime pas
                   </div>
                 </div>
-                <HeartCrack size={48} color="#FFF" fill="#FFF" strokeWidth={1.5} />
+                <HeartCrack size={32} color="#FFF" fill="#FFF" strokeWidth={1.5} />
               </button>
             </div>
           </div>
@@ -451,7 +453,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         <div style={baseWrap} className="text-black flex flex-col">
           <TopBar right={`${playedCount}/${nonBossCount}`} />
           <Scoreboard />
-          <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
+          <div className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-xl mx-auto w-full">
             <Clock size={64} strokeWidth={2.5} />
             <div
               style={{ fontFamily: '"Space Mono", monospace' }}
@@ -516,7 +518,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         <div style={baseWrap} className="text-black flex flex-col">
           <TopBar right={`${playedCount}/${nonBossCount}`} />
           <Scoreboard />
-          <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
+          <div className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-xl mx-auto w-full">
             <div
               style={{ fontFamily: '"Space Mono", monospace' }}
               className="text-[10px] uppercase tracking-widest opacity-60 mb-2"
@@ -533,7 +535,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               }}
             >
               <span
-                className="absolute top-2 left-3 text-2xl leading-none select-none"
+                className="absolute top-2 left-3 text-3xl leading-none select-none"
                 aria-hidden
               >
                 {catEmojiOf(myCard)}
@@ -572,7 +574,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         <div style={baseWrap} className="text-black flex flex-col">
           <TopBar />
           <Scoreboard />
-          <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
+          <div className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-xl mx-auto w-full">
             <div
               style={{ fontFamily: '"Space Mono", monospace' }}
               className="text-[10px] uppercase tracking-widest opacity-60 mb-2"
@@ -626,7 +628,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
       <div style={baseWrap} className="text-black flex flex-col">
         <TopBar right={`${playedCount}/${nonBossCount}`} />
         <Scoreboard />
-        <div className="px-5 pt-3 pb-3 text-center">
+        <div className="px-5 pt-3 pb-3 text-center max-w-xl mx-auto w-full">
           <div
             style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.95 }}
             className="text-3xl uppercase"
@@ -645,7 +647,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         </div>
 
         <div className="flex-1 px-4 pb-32 overflow-y-auto">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 max-w-xl mx-auto">
             {myHandCardIds.map((cid) => {
               const card = pool[cid];
               if (!card) return null;
@@ -666,7 +668,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                   className="border-4 border-black p-3 text-center flex items-center justify-center relative"
                 >
                   <span
-                    className="absolute top-1 left-2 text-lg leading-none opacity-70 select-none"
+                    className="absolute top-1 left-2 text-2xl leading-none opacity-80 select-none"
                     aria-hidden
                   >
                     {catEmojiOf(card)}
@@ -691,22 +693,24 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
           className="fixed bottom-0 left-0 right-0 p-4 border-t-4 border-black"
           style={{ backgroundColor: YELLOW }}
         >
-          <button
-            onClick={playCard}
-            disabled={!selectedCard || busy}
-            className="w-full border-4 border-black bg-black text-white py-4 disabled:opacity-30 active:translate-x-[2px] active:translate-y-[2px]"
-            style={{ boxShadow: '6px 6px 0 #000' }}
-          >
-            <div className="flex items-center justify-center gap-3">
-              <span
-                style={{ fontFamily: '"Anton", sans-serif' }}
-                className="text-xl uppercase tracking-wide"
-              >
-                {selectedCard ? 'Jouer cette carte' : 'Choisis une carte'}
-              </span>
-              {selectedCard && <ChevronRight size={24} />}
-            </div>
-          </button>
+          <div className="max-w-xl mx-auto">
+            <button
+              onClick={playCard}
+              disabled={!selectedCard || busy}
+              className="w-full border-4 border-black bg-black text-white py-4 disabled:opacity-30 active:translate-x-[2px] active:translate-y-[2px]"
+              style={{ boxShadow: '6px 6px 0 #000' }}
+            >
+              <div className="flex items-center justify-center gap-3">
+                <span
+                  style={{ fontFamily: '"Anton", sans-serif' }}
+                  className="text-xl uppercase tracking-wide"
+                >
+                  {selectedCard ? 'Jouer cette carte' : 'Choisis une carte'}
+                </span>
+                {selectedCard && <ChevronRight size={24} />}
+              </div>
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -719,7 +723,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         <div style={baseWrap} className="text-black flex flex-col">
           <TopBar right={`${playedEntries.length} CARTES`} />
           <Scoreboard />
-          <div className="px-5 pt-3 pb-2">
+          <div className="px-5 pt-3 pb-2 max-w-xl mx-auto w-full">
             <div
               style={{ fontFamily: '"Space Mono", monospace' }}
               className="text-[10px] uppercase tracking-widest opacity-60"
@@ -737,7 +741,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
             </div>
           </div>
           <div className="flex-1 px-4 pb-32 overflow-y-auto">
-            <div className="grid grid-cols-2 gap-3 mt-3">
+            <div className="grid grid-cols-2 gap-3 mt-3 max-w-xl mx-auto">
               {playedEntries.map((entry, i) => {
                 const card = pool[entry.cardId];
                 if (!card) return null;
@@ -776,7 +780,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                     className="border-4 border-black p-4 text-center flex items-center justify-center active:translate-x-[2px] active:translate-y-[2px] relative"
                   >
                     <span
-                      className="absolute top-1 left-2 text-lg leading-none opacity-70 select-none"
+                      className="absolute top-1 left-2 text-2xl leading-none opacity-80 select-none"
                       aria-hidden
                     >
                       {catEmojiOf(card)}
@@ -807,25 +811,27 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
             className="fixed bottom-0 left-0 right-0 p-4 border-t-4 border-black"
             style={{ backgroundColor: YELLOW }}
           >
-            <button
-              onClick={() => {
-                const entry = playedEntries.find((e) => e.cardId === selectedCard);
-                if (entry) bossPickWinner(entry);
-              }}
-              disabled={!selectedCard || busy}
-              className="w-full border-4 border-black bg-black text-white py-4 disabled:opacity-30 active:translate-x-[2px] active:translate-y-[2px]"
-              style={{ boxShadow: '6px 6px 0 #000' }}
-            >
-              <div className="flex items-center justify-center gap-3">
-                <span
-                  style={{ fontFamily: '"Anton", sans-serif' }}
-                  className="text-xl uppercase tracking-wide"
-                >
-                  {selectedCard ? 'Valider mon choix' : 'Choisis une carte'}
-                </span>
-                {selectedCard && <ChevronRight size={24} />}
-              </div>
-            </button>
+            <div className="max-w-xl mx-auto">
+              <button
+                onClick={() => {
+                  const entry = playedEntries.find((e) => e.cardId === selectedCard);
+                  if (entry) bossPickWinner(entry);
+                }}
+                disabled={!selectedCard || busy}
+                className="w-full border-4 border-black bg-black text-white py-4 disabled:opacity-30 active:translate-x-[2px] active:translate-y-[2px]"
+                style={{ boxShadow: '6px 6px 0 #000' }}
+              >
+                <div className="flex items-center justify-center gap-3">
+                  <span
+                    style={{ fontFamily: '"Anton", sans-serif' }}
+                    className="text-xl uppercase tracking-wide"
+                  >
+                    {selectedCard ? 'Valider mon choix' : 'Choisis une carte'}
+                  </span>
+                  {selectedCard && <ChevronRight size={24} />}
+                </div>
+              </button>
+            </div>
           </div>
         </div>
       );
@@ -836,7 +842,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
       <div style={baseWrap} className="text-black flex flex-col">
         <TopBar right={`${playedEntries.length} CARTES`} />
         <Scoreboard />
-        <div className="px-5 pt-3 pb-2">
+        <div className="px-5 pt-3 pb-2 max-w-xl mx-auto w-full">
           <div
             style={{ fontFamily: '"Space Mono", monospace' }}
             className="text-[10px] uppercase tracking-widest opacity-60"
@@ -866,7 +872,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
           </div>
         </div>
         <div className="flex-1 px-4 pb-6 overflow-y-auto">
-          <div className="grid grid-cols-2 gap-3 mt-3">
+          <div className="grid grid-cols-2 gap-3 mt-3 max-w-xl mx-auto">
             {playedEntries.map((entry, i) => {
               const card = pool[entry.cardId];
               if (!card) return null;
@@ -897,7 +903,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                   className="border-4 border-black p-4 text-center flex items-center justify-center relative"
                 >
                   <span
-                    className="absolute top-1 left-2 text-lg leading-none opacity-70 select-none"
+                    className="absolute top-1 left-2 text-2xl leading-none opacity-80 select-none"
                     aria-hidden
                   >
                     {catEmojiOf(card)}
@@ -939,7 +945,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
       <div style={baseWrap} className="text-black flex flex-col">
         <TopBar />
         <Scoreboard />
-        <div className="flex-1 flex flex-col items-center justify-center px-6 text-center py-6">
+        <div className="flex-1 flex flex-col items-center justify-center px-6 text-center py-6 max-w-xl mx-auto w-full">
           <div
             style={{ fontFamily: '"Space Mono", monospace' }}
             className="text-[10px] uppercase tracking-widest opacity-60 mb-2"
@@ -956,7 +962,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
             }}
           >
             <span
-              className="absolute top-2 left-3 text-2xl leading-none select-none"
+              className="absolute top-2 left-3 text-3xl leading-none select-none"
               aria-hidden
             >
               {catEmojiOf(winnerCard)}
@@ -1047,7 +1053,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     return (
       <div style={baseWrap} className="text-black flex flex-col">
         <TopBar />
-        <div className="flex-1 flex flex-col items-center justify-center px-6 text-center py-8">
+        <div className="flex-1 flex flex-col items-center justify-center px-6 text-center py-8 max-w-xl mx-auto w-full">
           <Trophy size={80} strokeWidth={2.5} />
           <div
             style={{ fontFamily: '"Space Mono", monospace' }}
