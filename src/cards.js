@@ -156,24 +156,24 @@ export const DEFAULT_CARDS = [
   ['Code Lyoko', 'cartoons'],
 
   // COQUIN
-  ['Cheveux tirés', 'coquin'], ['Yeux bandés', 'coquin'],
-  ['Mains attachées', 'coquin'], ['Mordre la lèvre', 'coquin'],
+  ['Tirer les cheveux', 'coquin'], ['Yeux bandés', 'coquin'],
+  ['Mains attachées au lit', 'coquin'], ['Mordre la lèvre', 'coquin'],
   ['Souffler dans le cou', 'coquin'], ["Mordiller l'oreille", 'coquin'],
-  ['Massage sensuel', 'coquin'], ['Slow dance', 'coquin'],
-  ['Strip-tease', 'coquin'], ['Lingerie noire', 'coquin'],
-  ['Douche à 2', 'coquin'], ['Bain à 2', 'coquin'],
-  ['Au réveil', 'coquin'], ['Avant de dormir', 'coquin'],
-  ['Voix qui chuchote', 'coquin'], ['Regards intenses', 'coquin'],
-  ['Sexto explicite', 'coquin'], ['Vocal coquin', 'coquin'],
-  ['Photo coquine', 'coquin'], ['Sextoy', 'coquin'],
-  ['Roleplay', 'coquin'], ['Dominant·e', 'coquin'],
-  ['Soumis·e', 'coquin'], ['Devant un miroir', 'coquin'],
-  ['Dans une voiture', 'coquin'], ['Dans un ascenseur', 'coquin'],
-  ["Suite d'hôtel chic", 'coquin'], ['Direct au but', 'coquin'],
-  ['Long préliminaire', 'coquin'], ['Avouer un fantasme', 'coquin'],
-  ['Sieste coquine', 'coquin'], ['Réveil coquin', 'coquin'],
-  ['Doux et lent', 'coquin'], ['Sauvage et rapide', 'coquin'],
-  ['Te laisser guider', 'coquin'], ['Tout diriger', 'coquin'],
+  ['Massage avec happy end', 'coquin'], ['Slow collé-serré au lit', 'coquin'],
+  ['Strip-tease', 'coquin'], ['Lingerie noire fine', 'coquin'],
+  ['Sexe sous la douche', 'coquin'], ['Bain coquin à deux', 'coquin'],
+  ['Coup du matin', 'coquin'], ['Coup du soir', 'coquin'],
+  ['Chuchoter cru à l\'oreille', 'coquin'], ['Se fixer pendant l\'acte', 'coquin'],
+  ['Sexto explicite', 'coquin'], ['Vocal coquin envoyé', 'coquin'],
+  ['Photo coquine', 'coquin'], ['Utiliser un sextoy', 'coquin'],
+  ['Jeu de rôle coquin', 'coquin'], ['Avoir le contrôle au lit', 'coquin'],
+  ['Donner les rênes au lit', 'coquin'], ['Se regarder dans le miroir', 'coquin'],
+  ['Quickie sur la banquette', 'coquin'], ["Quickie dans l'ascenseur", 'coquin'],
+  ['Nuit torride à l\'hôtel', 'coquin'], ['Direct au plat principal', 'coquin'],
+  ['Préliminaires interminables', 'coquin'], ['Confesser un fantasme', 'coquin'],
+  ['Sieste coquine à deux', 'coquin'], ['Se faire réveiller câlinement', 'coquin'],
+  ['Sexe lent et sensuel', 'coquin'], ['Coup sauvage', 'coquin'],
+  ['Se laisser guider au lit', 'coquin'], ['Tout diriger au lit', 'coquin'],
 ].map(([t, cat]) => ({ t, cat, spicy: cat === 'coquin' }));
 
 export const CATEGORIES = [
@@ -200,6 +200,8 @@ export const HAND_SIZE = 7;
 export const WINNING_SCORE = 5;
 export const YELLOW = '#FFE600';
 export const PINK = '#FF2D6F';
+export const LIKE_GREEN = '#00C853';
+export const DISLIKE_RED = '#FF1744';
 
 export const PLAYER_COLORS = [
   { id: 'yellow', hex: '#EBF704', fg: '#000' },

@@ -7,7 +7,15 @@ import {
   fitCard,
   fitBig,
 } from '../utils';
-import { WINNING_SCORE, YELLOW, PINK, colorHex, colorFg } from '../cards';
+import {
+  WINNING_SCORE,
+  YELLOW,
+  PINK,
+  LIKE_GREEN,
+  DISLIKE_RED,
+  colorHex,
+  colorFg,
+} from '../cards';
 import {
   Heart,
   HeartCrack,
@@ -308,10 +316,11 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 fontFamily: '"Anton", sans-serif',
                 lineHeight: 0.88,
                 fontSize: fitBig(boss.name),
+                color: bossColor || '#000',
               }}
               className="uppercase break-words mb-2"
             >
-              Tu es le boss
+              👑 {boss.name}
             </div>
             <div
               style={{ fontFamily: '"Anton", sans-serif' }}
@@ -332,7 +341,8 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 disabled={busy}
                 className="border-4 border-black p-6 active:translate-x-[3px] active:translate-y-[3px] flex items-center justify-between"
                 style={{
-                  backgroundColor: '#FFF',
+                  backgroundColor: LIKE_GREEN,
+                  color: '#000',
                   boxShadow: '8px 8px 0 #000',
                   transform: 'rotate(-1deg)',
                 }}
@@ -359,7 +369,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 disabled={busy}
                 className="border-4 border-black p-6 active:translate-x-[3px] active:translate-y-[3px] flex items-center justify-between"
                 style={{
-                  backgroundColor: '#000',
+                  backgroundColor: DISLIKE_RED,
                   color: '#FFF',
                   boxShadow: '8px 8px 0 #000',
                   transform: 'rotate(1deg)',
@@ -376,14 +386,14 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                     style={{
                       fontFamily: '"Anton", sans-serif',
                       lineHeight: 0.9,
-                      color: YELLOW,
+                      color: '#FFF',
                     }}
                     className="text-5xl uppercase"
                   >
                     J'aime pas
                   </div>
                 </div>
-                <HeartCrack size={48} color={YELLOW} fill={YELLOW} strokeWidth={1.5} />
+                <HeartCrack size={48} color="#FFF" fill="#FFF" strokeWidth={1.5} />
               </button>
             </div>
           </div>
@@ -439,7 +449,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               style={{ fontFamily: '"Space Mono", monospace' }}
               className="text-[10px] uppercase tracking-widest opacity-60 mt-4 mb-2"
             >
-              Mode {room.mode === 'like' ? "❤️ J'aime" : "💔 J'aime pas"}
+              Mode <span style={{ color: room.mode === 'like' ? LIKE_GREEN : DISLIKE_RED, fontWeight: 700 }}>{room.mode === 'like' ? "❤️ J'aime" : "💔 J'aime pas"}</span>
             </div>
             <div
               style={{
@@ -563,14 +573,14 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.95 }}
                 className="text-3xl uppercase mb-2"
               >
-                Le boss{' '}
+                👑{' '}
                 <span style={{ color: bossColor || '#000' }}>{boss.name}</span>{' '}
                 veut
               </div>
               <div
                 style={{
                   fontFamily: '"Anton", sans-serif',
-                  color: room.mode === 'like' ? '#000' : PINK,
+                  color: room.mode === 'like' ? LIKE_GREEN : DISLIKE_RED,
                   lineHeight: 0.95,
                 }}
                 className="text-5xl uppercase"
@@ -607,12 +617,12 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
             style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.95 }}
             className="text-3xl uppercase"
           >
-            Boss{' '}
+            👑{' '}
             <span style={{ color: bossColor || '#000' }}>{boss.name}</span>{' '}
             →{' '}
             <span
               style={{
-                color: room.mode === 'like' ? '#000' : PINK,
+                color: room.mode === 'like' ? LIKE_GREEN : DISLIKE_RED,
               }}
             >
               {room.mode === 'like' ? "j'aime" : "j'aime pas"}
@@ -632,7 +642,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                   key={cid}
                   onClick={() => setSelectedCard(cid)}
                   style={{
-                    backgroundColor: isSel ? (isSpicy ? PINK : '#000') : '#FFF',
+                    backgroundColor: isSel ? PINK : '#FFF',
                     color: isSel ? '#FFF' : '#000',
                     boxShadow: isSel ? '6px 6px 0 #000' : '4px 4px 0 #000',
                     transform: isSel ? 'translate(-2px, -2px)' : 'none',
@@ -878,7 +888,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
             style={{ fontFamily: '"Space Mono", monospace' }}
             className="text-[10px] uppercase tracking-widest opacity-50 mt-6 text-center"
           >
-            En attente du choix du boss…
+            En attente du choix…
           </div>
         </div>
       </div>
@@ -902,7 +912,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
             style={{ fontFamily: '"Space Mono", monospace' }}
             className="text-[10px] uppercase tracking-widest opacity-60 mb-2"
           >
-            Le boss a choisi
+            Carte choisie
           </div>
           <div
             className="border-4 border-black p-6 mb-6 max-w-sm w-full"
@@ -974,7 +984,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 >
                   {willWinGame
                     ? 'Voir le gagnant'
-                    : `${winnerP?.name} devient boss`}
+                    : `À ${winnerP?.name} 👑`}
                 </span>
                 <ChevronRight size={24} />
               </div>

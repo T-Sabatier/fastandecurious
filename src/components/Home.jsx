@@ -249,9 +249,9 @@ export default function Home({ playerId, onJoin, initialError }) {
           <ul className="text-sm leading-relaxed space-y-1">
             <li>• 3 joueurs minimum, chacun sur son appareil</li>
             <li>• Main de <b>7 cartes</b> chacun</li>
-            <li>• Le <b>boss</b> annonce <b>J'AIME</b> ou <b>J'AIME PAS</b></li>
+            <li>• Le joueur <b>👑</b> annonce <b>J'AIME</b> ou <b>J'AIME PAS</b></li>
             <li>• Les autres posent une carte face cachée</li>
-            <li>• Le boss choisit sa préférée → <b>+1 point</b></li>
+            <li>• Le <b>👑</b> choisit sa préférée → <b>+1 point</b></li>
             <li>• Premier à <b>5 points</b> gagne</li>
           </ul>
         </div>
