@@ -162,52 +162,47 @@ export default function Home({ playerId, onJoin, initialError }) {
           />
         </div>
 
-        <button
-          onClick={createRoom}
-          disabled={busy}
-          className="w-full border-4 border-black bg-black text-white py-4 mb-3 active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50"
-          style={{ boxShadow: '6px 6px 0 #000' }}
-        >
-          <div
-            style={{ fontFamily: '"Anton", sans-serif' }}
-            className="text-2xl uppercase tracking-wide"
-          >
-            Créer une partie
-          </div>
-        </button>
-
-        <div
-          style={{ fontFamily: '"Space Mono", monospace' }}
-          className="text-center my-4 text-[10px] uppercase tracking-widest opacity-50"
-        >
-          — ou —
-        </div>
-
-        <div className="flex gap-2 mb-2">
-          <input
-            value={joinCode}
-            onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-            placeholder="CODE"
-            maxLength={4}
-            className="flex-1 border-4 border-black bg-white px-3 py-3 outline-none placeholder-black/30 text-center text-2xl tracking-widest"
-            style={{
-              boxShadow: '4px 4px 0 #000',
-              fontFamily: '"Anton", sans-serif',
-            }}
-          />
+        <div className="grid grid-cols-2 gap-3 items-stretch mb-2">
           <button
-            onClick={joinRoom}
+            onClick={createRoom}
             disabled={busy}
-            className="border-4 border-black bg-white px-5 active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50"
-            style={{ boxShadow: '4px 4px 0 #000' }}
+            className="border-4 border-black bg-black text-white py-6 px-3 active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50 flex items-center justify-center text-center"
+            style={{ boxShadow: '6px 6px 0 #000' }}
           >
-            <span
-              style={{ fontFamily: '"Anton", sans-serif' }}
-              className="text-lg uppercase"
+            <div
+              style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.9 }}
+              className="text-3xl uppercase"
             >
-              Rejoindre
-            </span>
+              Créer<br />une<br />partie
+            </div>
           </button>
+
+          <div className="flex flex-col gap-2">
+            <input
+              value={joinCode}
+              onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+              placeholder="CODE"
+              maxLength={4}
+              className="border-4 border-black bg-white px-2 py-3 outline-none placeholder-black/30 text-center text-2xl tracking-widest"
+              style={{
+                boxShadow: '4px 4px 0 #000',
+                fontFamily: '"Anton", sans-serif',
+              }}
+            />
+            <button
+              onClick={joinRoom}
+              disabled={busy}
+              className="flex-1 border-4 border-black bg-black text-white py-3 active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50 flex items-center justify-center"
+              style={{ boxShadow: '4px 4px 0 #000' }}
+            >
+              <span
+                style={{ fontFamily: '"Anton", sans-serif' }}
+                className="text-xl uppercase"
+              >
+                Rejoindre
+              </span>
+            </button>
+          </div>
         </div>
 
         {error && (
