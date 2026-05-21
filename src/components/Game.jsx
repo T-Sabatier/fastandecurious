@@ -556,12 +556,12 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               À toi de jouer
             </div>
             <div
-              className="border-4 border-black bg-white p-4 mb-8 w-full max-w-sm"
+              className="border-4 border-black bg-white p-5 mb-8 w-full max-w-sm text-center"
               style={{ boxShadow: '5px 5px 0 #000' }}
             >
               <div
-                style={{ fontFamily: '"Space Mono", monospace' }}
-                className="text-[10px] uppercase tracking-widest opacity-60 mb-1"
+                style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.95 }}
+                className="text-3xl uppercase mb-2"
               >
                 Le boss{' '}
                 <span style={{ color: bossColor || '#000' }}>{boss.name}</span>{' '}
@@ -571,8 +571,9 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 style={{
                   fontFamily: '"Anton", sans-serif',
                   color: room.mode === 'like' ? '#000' : PINK,
+                  lineHeight: 0.95,
                 }}
-                className="text-3xl uppercase"
+                className="text-5xl uppercase"
               >
                 {room.mode === 'like' ? "❤️ J'aime" : "💔 J'aime pas"}
               </div>
@@ -601,31 +602,21 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
       <div style={baseWrap} className="text-black flex flex-col">
         <TopBar right={`${playedCount}/${nonBossCount}`} />
         <Scoreboard />
-        <div className="px-5 pt-3 pb-2">
+        <div className="px-5 pt-3 pb-3 text-center">
           <div
-            style={{ fontFamily: '"Space Mono", monospace' }}
-            className="text-[10px] uppercase tracking-widest opacity-60"
+            style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.95 }}
+            className="text-3xl uppercase"
           >
-            Ta main
-          </div>
-          <div className="flex items-baseline gap-2 mt-1 flex-wrap">
-            <div
-              style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.9 }}
-              className="text-2xl uppercase"
-            >
-              Boss{' '}
-              <span style={{ color: bossColor || '#000' }}>{boss.name}</span> →
-            </div>
-            <div
+            Boss{' '}
+            <span style={{ color: bossColor || '#000' }}>{boss.name}</span>{' '}
+            →{' '}
+            <span
               style={{
-                fontFamily: '"Anton", sans-serif',
                 color: room.mode === 'like' ? '#000' : PINK,
-                lineHeight: 0.9,
               }}
-              className="text-2xl uppercase"
             >
               {room.mode === 'like' ? "j'aime" : "j'aime pas"}
-            </div>
+            </span>
           </div>
         </div>
 
