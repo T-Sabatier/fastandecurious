@@ -7,6 +7,7 @@ import {
   setStoredName,
 } from '../utils';
 import { CATEGORIES, YELLOW } from '../cards';
+import { ChevronRight } from 'lucide-react';
 
 export default function Home({ playerId, onJoin, initialError }) {
   const [name, setName] = useState(getStoredName);
@@ -145,10 +146,10 @@ export default function Home({ playerId, onJoin, initialError }) {
           </div>
         </div>
 
-        <div className="mb-6">
+        <div className="mb-8">
           <div
             style={{ fontFamily: '"Space Mono", monospace' }}
-            className="text-[10px] uppercase tracking-widest mb-2 opacity-70"
+            className="text-sm uppercase tracking-widest mb-2 opacity-80"
           >
             Ton prénom
           </div>
@@ -162,47 +163,68 @@ export default function Home({ playerId, onJoin, initialError }) {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-3 items-stretch mb-2">
-          <button
-            onClick={createRoom}
-            disabled={busy}
-            className="border-4 border-black bg-black text-white py-6 px-3 active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50 flex items-center justify-center text-center"
-            style={{ boxShadow: '6px 6px 0 #000' }}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="h-1 flex-1 bg-black"></div>
+          <div
+            style={{ fontFamily: '"Space Mono", monospace' }}
+            className="text-sm uppercase tracking-widest"
           >
-            <div
-              style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.9 }}
-              className="text-3xl uppercase"
-            >
-              Créer<br />une<br />partie
-            </div>
-          </button>
-
-          <div className="flex flex-col gap-2">
-            <input
-              value={joinCode}
-              onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-              placeholder="CODE"
-              maxLength={4}
-              className="border-4 border-black bg-white px-2 py-3 outline-none placeholder-black/30 text-center text-2xl tracking-widest"
-              style={{
-                boxShadow: '4px 4px 0 #000',
-                fontFamily: '"Anton", sans-serif',
-              }}
-            />
-            <button
-              onClick={joinRoom}
-              disabled={busy}
-              className="flex-1 border-4 border-black bg-black text-white py-3 active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50 flex items-center justify-center"
-              style={{ boxShadow: '4px 4px 0 #000' }}
-            >
-              <span
-                style={{ fontFamily: '"Anton", sans-serif' }}
-                className="text-xl uppercase"
-              >
-                Rejoindre
-              </span>
-            </button>
+            Lancer
           </div>
+          <div className="h-1 flex-1 bg-black"></div>
+        </div>
+
+        <button
+          onClick={createRoom}
+          disabled={busy}
+          className="w-full border-4 border-black bg-black text-white py-2 active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50"
+          style={{ boxShadow: '4px 4px 0 #000' }}
+        >
+          <div
+            style={{ fontFamily: '"Anton", sans-serif' }}
+            className="text-2xl uppercase tracking-wide"
+          >
+            Créer une partie
+          </div>
+        </button>
+
+        <div className="flex items-center gap-3 my-6">
+          <div className="h-1 flex-1 bg-black"></div>
+          <div
+            style={{ fontFamily: '"Space Mono", monospace' }}
+            className="text-sm uppercase tracking-widest text-center"
+          >
+            Ou rejoins avec un code
+          </div>
+          <div className="h-1 flex-1 bg-black"></div>
+        </div>
+
+        <div className="flex items-stretch gap-2">
+          <input
+            value={joinCode}
+            onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+            placeholder="CODE"
+            maxLength={4}
+            className="flex-1 min-w-0 border-4 border-black bg-white px-2 py-2 outline-none placeholder-black/30 text-center text-2xl tracking-widest"
+            style={{
+              boxShadow: '4px 4px 0 #000',
+              fontFamily: '"Anton", sans-serif',
+            }}
+          />
+          <button
+            onClick={joinRoom}
+            disabled={busy || joinCode.trim().length !== 4}
+            className="border-4 border-black bg-black text-white px-4 active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-30 flex items-center justify-center gap-1"
+            style={{ boxShadow: '4px 4px 0 #000' }}
+          >
+            <span
+              style={{ fontFamily: '"Anton", sans-serif' }}
+              className="text-lg uppercase"
+            >
+              Rejoindre
+            </span>
+            <ChevronRight size={20} />
+          </button>
         </div>
 
         {error && (
