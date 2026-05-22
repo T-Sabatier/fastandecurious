@@ -531,7 +531,7 @@ function Dashboard() {
                       className="border-2 border-black bg-white px-2 py-1"
                       style={{ fontFamily: '"Anton", sans-serif' }}
                     >
-                      {CATEGORIES.map((x) => (
+                      {categories.map((x) => (
                         <option key={x.id} value={x.id}>
                           {x.emoji} {x.label}
                         </option>
