@@ -27,7 +27,6 @@ function catEmojiOf(card) {
 import {
   Heart,
   HeartCrack,
-  Eye,
   ChevronRight,
   Trophy,
   LogOut,
@@ -36,7 +35,6 @@ import {
 
 export default function Game({ room, roomCode, playerId, onLeave }) {
   const [selectedCard, setSelectedCard] = useState(null);
-  const [handRevealed, setHandRevealed] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const isHost = room.host === playerId;
@@ -103,7 +101,6 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   // Reset local state on phase / round changes
   useEffect(() => {
     setSelectedCard(null);
-    setHandRevealed(false);
   }, [room.phase, room.round, room.bossId]);
 
   async function bossChooseMode(m) {
@@ -132,7 +129,6 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     } finally {
       setBusy(false);
       setSelectedCard(null);
-      setHandRevealed(false);
     }
   }
 
@@ -601,79 +597,42 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
       );
     }
 
-    // Non-boss player who hasn't played
-    if (!handRevealed) {
-      return (
-        <div style={baseWrap} className="text-black flex flex-col">
-          <TopBar />
-          <Scoreboard />
-          <div className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-xl mx-auto w-full">
-            <div
-              style={{ fontFamily: '"Space Mono", monospace' }}
-              className="text-[10px] uppercase tracking-widest opacity-60 mb-2"
-            >
-              À toi de jouer
-            </div>
-            <div
-              className="border-4 border-black bg-white p-5 mb-8 w-full max-w-sm text-center"
-              style={{ boxShadow: '5px 5px 0 #000' }}
-            >
-              <div
-                style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.95 }}
-                className="text-3xl uppercase mb-2"
-              >
-                <span style={{ color: bossColor || '#000' }}>{boss?.name || '…'}</span>{' '}
-                veut
-              </div>
-              <div
-                style={{
-                  fontFamily: '"Anton", sans-serif',
-                  color: room.mode === 'like' ? LIKE_GREEN : DISLIKE_RED,
-                  lineHeight: 0.95,
-                }}
-                className="text-5xl uppercase"
-              >
-                {room.mode === 'like' ? "❤️ J'aime" : "💔 J'aime pas"}
-              </div>
-            </div>
-
-            <button
-              onClick={() => setHandRevealed(true)}
-              className="border-4 border-black bg-black text-white py-4 px-8 active:translate-x-[2px] active:translate-y-[2px] flex items-center gap-3"
-              style={{ boxShadow: '6px 6px 0 #000' }}
-            >
-              <Eye size={22} />
-              <span
-                style={{ fontFamily: '"Anton", sans-serif' }}
-                className="text-xl uppercase tracking-wide"
-              >
-                Voir ma main
-              </span>
-            </button>
-          </div>
-        </div>
-      );
-    }
-
-    // Hand revealed, picking card
+    // Non-boss player : main directement, banniere mode en haut
+    const isLike = room.mode === 'like';
     return (
       <div style={baseWrap} className="text-black flex flex-col">
         <TopBar right={`${playedCount}/${nonBossCount}`} />
         <Scoreboard />
-        <div className="px-5 pt-3 pb-3 text-center max-w-xl mx-auto w-full">
+        <div className="px-4 pt-3 pb-2 max-w-xl mx-auto w-full">
           <div
-            style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.95 }}
-            className="text-3xl uppercase"
+            className="border-4 border-black p-3 flex items-center justify-between"
+            style={{
+              backgroundColor: isLike ? LIKE_GREEN : DISLIKE_RED,
+              color: isLike ? '#000' : '#FFF',
+              boxShadow: '5px 5px 0 #000',
+              transform: isLike ? 'rotate(-1deg)' : 'rotate(1deg)',
+            }}
           >
-            <span style={{ color: bossColor || '#000' }}>{boss?.name || '…'}</span>{' '}
-            →{' '}
-            <span
-              style={{
-                color: room.mode === 'like' ? LIKE_GREEN : DISLIKE_RED,
-              }}
+            <div
+              style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.95 }}
+              className="text-xl uppercase"
             >
-              {room.mode === 'like' ? "j'aime" : "j'aime pas"}
-            </span>
+              <span
+                style={{
+                  color: bossColor || (isLike ? '#000' : '#FFF'),
+                  WebkitTextStroke: isLike ? '0.5px #000' : '0.5px #FFF',
+                  paintOrder: 'stroke fill',
+                }}
+              >
+                {boss?.name || '…'}
+              </span>{' '}
+              veut {isLike ? "J'aime" : "J'aime pas"}
+            </div>
+            {isLike ? (
+              <Heart size={28} fill="#000" strokeWidth={0} />
+            ) : (
+              <HeartCrack size={28} color="#FFF" strokeWidth={2.5} />
+            )}
           </div>
         </div>
 
