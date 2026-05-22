@@ -458,6 +458,9 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               lineHeight: 0.9,
               fontSize: fitBig(boss?.name || ''),
               color: bossColor || '#000',
+              WebkitTextStroke: '5px #000',
+              paintOrder: 'stroke fill',
+              letterSpacing: '0.08em',
             }}
             className="uppercase mb-2 break-words"
           >
@@ -997,6 +1000,9 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               lineHeight: 0.9,
               fontSize: fitBig(winnerP?.name || ''),
               color: colorHex(winnerP?.color) || '#000',
+              WebkitTextStroke: '5px #000',
+              paintOrder: 'stroke fill',
+              letterSpacing: '0.08em',
             }}
             className="uppercase mb-2 break-words"
           >
@@ -1073,6 +1079,9 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               lineHeight: 0.85,
               fontSize: fitBig(champ?.name || ''),
               color: colorHex(champ?.color) || '#000',
+              WebkitTextStroke: '5px #000',
+              paintOrder: 'stroke fill',
+              letterSpacing: '0.08em',
             }}
             className="uppercase mb-8 break-words"
           >
