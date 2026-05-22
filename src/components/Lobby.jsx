@@ -40,6 +40,14 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
     await set(ref(db, `rooms/${roomCode}/settings/cats/${id}`), !cats[id]);
   }
 
+  const winningScore = room.settings?.winningScore ?? 5;
+  const SCORE_OPTIONS = [3, 5, 7, 10];
+
+  async function pickWinningScore(n) {
+    if (!isHost) return;
+    await set(ref(db, `rooms/${roomCode}/settings/winningScore`), n);
+  }
+
   const myColor = room.players?.[playerId]?.color || null;
   const takenColors = new Set(
     players.filter((p) => p.id !== playerId && p.color).map((p) => p.color)
@@ -264,6 +272,49 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
                   }}
                   className="border-4 border-black"
                 />
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mb-8">
+          <div
+            style={{ fontFamily: '"Anton", sans-serif' }}
+            className="text-2xl uppercase mb-1"
+          >
+            Score gagnant
+          </div>
+          <div
+            style={{ fontFamily: '"Space Mono", monospace' }}
+            className="text-[10px] uppercase tracking-widest mb-3 opacity-70"
+          >
+            Premier à {winningScore} points gagne
+            {!isHost && ' · Seul le host peut changer'}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {SCORE_OPTIONS.map((n) => {
+              const selected = winningScore === n;
+              return (
+                <button
+                  key={n}
+                  onClick={() => pickWinningScore(n)}
+                  disabled={!isHost}
+                  style={{
+                    backgroundColor: selected ? '#000' : '#FFF',
+                    color: selected ? YELLOW : '#000',
+                    boxShadow: '4px 4px 0 #000',
+                    opacity: !isHost && !selected ? 0.6 : 1,
+                    minWidth: 56,
+                  }}
+                  className="border-4 border-black px-4 py-2 active:translate-x-[2px] active:translate-y-[2px] disabled:cursor-not-allowed"
+                >
+                  <span
+                    style={{ fontFamily: '"Anton", sans-serif' }}
+                    className="uppercase text-2xl leading-none"
+                  >
+                    {n}
+                  </span>
+                </button>
               );
             })}
           </div>

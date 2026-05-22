@@ -53,7 +53,7 @@ export default function Home({ playerId, onJoin, initialError }) {
           joinedAt: Date.now(),
         },
       },
-      settings: { cats: defaultCats },
+      settings: { cats: defaultCats, winningScore: 5 },
     };
 
     try {

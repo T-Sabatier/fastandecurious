@@ -184,7 +184,8 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
       updates['deck'] = currentDeck;
       updates['discard'] = currentDiscard;
 
-      if (winnerNewScore >= WINNING_SCORE) {
+      const targetScore = room.settings?.winningScore ?? WINNING_SCORE;
+      if (winnerNewScore >= targetScore) {
         updates['phase'] = 'game_over';
       } else {
         updates['phase'] = 'boss_choose';
@@ -947,7 +948,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     const winnerP = playerById[room.winnerInfo.playerId];
     const winnerCard = pool[room.winnerInfo.cardId];
     const winnerNewScore = (winnerP?.score || 0) + 1;
-    const willWinGame = winnerNewScore >= WINNING_SCORE;
+    const willWinGame = winnerNewScore >= (room.settings?.winningScore ?? WINNING_SCORE);
     const iAmWinner = room.winnerInfo.playerId === playerId;
 
     return (
