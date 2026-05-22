@@ -357,7 +357,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
           <div className="flex-1 px-5 py-6 flex flex-col max-w-xl mx-auto w-full text-center">
             <div
               style={{ fontFamily: '"Space Mono", monospace' }}
-              className="text-[10px] uppercase tracking-widest opacity-70"
+              className="text-[11px] uppercase tracking-[0.35em] opacity-70 mb-4"
             >
               C'est ton tour
             </div>
@@ -367,6 +367,8 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 lineHeight: 0.88,
                 fontSize: fitBig(boss?.name || ''),
                 color: bossColor || '#000',
+                WebkitTextStroke: '3px #000',
+                paintOrder: 'stroke fill',
               }}
               className="uppercase break-words mb-2"
             >
