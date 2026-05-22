@@ -1112,7 +1112,12 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                       #{i + 1}
                     </span>
                     <span
-                      style={{ fontFamily: '"Anton", sans-serif' }}
+                      style={{
+                        fontFamily: '"Anton", sans-serif',
+                        WebkitTextStroke: '2px #000',
+                        paintOrder: 'stroke fill',
+                        letterSpacing: '0.05em',
+                      }}
                       className="text-xl uppercase leading-none"
                     >
                       {p.name}
