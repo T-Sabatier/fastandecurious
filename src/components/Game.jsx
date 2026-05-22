@@ -324,7 +324,6 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               className="border-2 border-black px-2 py-1 flex items-center gap-1.5 whitespace-nowrap shrink-0"
             >
               <span className="uppercase text-sm leading-none">
-                {isPlayerBoss && '👑 '}
                 {p.name}
               </span>
               <span
@@ -355,7 +354,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         <div style={baseWrap} className="text-black flex flex-col">
           <TopBar right={`TOUR ${room.round || 1}`} />
           <Scoreboard />
-          <div className="flex-1 px-5 py-6 flex flex-col max-w-xl mx-auto w-full">
+          <div className="flex-1 px-5 py-6 flex flex-col max-w-xl mx-auto w-full text-center">
             <div
               style={{ fontFamily: '"Space Mono", monospace' }}
               className="text-[10px] uppercase tracking-widest opacity-70"
@@ -371,7 +370,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               }}
               className="uppercase break-words mb-2"
             >
-              👑 {boss?.name || '…'}
+              {boss?.name || '…'}
             </div>
             <div
               style={{ fontFamily: '"Anton", sans-serif' }}
@@ -398,21 +397,13 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                   transform: 'rotate(-1deg)',
                 }}
               >
-                <div className="text-left">
-                  <div
-                    style={{ fontFamily: '"Space Mono", monospace' }}
-                    className="text-[10px] uppercase tracking-widest opacity-60"
-                  >
-                    Mode
-                  </div>
-                  <div
-                    style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.9 }}
-                    className="text-3xl uppercase"
-                  >
-                    J'aime
-                  </div>
+                <div
+                  style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.9 }}
+                  className="text-3xl uppercase"
+                >
+                  J'aime
                 </div>
-                <Heart size={32} fill="#000" strokeWidth={0} />
+                <Heart size={36} fill="#000" strokeWidth={0} />
               </button>
 
               <button
@@ -426,25 +417,17 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                   transform: 'rotate(1deg)',
                 }}
               >
-                <div className="text-left">
-                  <div
-                    style={{ fontFamily: '"Space Mono", monospace' }}
-                    className="text-[10px] uppercase tracking-widest opacity-60"
-                  >
-                    Mode
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: '"Anton", sans-serif',
-                      lineHeight: 0.9,
-                      color: '#FFF',
-                    }}
-                    className="text-3xl uppercase"
-                  >
-                    J'aime pas
-                  </div>
+                <div
+                  style={{
+                    fontFamily: '"Anton", sans-serif',
+                    lineHeight: 0.9,
+                    color: '#FFF',
+                  }}
+                  className="text-3xl uppercase"
+                >
+                  J'aime pas
                 </div>
-                <HeartCrack size={32} color="#FFF" fill="#FFF" strokeWidth={1.5} />
+                <HeartCrack size={36} color="#FFF" strokeWidth={2.5} />
               </button>
             </div>
           </div>
@@ -630,7 +613,6 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.95 }}
                 className="text-3xl uppercase mb-2"
               >
-                👑{' '}
                 <span style={{ color: bossColor || '#000' }}>{boss?.name || '…'}</span>{' '}
                 veut
               </div>
@@ -674,7 +656,6 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
             style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.95 }}
             className="text-3xl uppercase"
           >
-            👑{' '}
             <span style={{ color: bossColor || '#000' }}>{boss?.name || '…'}</span>{' '}
             →{' '}
             <span
@@ -1048,7 +1029,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 >
                   {willWinGame
                     ? 'Voir le gagnant'
-                    : `À ${winnerP?.name} 👑`}
+                    : `À ${winnerP?.name} de jouer`}
                 </span>
                 <ChevronRight size={24} />
               </div>
