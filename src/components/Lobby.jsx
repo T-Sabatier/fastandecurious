@@ -344,11 +344,11 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
                   onClick={() => toggleCat(cat.id)}
                   disabled={!isHost}
                   style={{
-                    backgroundColor: on ? (isSpicy ? PINK : '#000') : '#FFF',
-                    color: on ? '#FFF' : '#000',
-                    boxShadow: '4px 4px 0 #000',
+                    backgroundColor: on && isSpicy ? PINK : '#FFF',
+                    color: on && isSpicy ? '#FFF' : '#000',
+                    boxShadow: on ? '4px 4px 0 #000' : '2px 2px 0 #000',
                     transition: 'all 100ms',
-                    opacity: !isHost && !on ? 0.6 : 1,
+                    opacity: on ? 1 : 0.4,
                   }}
                   className="border-4 border-black px-3 py-3 text-left flex items-center gap-2 active:translate-x-[2px] active:translate-y-[2px] disabled:cursor-not-allowed"
                 >
