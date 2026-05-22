@@ -482,20 +482,35 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         <div style={baseWrap} className="text-black flex flex-col">
           <TopBar right={`${playedCount}/${nonBossCount}`} />
           <Scoreboard />
-          <div className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-xl mx-auto w-full">
-            <Clock size={64} strokeWidth={2.5} />
+          <div className="flex-1 flex flex-col items-center justify-center px-4 text-center max-w-xl mx-auto w-full">
             <div
-              style={{ fontFamily: '"Space Mono", monospace' }}
-              className="text-[10px] uppercase tracking-widest opacity-60 mt-4 mb-2"
+              className="border-4 border-black p-3 flex items-center justify-between w-full max-w-sm mb-6"
+              style={{
+                backgroundColor: room.mode === 'like' ? LIKE_GREEN : DISLIKE_RED,
+                color: room.mode === 'like' ? '#000' : '#FFF',
+                boxShadow: '5px 5px 0 #000',
+                transform: room.mode === 'like' ? 'rotate(-1deg)' : 'rotate(1deg)',
+              }}
             >
-              Mode <span style={{ color: room.mode === 'like' ? LIKE_GREEN : DISLIKE_RED, fontWeight: 700 }}>{room.mode === 'like' ? "❤️ J'aime" : "💔 J'aime pas"}</span>
+              <div
+                style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.9 }}
+                className="text-3xl uppercase"
+              >
+                {room.mode === 'like' ? "J'aime" : "J'aime pas"}
+              </div>
+              {room.mode === 'like' ? (
+                <Heart size={32} fill="#000" strokeWidth={0} />
+              ) : (
+                <HeartCrack size={32} color="#FFF" strokeWidth={2.5} />
+              )}
             </div>
+            <Clock size={56} strokeWidth={2.5} />
             <div
               style={{
                 fontFamily: '"Anton", sans-serif',
                 lineHeight: 0.9,
               }}
-              className="text-4xl uppercase mb-4"
+              className="text-3xl uppercase mb-4 mt-3"
             >
               Les joueurs<br />posent leur carte
             </div>
@@ -603,7 +618,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
       <div style={baseWrap} className="text-black flex flex-col">
         <TopBar right={`${playedCount}/${nonBossCount}`} />
         <Scoreboard />
-        <div className="px-4 pt-3 pb-2 max-w-xl mx-auto w-full">
+        <div className="px-4 pt-3 pb-6 max-w-xl mx-auto w-full">
           <div
             className="border-4 border-black p-3 flex items-center justify-between"
             style={{
