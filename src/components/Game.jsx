@@ -243,7 +243,6 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
       const updates = {
         [`players/${playerId}`]: null,
         [`hands/${playerId}`]: null,
-        [`played/${playerId}`]: null,
       };
       if (remaining.length === 0) {
         await remove(ref(db, `rooms/${roomCode}`));
@@ -259,6 +258,9 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         updates.mode = null;
         updates.played = null;
         updates.winnerInfo = null;
+        updates.bossPick = null;
+      } else {
+        updates[`played/${playerId}`] = null;
       }
       await update(ref(db, `rooms/${roomCode}`), updates);
       onLeave();
