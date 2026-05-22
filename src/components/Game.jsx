@@ -524,7 +524,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
             >
               {playedCount} / {nonBossCount}
             </div>
-            <div className="mt-6 flex flex-wrap gap-2 justify-center">
+            <div className="mt-6 flex flex-wrap gap-3 justify-center">
               {players
                 .filter((p) => p.id !== room.bossId)
                 .map((p) => {
@@ -540,8 +540,9 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                         color: fg,
                         opacity: hasPlayed ? 1 : 0.5,
                         fontFamily: '"Anton", sans-serif',
+                        boxShadow: '3px 3px 0 #000',
                       }}
-                      className="border-2 border-black px-3 py-1.5 uppercase text-sm leading-none"
+                      className="border-2 border-black px-4 py-2 uppercase text-xl leading-none"
                     >
                       {hasPlayed ? '✓ ' : '… '}
                       {p.name}
