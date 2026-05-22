@@ -830,37 +830,41 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     }
 
     // Non-boss: voir les cartes posées (anonymes) pendant que le boss choisit
+    const revealIsLike = room.mode === 'like';
     return (
       <div style={baseWrap} className="text-black flex flex-col">
         <TopBar right={`${playedEntries.length} CARTES`} />
         <Scoreboard />
-        <div className="px-5 pt-3 pb-2 max-w-xl mx-auto w-full">
+        <div className="px-4 pt-3 pb-6 max-w-xl mx-auto w-full">
           <div
-            style={{ fontFamily: '"Space Mono", monospace' }}
-            className="text-[10px] uppercase tracking-widest opacity-60"
+            className="border-4 border-black p-3 flex items-center justify-between"
+            style={{
+              backgroundColor: revealIsLike ? LIKE_GREEN : DISLIKE_RED,
+              color: revealIsLike ? '#000' : '#FFF',
+              boxShadow: '5px 5px 0 #000',
+              transform: revealIsLike ? 'rotate(-1deg)' : 'rotate(1deg)',
+            }}
           >
-            Cartes posées
-          </div>
-          <div className="flex items-baseline gap-2 mt-1 flex-wrap">
             <div
-              style={{
-                fontFamily: '"Anton", sans-serif',
-                lineHeight: 0.9,
-                color: bossColor || '#000',
-              }}
-              className="text-2xl uppercase"
+              style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.95 }}
+              className="text-xl uppercase"
             >
-              {boss?.name || '…'}
+              <span
+                style={{
+                  color: bossColor || (revealIsLike ? '#000' : '#FFF'),
+                  WebkitTextStroke: revealIsLike ? '0.5px #000' : '0.5px #FFF',
+                  paintOrder: 'stroke fill',
+                }}
+              >
+                {boss?.name || '…'}
+              </span>{' '}
+              choisit {revealIsLike ? "J'aime" : "J'aime pas"}
             </div>
-            <div
-              style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.9 }}
-              className="text-2xl uppercase"
-            >
-              choisit{' '}
-              <span style={{ color: room.mode === 'like' ? '#000' : PINK }}>
-                {room.mode === 'like' ? 'sa préférée' : "qu'il aime le moins"}
-              </span>
-            </div>
+            {revealIsLike ? (
+              <Heart size={28} fill="#000" strokeWidth={0} />
+            ) : (
+              <HeartCrack size={28} color="#FFF" strokeWidth={2.5} />
+            )}
           </div>
         </div>
         <div className="flex-1 px-4 pb-6 overflow-y-auto">
