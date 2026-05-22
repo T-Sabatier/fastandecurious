@@ -356,8 +356,8 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
           <Scoreboard />
           <div className="flex-1 px-5 py-6 flex flex-col max-w-xl mx-auto w-full text-center">
             <div
-              style={{ fontFamily: '"Space Mono", monospace' }}
-              className="text-[11px] uppercase tracking-[0.35em] opacity-70 mb-4"
+              style={{ fontFamily: '"Space Mono", monospace', letterSpacing: '5px' }}
+              className="text-[11px] uppercase opacity-70 mb-4"
             >
               C'est ton tour
             </div>
