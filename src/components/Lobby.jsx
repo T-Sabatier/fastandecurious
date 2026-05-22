@@ -41,7 +41,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
   }
 
   const winningScore = room.settings?.winningScore ?? 5;
-  const SCORE_OPTIONS = [3, 5, 7, 10];
+  const SCORE_OPTIONS = [3, 5, 7, 10, 12, 15];
 
   async function pickWinningScore(n) {
     if (!isHost) return;
