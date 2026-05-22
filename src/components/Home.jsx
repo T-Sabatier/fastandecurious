@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ref, set, get } from 'firebase/database';
+import { useState, useEffect } from 'react';
+import { ref, set, get, remove } from 'firebase/database';
 import { db } from '../firebase';
 import {
   makeRoomCode,
@@ -9,11 +9,29 @@ import {
 import { CATEGORIES, YELLOW } from '../cards';
 import { ChevronRight } from 'lucide-react';
 
+const ROOM_TTL_MS = 6 * 60 * 60 * 1000; // 6h
+
 export default function Home({ playerId, onJoin, initialError }) {
   const [name, setName] = useState(getStoredName);
   const [joinCode, setJoinCode] = useState('');
   const [error, setError] = useState(initialError || '');
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    // Sweep au chargement : rooms > TTL (6h)
+    const cutoff = Date.now() - ROOM_TTL_MS;
+    get(ref(db, 'rooms'))
+      .then((snap) => {
+        if (!snap.exists()) return;
+        const rooms = snap.val();
+        Object.entries(rooms).forEach(([code, room]) => {
+          if (room?.createdAt && room.createdAt < cutoff) {
+            remove(ref(db, `rooms/${code}`)).catch(() => {});
+          }
+        });
+      })
+      .catch(() => {});
+  }, []);
 
   async function createRoom() {
     const n = name.trim();
