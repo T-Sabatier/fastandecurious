@@ -1114,7 +1114,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                     <span
                       style={{
                         fontFamily: '"Anton", sans-serif',
-                        WebkitTextStroke: '2px #000',
+                        WebkitTextStroke: '1px #000',
                         paintOrder: 'stroke fill',
                         letterSpacing: '0.05em',
                       }}
