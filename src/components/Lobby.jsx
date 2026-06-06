@@ -7,6 +7,7 @@ import { subscribeCategories, seedCategoriesIfEmpty } from '../categoriesStore';
 import { ChevronRight, X, LogOut, Copy, Check } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useState, useEffect } from 'react';
+import InstallButton from './InstallButton.jsx';
 
 export default function Lobby({ room, roomCode, playerId, onLeave }) {
   const isHost = room.host === playerId;
@@ -217,6 +218,8 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
             </div>
           </div>
         </div>
+
+        <InstallButton />
 
         <div className="mb-6">
           <div
