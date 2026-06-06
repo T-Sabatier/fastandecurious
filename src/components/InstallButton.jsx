@@ -22,7 +22,7 @@ export default function InstallButton({ align = 'right' }) {
     () => (typeof window !== 'undefined' ? window.__deferredInstallPrompt : null)
   );
   const [installed, setInstalled] = useState(isStandalone);
-  const [showIosHelp, setShowIosHelp] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
     if (installed) return;
@@ -44,25 +44,26 @@ export default function InstallButton({ align = 'right' }) {
     };
   }, [installed]);
 
-  const ios = isIOS();
-
-  // Rien a afficher : deja installee, ou pas d'event Android et pas iOS.
-  // On rend un espace vide pour ne pas casser l'alignement de l'en-tete.
-  if (installed || (!deferred && !ios)) {
+  // Deja en mode app installee : on rend un espace vide pour garder
+  // l'alignement de l'en-tete, mais pas de bouton.
+  if (installed) {
     return <div className="w-14" />;
   }
 
+  const ios = isIOS();
+
   async function handleClick() {
-    if (ios) {
-      setShowIosHelp((v) => !v);
+    // Prompt natif dispo (Android/Chrome/Edge) → on le declenche
+    if (deferred) {
+      deferred.prompt();
+      const { outcome } = await deferred.userChoice;
+      if (outcome === 'accepted') setInstalled(true);
+      setDeferred(null);
+      window.__deferredInstallPrompt = null;
       return;
     }
-    if (!deferred) return;
-    deferred.prompt();
-    const { outcome } = await deferred.userChoice;
-    if (outcome === 'accepted') setInstalled(true);
-    setDeferred(null);
-    window.__deferredInstallPrompt = null;
+    // Sinon (iOS, ou prompt pas encore/plus dispo) → on montre l'aide
+    setShowHelp((v) => !v);
   }
 
   return (
@@ -81,7 +82,7 @@ export default function InstallButton({ align = 'right' }) {
         </span>
       </button>
 
-      {ios && showIosHelp && (
+      {showHelp && !deferred && (
         <div
           className={`absolute top-full mt-2 z-50 w-64 border-4 border-black bg-black text-white p-4 ${
             align === 'right' ? 'right-0' : 'left-0'
@@ -89,7 +90,7 @@ export default function InstallButton({ align = 'right' }) {
           style={{ boxShadow: '4px 4px 0 #000' }}
         >
           <button
-            onClick={() => setShowIosHelp(false)}
+            onClick={() => setShowHelp(false)}
             className="absolute top-2 right-2"
             aria-label="Fermer"
           >
@@ -99,10 +100,21 @@ export default function InstallButton({ align = 'right' }) {
             style={{ fontFamily: '"Space Mono", monospace' }}
             className="text-[11px] uppercase tracking-widest leading-relaxed"
           >
-            Sur iPhone :<br />
-            1. Touche <Share size={13} className="inline -mt-0.5" /> Partager (en
-            bas de Safari)<br />
-            2. Choisis « Sur l'écran d'accueil »
+            {ios ? (
+              <>
+                Sur iPhone :<br />
+                1. Touche <Share size={13} className="inline -mt-0.5" /> Partager
+                (en bas de Safari)<br />
+                2. Choisis « Sur l'écran d'accueil »
+              </>
+            ) : (
+              <>
+                Pour installer :<br />
+                Menu du navigateur (⋮)<br />
+                → « Installer l'application »<br />
+                ou « Ajouter à l'écran d'accueil »
+              </>
+            )}
           </div>
         </div>
       )}
