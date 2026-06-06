@@ -142,7 +142,7 @@ export default function Home({ playerId, onJoin, initialError }) {
   return (
     <div
       style={{ backgroundColor: YELLOW, minHeight: '100vh' }}
-      className="text-black"
+      className="text-black overflow-x-hidden"
     >
       <div className="max-w-md mx-auto px-5 py-10">
         <div className="mb-10">
@@ -160,8 +160,9 @@ export default function Home({ playerId, onJoin, initialError }) {
               fontFamily: '"Anton", sans-serif',
               lineHeight: 0.82,
               letterSpacing: '-0.02em',
+              fontSize: 'clamp(2.75rem, 16vw, 6rem)',
             }}
-            className="text-8xl uppercase whitespace-nowrap"
+            className="uppercase whitespace-nowrap"
           >
             Snap{' '}
             <span
