@@ -50,18 +50,27 @@ export default function App() {
     return () => unsub();
   }, [roomCode]);
 
-  // Retire automatiquement le joueur s'il ferme l'onglet — uniquement dans le
-  // lobby (en partie on garde sa place pour permettre une reconnexion).
+  // Nettoyage auto si le joueur ferme l'onglet — uniquement dans le lobby
+  // (en partie on garde sa place pour permettre une reconnexion).
+  // Si je suis le SEUL joueur, onDisconnect supprime toute la room (sinon il
+  // resterait une coquille vide que personne n'est là pour effacer). S'il y a
+  // d'autres joueurs, on ne retire que mon noeud ; quand il n'en reste qu'un,
+  // son effet se re-arme automatiquement sur la suppression de toute la room.
+  const playerCount =
+    room?.players ? Object.keys(room.players).length : 0;
   useEffect(() => {
     if (!roomCode || !room || !room.players || !room.players[playerId]) return;
     if (room.phase !== 'lobby') return;
-    const playerRef = ref(db, `rooms/${roomCode}/players/${playerId}`);
-    const od = onDisconnect(playerRef);
+    const target =
+      playerCount <= 1
+        ? ref(db, `rooms/${roomCode}`)
+        : ref(db, `rooms/${roomCode}/players/${playerId}`);
+    const od = onDisconnect(target);
     od.remove();
     return () => {
       od.cancel().catch(() => {});
     };
-  }, [roomCode, room?.phase, playerId, room?.players?.[playerId] ? 1 : 0]);
+  }, [roomCode, room?.phase, playerId, playerCount]);
 
   function joinRoom(code) {
     setStoredRoom(code);
