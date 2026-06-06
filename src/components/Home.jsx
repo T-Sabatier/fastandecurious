@@ -146,25 +146,16 @@ export default function Home({ playerId, onJoin, initialError }) {
     >
       <div className="max-w-md mx-auto px-5 py-10">
         <div className="mb-10">
-          <div className="flex items-center justify-between mb-2">
-            <div
-              style={{ fontFamily: '"Space Mono", monospace' }}
-              className="text-[10px] tracking-[0.3em] uppercase"
-            >
-              ▸ Multijoueur · Web
-            </div>
-            <InstallButton align="right" />
-          </div>
           <h1
             style={{
               fontFamily: '"Anton", sans-serif',
               lineHeight: 0.82,
               letterSpacing: '-0.02em',
-              fontSize: 'clamp(2.75rem, 16vw, 6rem)',
+              fontSize: 'clamp(2.75rem, 18vw, 7rem)',
             }}
-            className="uppercase whitespace-nowrap"
+            className="uppercase whitespace-nowrap flex items-end gap-3"
           >
-            Snap{' '}
+            <span>Snap</span>
             <span
               className="inline-block px-5 py-2 -rotate-2 leading-none"
               style={{
@@ -181,9 +172,9 @@ export default function Home({ playerId, onJoin, initialError }) {
             <div className="h-1 flex-1 bg-black"></div>
             <div
               style={{ fontFamily: '"Space Mono", monospace' }}
-              className="text-[10px] uppercase tracking-widest"
+              className="text-[10px] uppercase tracking-widest whitespace-nowrap"
             >
-              Chacun sur son tel
+              Devine ce qu'ils aiment ou pas…
             </div>
           </div>
         </div>
@@ -326,6 +317,10 @@ export default function Home({ playerId, onJoin, initialError }) {
             <li>• Il choisit sa carte préférée → <b>+1 point</b></li>
             <li>• Premier à <b>5 points</b> gagne</li>
           </ul>
+        </div>
+
+        <div className="mt-10">
+          <InstallButton variant="block" />
         </div>
       </div>
     </div>
