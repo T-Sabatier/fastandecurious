@@ -15,8 +15,9 @@ function isIOS() {
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
 
-// Bouton compact (meme taille/police que "Quitter") pour les en-tetes.
-export default function InstallButton({ align = 'right' }) {
+// variant "compact" : meme taille/police que "Quitter" (en-tetes).
+// variant "block"   : gros bouton pleine largeur (bas de page).
+export default function InstallButton({ align = 'right', variant = 'compact' }) {
   // Recupere l'event eventuellement deja capture par main.jsx
   const [deferred, setDeferred] = useState(
     () => (typeof window !== 'undefined' ? window.__deferredInstallPrompt : null)
@@ -44,10 +45,12 @@ export default function InstallButton({ align = 'right' }) {
     };
   }, [installed]);
 
-  // Deja en mode app installee : on rend un espace vide pour garder
-  // l'alignement de l'en-tete, mais pas de bouton.
+  const block = variant === 'block';
+
+  // Deja en mode app installee : pas de bouton. En compact on garde un espace
+  // pour l'alignement de l'en-tete ; en block on n'affiche rien.
   if (installed) {
-    return <div className="w-14" />;
+    return block ? null : <div className="w-14" />;
   }
 
   const ios = isIOS();
@@ -67,25 +70,42 @@ export default function InstallButton({ align = 'right' }) {
   }
 
   return (
-    <div className="relative">
-      <button
-        onClick={handleClick}
-        className="flex items-center gap-1.5"
-        aria-label="Télécharger l'app"
-      >
-        {ios ? <Share size={18} /> : <Download size={18} />}
-        <span
-          style={{ fontFamily: '"Space Mono", monospace' }}
-          className="text-[10px] uppercase tracking-widest"
+    <div className={block ? 'relative mb-6' : 'relative'}>
+      {block ? (
+        <button
+          onClick={handleClick}
+          className="w-full border-4 border-black bg-white py-3 flex items-center justify-center gap-2 active:translate-x-[2px] active:translate-y-[2px]"
+          style={{ boxShadow: '4px 4px 0 #000' }}
+          aria-label="Télécharger l'app"
         >
-          Télécharger l'app
-        </span>
-      </button>
+          {ios ? <Share size={20} /> : <Download size={20} />}
+          <span
+            style={{ fontFamily: '"Anton", sans-serif' }}
+            className="text-xl uppercase tracking-wide"
+          >
+            Télécharger l'app
+          </span>
+        </button>
+      ) : (
+        <button
+          onClick={handleClick}
+          className="flex items-center gap-1.5"
+          aria-label="Télécharger l'app"
+        >
+          {ios ? <Share size={18} /> : <Download size={18} />}
+          <span
+            style={{ fontFamily: '"Space Mono", monospace' }}
+            className="text-[10px] uppercase tracking-widest"
+          >
+            Télécharger l'app
+          </span>
+        </button>
+      )}
 
       {showHelp && !deferred && (
         <div
-          className={`absolute top-full mt-2 z-50 w-64 border-4 border-black bg-black text-white p-4 ${
-            align === 'right' ? 'right-0' : 'left-0'
+          className={`absolute z-50 w-64 border-4 border-black bg-black text-white p-4 ${
+            block ? 'bottom-full mb-2 left-0' : `top-full mt-2 ${align === 'right' ? 'right-0' : 'left-0'}`
           }`}
           style={{ boxShadow: '4px 4px 0 #000' }}
         >
