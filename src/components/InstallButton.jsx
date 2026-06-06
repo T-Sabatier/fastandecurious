@@ -15,7 +15,8 @@ function isIOS() {
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
 
-export default function InstallButton() {
+// Bouton compact (meme taille/police que "Quitter") pour les en-tetes.
+export default function InstallButton({ align = 'right' }) {
   // Recupere l'event eventuellement deja capture par main.jsx
   const [deferred, setDeferred] = useState(
     () => (typeof window !== 'undefined' ? window.__deferredInstallPrompt : null)
@@ -43,14 +44,13 @@ export default function InstallButton() {
     };
   }, [installed]);
 
-  // Déjà installée → rien à afficher
-  if (installed) return null;
-
   const ios = isIOS();
 
-  // Sur Android/Chrome on attend l'event ; sur iOS on montre l'aide manuelle.
-  // Si ni l'un ni l'autre n'est dispo (navigateur sans support), on cache.
-  if (!deferred && !ios) return null;
+  // Rien a afficher : deja installee, ou pas d'event Android et pas iOS.
+  // On rend un espace vide pour ne pas casser l'alignement de l'en-tete.
+  if (installed || (!deferred && !ios)) {
+    return <div className="w-14" />;
+  }
 
   async function handleClick() {
     if (ios) {
@@ -66,24 +66,26 @@ export default function InstallButton() {
   }
 
   return (
-    <div className="mb-6">
+    <div className="relative">
       <button
         onClick={handleClick}
-        className="w-full border-4 border-black bg-white py-3 flex items-center justify-center gap-2 active:translate-x-[2px] active:translate-y-[2px]"
-        style={{ boxShadow: '4px 4px 0 #000' }}
+        className="flex items-center gap-1.5"
+        aria-label="Télécharger l'app"
       >
-        {ios ? <Share size={20} /> : <Download size={20} />}
+        {ios ? <Share size={18} /> : <Download size={18} />}
         <span
-          style={{ fontFamily: '"Anton", sans-serif' }}
-          className="text-xl uppercase tracking-wide"
+          style={{ fontFamily: '"Space Mono", monospace' }}
+          className="text-[10px] uppercase tracking-widest"
         >
-          Installer l'app
+          Télécharger l'app
         </span>
       </button>
 
       {ios && showIosHelp && (
         <div
-          className="mt-2 border-4 border-black bg-black text-white p-4 relative"
+          className={`absolute top-full mt-2 z-50 w-64 border-4 border-black bg-black text-white p-4 ${
+            align === 'right' ? 'right-0' : 'left-0'
+          }`}
           style={{ boxShadow: '4px 4px 0 #000' }}
         >
           <button

@@ -8,6 +8,7 @@ import {
 } from '../utils';
 import { CATEGORIES, YELLOW, PINK } from '../cards';
 import { ChevronRight } from 'lucide-react';
+import InstallButton from './InstallButton.jsx';
 
 const ROOM_TTL_MS = 6 * 60 * 60 * 1000; // 6h
 
@@ -145,11 +146,14 @@ export default function Home({ playerId, onJoin, initialError }) {
     >
       <div className="max-w-md mx-auto px-5 py-10">
         <div className="mb-10">
-          <div
-            style={{ fontFamily: '"Space Mono", monospace' }}
-            className="text-[10px] tracking-[0.3em] mb-2 uppercase"
-          >
-            ▸ Multijoueur · Web
+          <div className="flex items-center justify-between mb-2">
+            <div
+              style={{ fontFamily: '"Space Mono", monospace' }}
+              className="text-[10px] tracking-[0.3em] uppercase"
+            >
+              ▸ Multijoueur · Web
+            </div>
+            <InstallButton align="right" />
           </div>
           <h1
             style={{

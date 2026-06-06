@@ -157,7 +157,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
           >
             Salon
           </div>
-          <div className="w-14" />
+          <InstallButton align="right" />
         </div>
 
         <div
@@ -218,8 +218,6 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
             </div>
           </div>
         </div>
-
-        <InstallButton />
 
         <div className="mb-6">
           <div
