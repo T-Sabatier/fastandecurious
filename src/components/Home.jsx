@@ -6,7 +6,7 @@ import {
   getStoredName,
   setStoredName,
 } from '../utils';
-import { CATEGORIES, YELLOW } from '../cards';
+import { CATEGORIES, YELLOW, PINK } from '../cards';
 import { ChevronRight } from 'lucide-react';
 
 const ROOM_TTL_MS = 6 * 60 * 60 * 1000; // 6h
@@ -32,7 +32,9 @@ export default function Home({ playerId, onJoin, initialError }) {
         if (!snap.exists()) return;
         const rooms = snap.val();
         Object.entries(rooms).forEach(([code, room]) => {
-          if (room?.createdAt && room.createdAt < cutoff) {
+          const isEmpty = !room?.players || Object.keys(room.players).length === 0;
+          const isOld = room?.createdAt && room.createdAt < cutoff;
+          if (isEmpty || isOld) {
             remove(ref(db, `rooms/${code}`)).catch(() => {});
           }
         });
@@ -155,10 +157,20 @@ export default function Home({ playerId, onJoin, initialError }) {
               lineHeight: 0.82,
               letterSpacing: '-0.02em',
             }}
-            className="text-7xl uppercase"
+            className="text-8xl uppercase whitespace-nowrap"
           >
-            Snap<br />
-            Tap
+            Snap{' '}
+            <span
+              className="inline-block px-5 py-2 -rotate-2 leading-none"
+              style={{
+                backgroundColor: PINK,
+                color: '#fff',
+                border: '4px solid #000',
+                boxShadow: '6px 6px 0 #000',
+              }}
+            >
+              Tap
+            </span>
           </h1>
           <div className="mt-4 flex items-center gap-2">
             <div className="h-1 flex-1 bg-black"></div>

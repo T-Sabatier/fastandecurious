@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ref, onValue } from 'firebase/database';
+import { ref, onValue, onDisconnect, remove } from 'firebase/database';
 import { db } from './firebase';
 import {
   getOrCreatePlayerId,
@@ -33,7 +33,12 @@ export default function App() {
     const roomRef = ref(db, `rooms/${roomCode}`);
     const unsub = onValue(roomRef, (snap) => {
       const val = snap.val();
-      if (!val) {
+      const playerCount = val?.players ? Object.keys(val.players).length : 0;
+      if (!val || playerCount === 0) {
+        // Room inexistante OU plus aucun joueur → on la supprime et on sort
+        if (val && playerCount === 0) {
+          remove(ref(db, `rooms/${roomCode}`)).catch(() => {});
+        }
         setStoredRoom(null);
         setRoomCode(null);
         setRoom(null);
@@ -44,6 +49,19 @@ export default function App() {
     });
     return () => unsub();
   }, [roomCode]);
+
+  // Retire automatiquement le joueur s'il ferme l'onglet — uniquement dans le
+  // lobby (en partie on garde sa place pour permettre une reconnexion).
+  useEffect(() => {
+    if (!roomCode || !room || !room.players || !room.players[playerId]) return;
+    if (room.phase !== 'lobby') return;
+    const playerRef = ref(db, `rooms/${roomCode}/players/${playerId}`);
+    const od = onDisconnect(playerRef);
+    od.remove();
+    return () => {
+      od.cancel().catch(() => {});
+    };
+  }, [roomCode, room?.phase, playerId, room?.players?.[playerId] ? 1 : 0]);
 
   function joinRoom(code) {
     setStoredRoom(code);
