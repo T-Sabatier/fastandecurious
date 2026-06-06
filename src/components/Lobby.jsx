@@ -160,70 +160,62 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
         </div>
 
         <div
-          className="border-4 border-black bg-black text-white p-5 mb-6 text-center"
+          className="border-4 border-black bg-black text-white p-5 mb-6"
           style={{ boxShadow: '6px 6px 0 #000' }}
         >
-          <div
-            style={{ fontFamily: '"Space Mono", monospace' }}
-            className="text-[10px] uppercase tracking-widest opacity-60 mb-1"
-          >
-            Code de la room
-          </div>
-          <div className="flex items-center justify-center gap-3">
-            <div
-              style={{
-                fontFamily: '"Anton", sans-serif',
-                color: YELLOW,
-                letterSpacing: '0.15em',
-              }}
-              className="text-5xl uppercase"
-            >
-              {roomCode}
+          <div className="flex items-center gap-4">
+            <div className="flex-1 min-w-0 text-center">
+              <div
+                style={{ fontFamily: '"Space Mono", monospace' }}
+                className="text-[10px] uppercase tracking-widest opacity-60 mb-1"
+              >
+                Code de la room
+              </div>
+              <div className="flex items-center justify-center gap-2">
+                <div
+                  style={{
+                    fontFamily: '"Anton", sans-serif',
+                    color: YELLOW,
+                    letterSpacing: '0.15em',
+                  }}
+                  className="text-5xl uppercase"
+                >
+                  {roomCode}
+                </div>
+                <button
+                  onClick={copyCode}
+                  className="border-2 border-white p-2 active:opacity-70"
+                  aria-label="Copier"
+                >
+                  {copied ? <Check size={20} color="#FFE600" /> : <Copy size={20} color="#FFF" />}
+                </button>
+              </div>
+              <button
+                onClick={copyLink}
+                className="mt-3 inline-flex items-center gap-2 border-2 border-white px-3 py-2 active:opacity-70"
+              >
+                {linkCopied ? <Check size={14} color="#FFE600" /> : <Copy size={14} color="#FFF" />}
+                <span
+                  style={{ fontFamily: '"Space Mono", monospace' }}
+                  className="text-[10px] uppercase tracking-widest"
+                >
+                  {linkCopied ? 'Lien copié' : 'Copier le lien'}
+                </span>
+              </button>
             </div>
-            <button
-              onClick={copyCode}
-              className="border-2 border-white p-2 active:opacity-70"
-              aria-label="Copier"
-            >
-              {copied ? <Check size={20} color="#FFE600" /> : <Copy size={20} color="#FFF" />}
-            </button>
-          </div>
-          <div
-            style={{ fontFamily: '"Space Mono", monospace' }}
-            className="text-[10px] uppercase tracking-widest opacity-60 mt-2"
-          >
-            Partage ce code à tes potes
-          </div>
-        </div>
 
-        <div
-          className="border-4 border-black bg-white p-5 mb-6 text-center"
-          style={{ boxShadow: '6px 6px 0 #000' }}
-        >
-          <div
-            style={{ fontFamily: '"Space Mono", monospace' }}
-            className="text-[10px] uppercase tracking-widest opacity-60 mb-3"
-          >
-            Ou scanne pour rejoindre
-          </div>
-          <div className="flex justify-center">
-            <div className="border-4 border-black p-2 bg-white">
-              <QRCodeSVG value={joinUrl} size={180} level="M" />
+            <div className="flex flex-col items-center">
+              <div className="border-4 border-white p-1.5 bg-white">
+                <QRCodeSVG value={joinUrl} size={110} level="M" />
+              </div>
+              <div
+                style={{ fontFamily: '"Space Mono", monospace' }}
+                className="text-[9px] uppercase tracking-widest opacity-60 mt-2"
+              >
+                Scanne
+              </div>
             </div>
           </div>
-          <button
-            onClick={copyLink}
-            className="mt-4 inline-flex items-center gap-2 border-2 border-black px-3 py-2 active:translate-x-[1px] active:translate-y-[1px]"
-            style={{ boxShadow: '3px 3px 0 #000' }}
-          >
-            {linkCopied ? <Check size={16} /> : <Copy size={16} />}
-            <span
-              style={{ fontFamily: '"Space Mono", monospace' }}
-              className="text-[10px] uppercase tracking-widest"
-            >
-              {linkCopied ? 'Lien copié' : 'Copier le lien'}
-            </span>
-          </button>
         </div>
 
         <div className="mb-6">
