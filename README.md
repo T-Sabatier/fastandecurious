@@ -1,6 +1,6 @@
-# Fast & Curious — version multijoueur
+# Snap Tap — version multijoueur
 
-Le jeu de cartes Fast & Curious, mais chacun joue sur **son** tel ou ordi. Le créateur de la room obtient un **code à 4 lettres** qu'il partage à ses potes ; ils rejoignent depuis n'importe où.
+Le jeu de cartes Snap Tap, mais chacun joue sur **son** tel ou ordi. Le créateur de la room obtient un **code à 4 lettres** qu'il partage à ses potes ; ils rejoignent depuis n'importe où.
 
 - Main de 7 cartes par personne (privée)
 - Le **boss** annonce J'AIME ou J'AIME PAS
@@ -29,7 +29,7 @@ npm --version
 1. Va sur [console.firebase.google.com](https://console.firebase.google.com/)
 2. Connecte-toi avec un compte Google
 3. Clique sur **« Ajouter un projet »**
-4. Nom du projet : `fast-curious` (ou ce que tu veux)
+4. Nom du projet : `snap-tap` (ou ce que tu veux)
 5. Tu peux **désactiver Google Analytics** (pas utile ici)
 6. Clique sur **« Créer le projet »**
 
@@ -57,7 +57,7 @@ Puis **Publier**. (Ces règles sont permissives — c'est ok pour un jeu de pote
 1. Dans Firebase Console, clique sur l'engrenage en haut à gauche → **Paramètres du projet**
 2. Descends jusqu'à **« Tes applications »**
 3. Clique sur l'icône **`</>`** (Web) pour ajouter une app web
-4. Donne un surnom (ex: `fast-curious-web`), pas besoin de Firebase Hosting
+4. Donne un surnom (ex: `snap-tap-web`), pas besoin de Firebase Hosting
 5. Tu vois un objet `firebaseConfig` avec toutes les clés. **Garde-le sous la main.**
 
 ### 5. Installer le projet
@@ -71,10 +71,10 @@ Crée un fichier `.env` à la racine (copie `.env.example`) et remplis-le avec t
 
 ```
 VITE_FIREBASE_API_KEY=AIzaSy...
-VITE_FIREBASE_AUTH_DOMAIN=fast-curious.firebaseapp.com
-VITE_FIREBASE_DATABASE_URL=https://fast-curious-default-rtdb.europe-west1.firebasedatabase.app
-VITE_FIREBASE_PROJECT_ID=fast-curious
-VITE_FIREBASE_STORAGE_BUCKET=fast-curious.appspot.com
+VITE_FIREBASE_AUTH_DOMAIN=snap-tap.firebaseapp.com
+VITE_FIREBASE_DATABASE_URL=https://snap-tap-default-rtdb.europe-west1.firebasedatabase.app
+VITE_FIREBASE_PROJECT_ID=snap-tap
+VITE_FIREBASE_STORAGE_BUCKET=snap-tap.appspot.com
 VITE_FIREBASE_MESSAGING_SENDER_ID=123456789
 VITE_FIREBASE_APP_ID=1:123456789:web:abc...
 ```
@@ -112,7 +112,7 @@ git push -u origin main
 4. Dans **Environment Variables**, ajoute **toutes** les variables de ton `.env` une par une (clé + valeur)
 5. Clique sur **Deploy**
 
-Vercel te donne une URL du type `https://fast-curious-xyz.vercel.app`. **Partage-la à tes potes.** Chaque mise à jour de ton repo GitHub redéploiera automatiquement.
+Vercel te donne une URL du type `https://snap-tap-xyz.vercel.app`. **Partage-la à tes potes.** Chaque mise à jour de ton repo GitHub redéploiera automatiquement.
 
 ---
 

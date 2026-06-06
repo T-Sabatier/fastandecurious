@@ -11,11 +11,18 @@ import { ChevronRight } from 'lucide-react';
 
 const ROOM_TTL_MS = 6 * 60 * 60 * 1000; // 6h
 
+function getCodeFromUrl() {
+  if (typeof window === 'undefined') return '';
+  const fromQuery = new URLSearchParams(window.location.search).get('room');
+  return (fromQuery || '').trim().toUpperCase().slice(0, 4);
+}
+
 export default function Home({ playerId, onJoin, initialError }) {
   const [name, setName] = useState(getStoredName);
-  const [joinCode, setJoinCode] = useState('');
+  const [joinCode, setJoinCode] = useState(getCodeFromUrl);
   const [error, setError] = useState(initialError || '');
   const [busy, setBusy] = useState(false);
+  const [invitedCode] = useState(getCodeFromUrl);
 
   useEffect(() => {
     // Sweep au chargement : rooms > TTL (6h)
@@ -150,8 +157,8 @@ export default function Home({ playerId, onJoin, initialError }) {
             }}
             className="text-7xl uppercase"
           >
-            Fast &<br />
-            Curious
+            Snap<br />
+            Tap
           </h1>
           <div className="mt-4 flex items-center gap-2">
             <div className="h-1 flex-1 bg-black"></div>
@@ -163,6 +170,36 @@ export default function Home({ playerId, onJoin, initialError }) {
             </div>
           </div>
         </div>
+
+        {invitedCode && (
+          <div
+            className="mb-6 border-4 border-black bg-black text-white p-4 text-center"
+            style={{ boxShadow: '6px 6px 0 #000' }}
+          >
+            <div
+              style={{ fontFamily: '"Space Mono", monospace' }}
+              className="text-[10px] uppercase tracking-widest opacity-60 mb-1"
+            >
+              Tu as été invité dans la room
+            </div>
+            <div
+              style={{
+                fontFamily: '"Anton", sans-serif',
+                color: YELLOW,
+                letterSpacing: '0.15em',
+              }}
+              className="text-4xl uppercase"
+            >
+              {invitedCode}
+            </div>
+            <div
+              style={{ fontFamily: '"Space Mono", monospace' }}
+              className="text-[10px] uppercase tracking-widest opacity-60 mt-1"
+            >
+              Mets ton prénom et rejoins 👇
+            </div>
+          </div>
+        )}
 
         <div className="mb-8">
           <div

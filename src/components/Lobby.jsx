@@ -5,12 +5,18 @@ import { HAND_SIZE, YELLOW, PINK, PLAYER_COLORS, colorHex, colorFg } from '../ca
 import { subscribeCards, seedDefaultsIfEmpty } from '../cardsStore';
 import { subscribeCategories, seedCategoriesIfEmpty } from '../categoriesStore';
 import { ChevronRight, X, LogOut, Copy, Check } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import { useState, useEffect } from 'react';
 
 export default function Lobby({ room, roomCode, playerId, onLeave }) {
   const isHost = room.host === playerId;
   const players = Object.entries(room.players || {}).map(([id, p]) => ({ id, ...p }));
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const joinUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/?room=${roomCode}`
+      : '';
   const [allCards, setAllCards] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
 
@@ -124,6 +130,13 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
     }).catch(() => {});
   }
 
+  function copyLink() {
+    navigator.clipboard.writeText(joinUrl).then(() => {
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 1500);
+    }).catch(() => {});
+  }
+
   return (
     <div style={{ backgroundColor: YELLOW, minHeight: '100vh' }} className="text-black">
       <div className="max-w-md mx-auto px-5 py-6 pb-32">
@@ -181,6 +194,36 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
           >
             Partage ce code à tes potes
           </div>
+        </div>
+
+        <div
+          className="border-4 border-black bg-white p-5 mb-6 text-center"
+          style={{ boxShadow: '6px 6px 0 #000' }}
+        >
+          <div
+            style={{ fontFamily: '"Space Mono", monospace' }}
+            className="text-[10px] uppercase tracking-widest opacity-60 mb-3"
+          >
+            Ou scanne pour rejoindre
+          </div>
+          <div className="flex justify-center">
+            <div className="border-4 border-black p-2 bg-white">
+              <QRCodeSVG value={joinUrl} size={180} level="M" />
+            </div>
+          </div>
+          <button
+            onClick={copyLink}
+            className="mt-4 inline-flex items-center gap-2 border-2 border-black px-3 py-2 active:translate-x-[1px] active:translate-y-[1px]"
+            style={{ boxShadow: '3px 3px 0 #000' }}
+          >
+            {linkCopied ? <Check size={16} /> : <Copy size={16} />}
+            <span
+              style={{ fontFamily: '"Space Mono", monospace' }}
+              className="text-[10px] uppercase tracking-widest"
+            >
+              {linkCopied ? 'Lien copié' : 'Copier le lien'}
+            </span>
+          </button>
         </div>
 
         <div className="mb-6">
