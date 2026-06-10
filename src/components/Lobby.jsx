@@ -12,7 +12,6 @@ import InstallButton from './InstallButton.jsx';
 export default function Lobby({ room, roomCode, playerId, onLeave }) {
   const isHost = room.host === playerId;
   const players = Object.entries(room.players || {}).map(([id, p]) => ({ id, ...p }));
-  const [copied, setCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const joinUrl =
     typeof window !== 'undefined'
@@ -124,13 +123,6 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
     onLeave();
   }
 
-  function copyCode() {
-    navigator.clipboard.writeText(roomCode).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    }).catch(() => {});
-  }
-
   function copyLink() {
     navigator.clipboard.writeText(joinUrl).then(() => {
       setLinkCopied(true);
@@ -172,24 +164,15 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
               >
                 Code de la room
               </div>
-              <div className="flex items-center justify-center gap-2">
-                <div
-                  style={{
-                    fontFamily: '"Anton", sans-serif',
-                    color: YELLOW,
-                    letterSpacing: '0.15em',
-                  }}
-                  className="text-5xl uppercase"
-                >
-                  {roomCode}
-                </div>
-                <button
-                  onClick={copyCode}
-                  className="border-2 border-white p-2 active:opacity-70"
-                  aria-label="Copier"
-                >
-                  {copied ? <Check size={20} color="#FFE600" /> : <Copy size={20} color="#FFF" />}
-                </button>
+              <div
+                style={{
+                  fontFamily: '"Anton", sans-serif',
+                  color: YELLOW,
+                  letterSpacing: '0.15em',
+                }}
+                className="text-5xl uppercase"
+              >
+                {roomCode}
               </div>
               <button
                 onClick={copyLink}
