@@ -6,6 +6,7 @@ import {
   getStoredRoom,
   setStoredRoom,
   getStoredName,
+  ROOM_TTL_MS,
 } from './utils';
 import Home from './components/Home.jsx';
 import Lobby from './components/Lobby.jsx';
@@ -48,9 +49,11 @@ export default function App() {
     const unsub = onValue(roomRef, (snap) => {
       const val = snap.val();
       const playerCount = val?.players ? Object.keys(val.players).length : 0;
-      if (!val || playerCount === 0) {
-        // Room inexistante OU plus aucun joueur → on la supprime et on sort
-        if (val && playerCount === 0) {
+      // Room trop vieille (> TTL) → consideree abandonnee, meme en pleine partie.
+      const expired = val?.createdAt && val.createdAt < Date.now() - ROOM_TTL_MS;
+      if (!val || playerCount === 0 || expired) {
+        // Room inexistante / vide / expiree → on la supprime et on sort
+        if (val && (playerCount === 0 || expired)) {
           remove(ref(db, `rooms/${roomCode}`)).catch(() => {});
         }
         setStoredRoom(null);

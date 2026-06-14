@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
-import { ref, set, get, remove } from 'firebase/database';
+import { ref, set, get, remove, query, orderByChild, endAt } from 'firebase/database';
 import { db } from '../firebase';
 import {
   makeRoomCode,
   getStoredName,
   setStoredName,
+  ROOM_TTL_MS,
 } from '../utils';
 import { CATEGORIES, YELLOW, PINK } from '../cards';
 import { ChevronRight } from 'lucide-react';
 import InstallButton from './InstallButton.jsx';
-
-const ROOM_TTL_MS = 6 * 60 * 60 * 1000; // 6h
 
 function getCodeFromUrl() {
   if (typeof window === 'undefined') return '';
@@ -26,18 +25,16 @@ export default function Home({ playerId, onJoin, initialError }) {
   const [invitedCode] = useState(getCodeFromUrl);
 
   useEffect(() => {
-    // Sweep au chargement : rooms > TTL (6h)
+    // Sweep au chargement : on ne recupere QUE les rooms trop vieilles (> TTL)
+    // via une requete indexee sur createdAt → leger meme avec beaucoup de rooms.
+    // (necessite "rooms": { ".indexOn": ["createdAt"] } dans les regles Firebase)
     const cutoff = Date.now() - ROOM_TTL_MS;
-    get(ref(db, 'rooms'))
+    const oldRooms = query(ref(db, 'rooms'), orderByChild('createdAt'), endAt(cutoff));
+    get(oldRooms)
       .then((snap) => {
         if (!snap.exists()) return;
-        const rooms = snap.val();
-        Object.entries(rooms).forEach(([code, room]) => {
-          const isEmpty = !room?.players || Object.keys(room.players).length === 0;
-          const isOld = room?.createdAt && room.createdAt < cutoff;
-          if (isEmpty || isOld) {
-            remove(ref(db, `rooms/${code}`)).catch(() => {});
-          }
+        Object.keys(snap.val()).forEach((code) => {
+          remove(ref(db, `rooms/${code}`)).catch(() => {});
         });
       })
       .catch(() => {});
