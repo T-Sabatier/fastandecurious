@@ -33,6 +33,8 @@ import {
   LogOut,
   Clock,
   Eye,
+  X,
+  Zap,
 } from 'lucide-react';
 
 export default function Game({ room, roomCode, playerId, onLeave }) {
@@ -42,6 +44,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   const [espionArming, setEspionArming] = useState(false);
   const [espionReveal, setEspionReveal] = useState({});
   const [espionDone, setEspionDone] = useState(false);
+  const [sortsOpen, setSortsOpen] = useState(false);
 
   const isHost = room.host === playerId;
   const isBoss = room.bossId === playerId;
@@ -115,6 +118,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     setEspionArming(false);
     setEspionReveal({});
     setEspionDone(false);
+    setSortsOpen(false);
   }, [room.phase, room.round, room.bossId]);
 
   async function bossChooseMode(m) {
@@ -159,6 +163,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   async function rerollHand() {
     if (isBoss || iHavePlayed || busy) return;
     if (!sorts.reroll || myUsed.reroll) return;
+    if (!confirm('Rejeter ta main et repiocher 7 nouvelles cartes ? (1 seule fois)')) return;
     setBusy(true);
     try {
       await runTransaction(ref(db, `rooms/${roomCode}`), (cur) => {
@@ -782,50 +787,79 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
           style={{ backgroundColor: YELLOW }}
         >
           <div className="max-w-xl mx-auto">
-            {(sorts.reroll || sorts.vatout) && (
-              <div className="flex gap-2 mb-2">
-                {sorts.reroll && (
+            {(sorts.reroll || sorts.vatout) &&
+              (sortsOpen ? (
+                <div className="flex gap-2 mb-2 items-stretch">
+                  {sorts.reroll && (
+                    <button
+                      onClick={rerollHand}
+                      disabled={busy || myUsed.reroll}
+                      className="flex-1 border-4 border-black bg-white py-2 disabled:opacity-30 active:translate-x-[2px] active:translate-y-[2px] flex items-center justify-center gap-1.5"
+                      style={{ boxShadow: '4px 4px 0 #000' }}
+                    >
+                      <span className="text-lg leading-none">🎲</span>
+                      <span
+                        style={{ fontFamily: '"Anton", sans-serif' }}
+                        className="text-sm uppercase leading-none"
+                      >
+                        {myUsed.reroll ? 'Reroll utilisé' : 'Reroll'}
+                      </span>
+                    </button>
+                  )}
+                  {sorts.vatout && (
+                    <button
+                      onClick={() => !myUsed.vatout && setVatoutArmed((v) => !v)}
+                      disabled={busy || myUsed.vatout}
+                      className="flex-1 border-4 border-black py-2 disabled:opacity-30 active:translate-x-[2px] active:translate-y-[2px] flex items-center justify-center gap-1.5"
+                      style={{
+                        backgroundColor: vatoutArmed ? DISLIKE_RED : '#FFF',
+                        color: vatoutArmed ? '#FFF' : '#000',
+                        boxShadow: '4px 4px 0 #000',
+                      }}
+                    >
+                      <span className="text-lg leading-none">🔥</span>
+                      <span
+                        style={{ fontFamily: '"Anton", sans-serif' }}
+                        className="text-sm uppercase leading-none"
+                      >
+                        {myUsed.vatout
+                          ? 'x2 utilisé'
+                          : vatoutArmed
+                            ? 'x2 activé !'
+                            : 'x2'}
+                      </span>
+                    </button>
+                  )}
                   <button
-                    onClick={rerollHand}
-                    disabled={busy || myUsed.reroll}
-                    className="flex-1 border-4 border-black bg-white py-2 disabled:opacity-30 active:translate-x-[2px] active:translate-y-[2px] flex items-center justify-center gap-1.5"
+                    onClick={() => setSortsOpen(false)}
+                    aria-label="Fermer les sorts"
+                    className="border-4 border-black bg-black text-white px-3 active:translate-x-[2px] active:translate-y-[2px] flex items-center justify-center"
                     style={{ boxShadow: '4px 4px 0 #000' }}
                   >
-                    <span className="text-lg leading-none">🎲</span>
-                    <span
-                      style={{ fontFamily: '"Anton", sans-serif' }}
-                      className="text-sm uppercase leading-none"
-                    >
-                      {myUsed.reroll ? 'Reroll utilisé' : 'Reroll'}
-                    </span>
+                    <X size={20} />
                   </button>
-                )}
-                {sorts.vatout && (
+                </div>
+              ) : (
+                <div className="flex justify-center mb-2">
                   <button
-                    onClick={() => !myUsed.vatout && setVatoutArmed((v) => !v)}
-                    disabled={busy || myUsed.vatout}
-                    className="flex-1 border-4 border-black py-2 disabled:opacity-30 active:translate-x-[2px] active:translate-y-[2px] flex items-center justify-center gap-1.5"
+                    onClick={() => setSortsOpen(true)}
+                    className="border-4 border-black bg-white px-3 py-1.5 active:translate-x-[2px] active:translate-y-[2px] flex items-center gap-1.5"
                     style={{
+                      boxShadow: '4px 4px 0 #000',
                       backgroundColor: vatoutArmed ? DISLIKE_RED : '#FFF',
                       color: vatoutArmed ? '#FFF' : '#000',
-                      boxShadow: '4px 4px 0 #000',
                     }}
                   >
-                    <span className="text-lg leading-none">🔥</span>
+                    <Zap size={16} fill="currentColor" strokeWidth={0} />
                     <span
                       style={{ fontFamily: '"Anton", sans-serif' }}
                       className="text-sm uppercase leading-none"
                     >
-                      {myUsed.vatout
-                        ? 'x2 utilisé'
-                        : vatoutArmed
-                          ? 'x2 activé !'
-                          : 'x2'}
+                      {vatoutArmed ? 'x2 armé' : 'Sorts'}
                     </span>
                   </button>
-                )}
-              </div>
-            )}
+                </div>
+              ))}
             <button
               onClick={playCard}
               disabled={!selectedCard || busy}
