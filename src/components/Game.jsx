@@ -31,6 +31,7 @@ import {
   Trophy,
   LogOut,
   Clock,
+  Eye,
 } from 'lucide-react';
 
 export default function Game({ room, roomCode, playerId, onLeave }) {
@@ -573,8 +574,8 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
             <div
               className="border-4 border-black p-5 mb-6 max-w-xs w-full relative"
               style={{
-                backgroundColor: myCard?.spicy ? PINK : '#000',
-                color: myCard?.spicy ? '#FFF' : YELLOW,
+                backgroundColor: '#FFF',
+                color: '#000',
                 boxShadow: '8px 8px 0 #000',
                 transform: 'rotate(-2deg)',
               }}
@@ -597,14 +598,19 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               </div>
             </div>
             <div
-              style={{ fontFamily: '"Anton", sans-serif' }}
-              className="text-xl uppercase opacity-80 mb-2"
+              style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.95 }}
+              className="text-3xl uppercase mb-3"
             >
-              En attente des autres
+              En attente<br />des autres
             </div>
             <div
-              style={{ fontFamily: '"Space Mono", monospace' }}
-              className="text-[10px] uppercase tracking-widest opacity-60"
+              style={{
+                fontFamily: '"Anton", sans-serif',
+                backgroundColor: '#000',
+                color: YELLOW,
+                boxShadow: '4px 4px 0 #000',
+              }}
+              className="inline-block border-4 border-black px-4 py-2 text-2xl uppercase"
             >
               {playedCount} / {nonBossCount} ont posé
             </div>
@@ -621,7 +627,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         <Scoreboard />
         <div className="px-4 pt-3 pb-6 max-w-xl mx-auto w-full">
           <div
-            className="border-4 border-black p-3 flex items-center justify-between"
+            className="border-4 border-black p-4 flex items-center justify-between gap-3"
             style={{
               backgroundColor: isLike ? LIKE_GREEN : DISLIKE_RED,
               color: isLike ? '#000' : '#FFF',
@@ -631,12 +637,12 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
           >
             <div
               style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.95 }}
-              className="text-xl uppercase"
+              className="text-2xl uppercase min-w-0 break-words"
             >
               <span
                 style={{
                   color: bossColor || (isLike ? '#000' : '#FFF'),
-                  WebkitTextStroke: isLike ? '0.5px #000' : '0.5px #FFF',
+                  WebkitTextStroke: isLike ? '0.6px #000' : '0.6px #FFF',
                   paintOrder: 'stroke fill',
                 }}
               >
@@ -645,9 +651,9 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               veut {isLike ? "J'aime" : "J'aime pas"}
             </div>
             {isLike ? (
-              <Heart size={28} fill="#000" strokeWidth={0} />
+              <Heart size={40} fill="#000" strokeWidth={0} className="shrink-0" />
             ) : (
-              <HeartCrack size={28} color="#FFF" strokeWidth={2.5} />
+              <HeartCrack size={40} color="#FFF" strokeWidth={2.5} className="shrink-0" />
             )}
           </div>
         </div>
@@ -829,93 +835,118 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
       );
     }
 
-    // Non-boss: voir les cartes posées (anonymes) pendant que le boss choisit
+    // Non-boss: MODE PROJECTEUR — fond noir, le boss "scanne" les cartes.
+    // Changement radical de fond (noir au lieu du jaune) = signal visuel le
+    // plus fort que ce n'est PAS a moi de jouer, sans rien avoir a lire.
     const revealIsLike = room.mode === 'like';
+    const modeColor = revealIsLike ? LIKE_GREEN : DISLIKE_RED;
     return (
-      <div style={baseWrap} className="text-black flex flex-col">
+      <div style={{ minHeight: '100vh', backgroundColor: '#0a0a0a' }} className="text-white flex flex-col">
         <TopBar right={`${playedEntries.length} CARTES`} />
         <Scoreboard />
-        <div className="px-4 pt-3 pb-6 max-w-xl mx-auto w-full">
+
+        {/* Entete projecteur : gros nom du boss qui pulse + halo couleur du mode */}
+        <div className="relative px-4 pt-6 pb-4 text-center overflow-hidden">
           <div
-            className="border-4 border-black p-3 flex items-center justify-between"
+            className="boss-glow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
             style={{
-              backgroundColor: revealIsLike ? LIKE_GREEN : DISLIKE_RED,
-              color: revealIsLike ? '#000' : '#FFF',
-              boxShadow: '5px 5px 0 #000',
-              transform: revealIsLike ? 'rotate(-1deg)' : 'rotate(1deg)',
+              width: 320,
+              height: 220,
+              background: `radial-gradient(ellipse at center, ${bossColor || modeColor}66 0%, transparent 70%)`,
+              filter: 'blur(10px)',
             }}
-          >
+            aria-hidden
+          />
+          <div className="relative flex flex-col items-center">
+            <Eye size={28} color={modeColor} strokeWidth={2.5} className="mb-1 animate-pulse" />
             <div
-              style={{ fontFamily: '"Anton", sans-serif', lineHeight: 0.95 }}
-              className="text-xl uppercase"
+              style={{
+                fontFamily: '"Anton", sans-serif',
+                lineHeight: 0.9,
+                fontSize: fitBig(boss?.name || ''),
+                color: bossColor || '#FFF',
+                letterSpacing: '0.06em',
+              }}
+              className="uppercase break-words"
             >
-              <span
-                style={{
-                  color: bossColor || (revealIsLike ? '#000' : '#FFF'),
-                  WebkitTextStroke: revealIsLike ? '0.5px #000' : '0.5px #FFF',
-                  paintOrder: 'stroke fill',
-                }}
-              >
-                {boss?.name || '…'}
-              </span>{' '}
-              choisit {revealIsLike ? "J'aime" : "J'aime pas"}
+              {boss?.name || '…'}
             </div>
-            {revealIsLike ? (
-              <Heart size={28} fill="#000" strokeWidth={0} />
-            ) : (
-              <HeartCrack size={28} color="#FFF" strokeWidth={2.5} />
-            )}
+            <div
+              className="inline-flex items-center gap-2 mt-2 border-2 px-3 py-1"
+              style={{ borderColor: modeColor, color: modeColor }}
+            >
+              {revealIsLike ? (
+                <Heart size={16} fill={modeColor} strokeWidth={0} />
+              ) : (
+                <HeartCrack size={16} color={modeColor} strokeWidth={2.5} />
+              )}
+              <span
+                style={{ fontFamily: '"Anton", sans-serif' }}
+                className="text-base uppercase leading-none"
+              >
+                choisit ce qu'il {revealIsLike ? 'aime' : 'aime pas'}
+              </span>
+            </div>
           </div>
         </div>
-        <div className="flex-1 px-4 pb-6 overflow-y-auto">
-          <div className="grid grid-cols-2 gap-3 mt-3 max-w-xl mx-auto">
-            {playedEntries.map((entry, i) => {
-              const card = pool[entry.cardId];
-              if (!card) return null;
-              const isBossPick = room.bossPick === entry.cardId;
-              const rot = i % 2 === 0 ? '-1.5deg' : '1.5deg';
-              return (
-                <div
-                  key={i}
-                  style={{
-                    backgroundColor: '#FFF',
-                    color: '#000',
-                    boxShadow: isBossPick ? '8px 8px 0 #000' : '5px 5px 0 #000',
-                    transform: isBossPick
-                      ? `rotate(${rot}) translate(-3px, -3px)`
-                      : `rotate(${rot})`,
-                    outline: isBossPick ? `4px solid ${PINK}` : 'none',
-                    outlineOffset: isBossPick ? '3px' : '0',
-                    minHeight: '120px',
-                    transition: 'all 120ms',
-                  }}
-                  className="border-4 border-black p-4 text-center flex items-center justify-center relative"
-                >
-                  <span
-                    className="absolute top-1 left-2 text-2xl leading-none opacity-80 select-none"
-                    aria-hidden
-                  >
-                    {catEmojiOf(card)}
-                  </span>
+
+        {/* Cartes sombres "sur scene" + faisceau de projecteur qui balaie */}
+        <div className="flex-1 px-4 pb-8 overflow-y-auto">
+          <div className="relative max-w-xl mx-auto">
+            <div
+              className="pointer-events-none absolute inset-y-0 left-0 w-1/2 spotlight-sweep z-10"
+              style={{
+                background:
+                  'linear-gradient(90deg, transparent, rgba(255,255,255,0.10), transparent)',
+              }}
+              aria-hidden
+            />
+            <div className="grid grid-cols-2 gap-3 mt-1">
+              {playedEntries.map((entry, i) => {
+                const card = pool[entry.cardId];
+                if (!card) return null;
+                const isBossPick = room.bossPick === entry.cardId;
+                const rot = i % 2 === 0 ? '-1.5deg' : '1.5deg';
+                return (
                   <div
+                    key={i}
                     style={{
-                      fontFamily: '"Anton", sans-serif',
-                      lineHeight: 0.95,
-                      fontSize: fitCard(card.t),
+                      backgroundColor: isBossPick ? '#FFF' : '#33333a',
+                      color: isBossPick ? '#000' : '#c9c9d2',
+                      borderColor: isBossPick ? PINK : '#55555f',
+                      boxShadow: isBossPick
+                        ? `0 0 0 4px ${PINK}, 0 0 32px ${PINK}`
+                        : 'none',
+                      opacity: isBossPick ? 1 : 0.82,
+                      transform: isBossPick
+                        ? `rotate(${rot}) scale(1.06)`
+                        : `rotate(${rot})`,
+                      minHeight: '120px',
+                      transition: 'all 160ms',
                     }}
-                    className="uppercase"
+                    className="border-4 p-4 text-center flex items-center justify-center relative"
                   >
-                    {card.t}
+                    <span
+                      className="absolute top-1 left-2 text-2xl leading-none select-none"
+                      style={{ filter: isBossPick ? 'none' : 'grayscale(0.6)', opacity: isBossPick ? 0.85 : 0.6 }}
+                      aria-hidden
+                    >
+                      {catEmojiOf(card)}
+                    </span>
+                    <div
+                      style={{
+                        fontFamily: '"Anton", sans-serif',
+                        lineHeight: 0.95,
+                        fontSize: fitCard(card.t),
+                      }}
+                      className="uppercase"
+                    >
+                      {card.t}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-          <div
-            style={{ fontFamily: '"Space Mono", monospace' }}
-            className="text-[10px] uppercase tracking-widest opacity-50 mt-6 text-center"
-          >
-            En attente du choix…
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
@@ -944,8 +975,8 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
           <div
             className="border-4 border-black p-6 mb-6 max-w-sm w-full relative"
             style={{
-              backgroundColor: winnerCard?.spicy ? PINK : '#000',
-              color: winnerCard?.spicy ? '#FFF' : YELLOW,
+              backgroundColor: '#000',
+              color: YELLOW,
               boxShadow: '8px 8px 0 #000',
               transform: 'rotate(-2deg)',
             }}

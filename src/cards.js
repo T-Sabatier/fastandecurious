@@ -191,6 +191,14 @@ export const PLAYER_COLORS = [
   { id: 'orange', hex: '#FF6D00', fg: '#000' },
   { id: 'pink',   hex: '#FF1493', fg: '#000' },
   { id: 'lime',   hex: '#39FF14', fg: '#000' },
+  { id: 'cyan',   hex: '#00E5FF', fg: '#000' },
+  { id: 'teal',   hex: '#00BFA5', fg: '#000' },
+  { id: 'amber',  hex: '#FFC400', fg: '#000' },
+  { id: 'purple', hex: '#7C4DFF', fg: '#FFF' },
+  { id: 'indigo', hex: '#304FFE', fg: '#FFF' },
+  { id: 'coral',  hex: '#FF5252', fg: '#000' },
+  { id: 'brown',  hex: '#8D6E63', fg: '#FFF' },
+  { id: 'white',  hex: '#FFFFFF', fg: '#000' },
 ];
 
 export function colorHex(id) {

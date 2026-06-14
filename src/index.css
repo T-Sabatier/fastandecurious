@@ -21,3 +21,23 @@ button {
 input {
   font-family: inherit;
 }
+
+/* ===== Mode projecteur (ecran "le boss choisit") ===== */
+/* Faisceau de projecteur qui balaie les cartes de gauche a droite.
+   L'element fait 50% de large : translateX -50% -> 150% place son CENTRE
+   pile du bord gauche (0%) au bord droit (100%) du conteneur = balayage centre. */
+@keyframes spotlight-sweep {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(150%); }
+}
+.spotlight-sweep {
+  animation: spotlight-sweep 3s ease-in-out infinite alternate;
+}
+/* Halo qui respire derriere le nom du boss */
+@keyframes boss-glow {
+  0%, 100% { opacity: 0.35; transform: scale(0.92); }
+  50%      { opacity: 0.7;  transform: scale(1.08); }
+}
+.boss-glow {
+  animation: boss-glow 2.2s ease-in-out infinite;
+}

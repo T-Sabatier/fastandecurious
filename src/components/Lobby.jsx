@@ -1,6 +1,6 @@
 import { ref, set, remove, update } from 'firebase/database';
 import { db } from '../firebase';
-import { shuffle } from '../utils';
+import { shuffle, getStoredName, setStoredName } from '../utils';
 import { HAND_SIZE, YELLOW, PINK, PLAYER_COLORS, colorHex, colorFg } from '../cards';
 import { subscribeCards, seedDefaultsIfEmpty } from '../cardsStore';
 import { subscribeCategories, seedCategoriesIfEmpty } from '../categoriesStore';
@@ -13,6 +13,10 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
   const isHost = room.host === playerId;
   const players = Object.entries(room.players || {}).map(([id, p]) => ({ id, ...p }));
   const [linkCopied, setLinkCopied] = useState(false);
+  const me = room.players?.[playerId];
+  const myName = (me?.name || '').trim();
+  const [nameInput, setNameInput] = useState(() => me?.name || getStoredName());
+  const allNamed = players.every((p) => (p.name || '').trim().length > 0);
   const joinUrl =
     typeof window !== 'undefined'
       ? `${window.location.origin}/?room=${roomCode}`
@@ -39,7 +43,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
   const totalAvailable = allCards.filter((c) => cats[c.cat]).length;
   const enoughPlayers = players.length >= 3;
   const enoughCards = totalAvailable >= players.length * HAND_SIZE + 8;
-  const canStart = enoughPlayers && enoughCards && allCards.length > 0;
+  const canStart = enoughPlayers && enoughCards && allCards.length > 0 && allNamed;
 
   async function toggleCat(id) {
     if (!isHost) return;
@@ -123,6 +127,20 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
     onLeave();
   }
 
+  async function saveName() {
+    const n = nameInput.trim();
+    if (!n) return;
+    setStoredName(n);
+    await set(ref(db, `rooms/${roomCode}/players/${playerId}/name`), n);
+  }
+
+  async function kickPlayer(p) {
+    if (!isHost || p.id === playerId) return;
+    if (!confirm(`Exclure ${p.name} du salon ?`)) return;
+    await remove(ref(db, `rooms/${roomCode}/players/${p.id}`));
+    await remove(ref(db, `rooms/${roomCode}/hands/${p.id}`)).catch(() => {});
+  }
+
   function copyLink() {
     navigator.clipboard.writeText(joinUrl).then(() => {
       setLinkCopied(true);
@@ -202,6 +220,59 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
           </div>
         </div>
 
+        {/* Saisie du prenom — affichee seulement tant qu'on n'a pas de prenom.
+            L'host (et tout joueur deja nomme) ne la voit pas : il l'a deja mis. */}
+        {!myName && (
+        <div
+          className="border-4 border-black bg-white p-4 mb-6"
+          style={{ boxShadow: '6px 6px 0 #000' }}
+        >
+          <div
+            style={{ fontFamily: '"Anton", sans-serif' }}
+            className="text-2xl uppercase mb-1"
+          >
+            Ton prénom
+          </div>
+          <div
+            style={{ fontFamily: '"Space Mono", monospace' }}
+            className="text-[10px] uppercase tracking-widest opacity-70 mb-3"
+          >
+            Entre ton prénom pour rejoindre 👇
+          </div>
+          <div className="flex items-stretch gap-2">
+            <input
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
+              onBlur={saveName}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  saveName();
+                  e.currentTarget.blur();
+                }
+              }}
+              placeholder="Prénom…"
+              maxLength={20}
+              autoFocus={!myName}
+              className="flex-1 min-w-0 border-4 border-black bg-white px-3 py-3 outline-none placeholder-black/30 text-lg"
+              style={{ boxShadow: '4px 4px 0 #000' }}
+            />
+            <button
+              onClick={saveName}
+              disabled={!nameInput.trim()}
+              className="border-4 border-black bg-black text-white px-4 disabled:opacity-30 active:translate-x-[2px] active:translate-y-[2px] flex items-center"
+              style={{ boxShadow: '4px 4px 0 #000' }}
+            >
+              <span
+                style={{ fontFamily: '"Anton", sans-serif' }}
+                className="text-lg uppercase"
+              >
+                OK
+              </span>
+            </button>
+          </div>
+        </div>
+        )}
+
         <div className="mb-6">
           <div
             style={{ fontFamily: '"Anton", sans-serif' }}
@@ -236,7 +307,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
                     style={{ fontFamily: '"Anton", sans-serif' }}
                     className="uppercase text-xl leading-none"
                   >
-                    {p.name}
+                    {p.name?.trim() || '…'}
                   </span>
                   {isTheHost && (
                     <span
@@ -249,6 +320,17 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
                     >
                       Host
                     </span>
+                  )}
+                  {isHost && !isTheHost && (
+                    <button
+                      onClick={() => kickPlayer(p)}
+                      aria-label={`Exclure ${p.name}`}
+                      title={`Exclure ${p.name}`}
+                      className="ml-0.5 -mr-1 flex items-center justify-center active:opacity-50"
+                      style={{ color: fg }}
+                    >
+                      <X size={16} strokeWidth={3} />
+                    </button>
                   )}
                 </div>
               );
@@ -296,6 +378,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
           </div>
         </div>
 
+        {isHost && (
         <div className="mb-8">
           <div
             style={{ fontFamily: '"Anton", sans-serif' }}
@@ -338,7 +421,9 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
             })}
           </div>
         </div>
+        )}
 
+        {isHost && (
         <div className="mb-8">
           <div
             style={{ fontFamily: '"Anton", sans-serif' }}
@@ -383,6 +468,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
             })}
           </div>
         </div>
+        )}
 
         <InstallButton variant="block" />
       </div>
@@ -415,6 +501,14 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
                   className="text-[10px] uppercase tracking-widest mb-2 text-center"
                 >
                   Pas assez de cartes — coche plus de catégories
+                </div>
+              )}
+              {enoughPlayers && enoughCards && !allNamed && (
+                <div
+                  style={{ fontFamily: '"Space Mono", monospace' }}
+                  className="text-[10px] uppercase tracking-widest mb-2 text-center"
+                >
+                  En attente que tout le monde entre son prénom
                 </div>
               )}
               <button

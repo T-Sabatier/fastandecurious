@@ -323,6 +323,15 @@ export default function Home({ playerId, onJoin, initialError }) {
           <InstallButton variant="block" />
         </div>
       </div>
+      {import.meta.env.DEV && (
+        <a
+          href="?debug"
+          className="fixed bottom-3 left-3 z-50 border-2 border-black bg-black text-white px-2 py-1 text-[10px] uppercase tracking-widest"
+          style={{ fontFamily: '"Space Mono", monospace' }}
+        >
+          🐛 Debug
+        </a>
+      )}
     </div>
   );
 }
