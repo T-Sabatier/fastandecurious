@@ -9,6 +9,7 @@ import {
 } from '../utils';
 import {
   WINNING_SCORE,
+  HAND_SIZE,
   YELLOW,
   PINK,
   LIKE_GREEN,
@@ -37,6 +38,10 @@ import {
 export default function Game({ room, roomCode, playerId, onLeave }) {
   const [selectedCard, setSelectedCard] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [vatoutArmed, setVatoutArmed] = useState(false);
+  const [espionArming, setEspionArming] = useState(false);
+  const [espionReveal, setEspionReveal] = useState({});
+  const [espionDone, setEspionDone] = useState(false);
 
   const isHost = room.host === playerId;
   const isBoss = room.bossId === playerId;
@@ -51,6 +56,10 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
 
   const myHandCardIds = Object.keys(room.hands?.[playerId] || {});
   const pool = room.pool || {};
+
+  // Sorts (pouvoirs) actives par l'host + ce que j'ai deja consomme.
+  const sorts = room.settings?.sorts || {};
+  const myUsed = room.players?.[playerId]?.sortsUsed || {};
 
   const playedObj = room.played || {};
   const playedEntries = Object.entries(playedObj).map(([pid, cid]) => ({
@@ -102,6 +111,10 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   // Reset local state on phase / round changes
   useEffect(() => {
     setSelectedCard(null);
+    setVatoutArmed(false);
+    setEspionArming(false);
+    setEspionReveal({});
+    setEspionDone(false);
   }, [room.phase, room.round, room.bossId]);
 
   async function bossChooseMode(m) {
@@ -113,6 +126,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         phase: 'play',
         played: null,
         bossPick: null,
+        vatout: null,
       });
     } finally {
       setBusy(false);
@@ -122,14 +136,72 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   async function playCard() {
     if (!selectedCard || isBoss || iHavePlayed || busy) return;
     setBusy(true);
+    const useVatout = vatoutArmed && sorts.vatout && !myUsed.vatout;
     try {
-      await update(ref(db, `rooms/${roomCode}`), {
+      const updates = {
         [`hands/${playerId}/${selectedCard}`]: null,
         [`played/${playerId}`]: selectedCard,
+      };
+      if (useVatout) {
+        updates[`vatout/${playerId}`] = true;
+        updates[`players/${playerId}/sortsUsed/vatout`] = true;
+      }
+      await update(ref(db, `rooms/${roomCode}`), updates);
+    } finally {
+      setBusy(false);
+      setSelectedCard(null);
+      setVatoutArmed(false);
+    }
+  }
+
+  // SORT Reroll : rejette ma main et repioche HAND_SIZE cartes. Transaction
+  // pour eviter les conflits si plusieurs joueurs rerollent en meme temps.
+  async function rerollHand() {
+    if (isBoss || iHavePlayed || busy) return;
+    if (!sorts.reroll || myUsed.reroll) return;
+    setBusy(true);
+    try {
+      await runTransaction(ref(db, `rooms/${roomCode}`), (cur) => {
+        if (!cur || cur.phase !== 'play') return undefined;
+        if (cur.played?.[playerId]) return undefined;
+        if (cur.players?.[playerId]?.sortsUsed?.reroll) return undefined;
+        const myHand = Object.keys(cur.hands?.[playerId] || {});
+        let deck = toArray(cur.deck);
+        let discard = [...toArray(cur.discard), ...myHand];
+        const newHand = {};
+        for (let i = 0; i < HAND_SIZE; i++) {
+          if (deck.length === 0 && discard.length > 0) {
+            deck = shuffle(discard);
+            discard = [];
+          }
+          if (deck.length > 0) newHand[deck.shift()] = true;
+        }
+        cur.hands = cur.hands || {};
+        cur.hands[playerId] = newHand;
+        cur.deck = deck;
+        cur.discard = discard;
+        cur.players[playerId].sortsUsed = {
+          ...(cur.players[playerId].sortsUsed || {}),
+          reroll: true,
+        };
+        return cur;
       });
     } finally {
       setBusy(false);
       setSelectedCard(null);
+    }
+  }
+
+  // SORT Espion : revele (pour moi seul) qui a pose la carte tapee.
+  async function consumeEspion(cardId) {
+    if (!espionArming || espionDone || espionReveal[cardId]) return;
+    setEspionReveal((r) => ({ ...r, [cardId]: true }));
+    setEspionArming(false);
+    setEspionDone(true); // verrou local : une seule carte revelee, pas de re-arme
+    if (sorts.espion && !myUsed.espion) {
+      await update(ref(db, `rooms/${roomCode}`), {
+        [`players/${playerId}/sortsUsed/espion`]: true,
+      }).catch(() => {});
     }
   }
 
@@ -154,8 +226,12 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
       const updates = {};
       const winnerId = room.winnerInfo.playerId;
       const winnerCurrentScore = playerById[winnerId]?.score || 0;
-      const winnerNewScore = winnerCurrentScore + 1;
+      // SORT Va-tout : si le gagnant avait parie, sa carte vaut +2.
+      const gain = room.vatout?.[winnerId] ? 2 : 1;
+      const winnerNewScore = winnerCurrentScore + gain;
       updates[`players/${winnerId}/score`] = winnerNewScore;
+      // Le va-tout est valable un seul tour → on le remet a zero.
+      updates['vatout'] = null;
 
       // Move played cards to discard
       const playedCardIds = Object.values(playedObj);
@@ -706,6 +782,50 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
           style={{ backgroundColor: YELLOW }}
         >
           <div className="max-w-xl mx-auto">
+            {(sorts.reroll || sorts.vatout) && (
+              <div className="flex gap-2 mb-2">
+                {sorts.reroll && (
+                  <button
+                    onClick={rerollHand}
+                    disabled={busy || myUsed.reroll}
+                    className="flex-1 border-4 border-black bg-white py-2 disabled:opacity-30 active:translate-x-[2px] active:translate-y-[2px] flex items-center justify-center gap-1.5"
+                    style={{ boxShadow: '4px 4px 0 #000' }}
+                  >
+                    <span className="text-lg leading-none">🎲</span>
+                    <span
+                      style={{ fontFamily: '"Anton", sans-serif' }}
+                      className="text-sm uppercase leading-none"
+                    >
+                      {myUsed.reroll ? 'Reroll utilisé' : 'Reroll'}
+                    </span>
+                  </button>
+                )}
+                {sorts.vatout && (
+                  <button
+                    onClick={() => !myUsed.vatout && setVatoutArmed((v) => !v)}
+                    disabled={busy || myUsed.vatout}
+                    className="flex-1 border-4 border-black py-2 disabled:opacity-30 active:translate-x-[2px] active:translate-y-[2px] flex items-center justify-center gap-1.5"
+                    style={{
+                      backgroundColor: vatoutArmed ? DISLIKE_RED : '#FFF',
+                      color: vatoutArmed ? '#FFF' : '#000',
+                      boxShadow: '4px 4px 0 #000',
+                    }}
+                  >
+                    <span className="text-lg leading-none">🔥</span>
+                    <span
+                      style={{ fontFamily: '"Anton", sans-serif' }}
+                      className="text-sm uppercase leading-none"
+                    >
+                      {myUsed.vatout
+                        ? 'x2 utilisé'
+                        : vatoutArmed
+                          ? 'x2 activé !'
+                          : 'x2'}
+                    </span>
+                  </button>
+                )}
+              </div>
+            )}
             <button
               onClick={playCard}
               disabled={!selectedCard || busy}
@@ -717,7 +837,11 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                   style={{ fontFamily: '"Anton", sans-serif' }}
                   className="text-xl uppercase tracking-wide"
                 >
-                  {selectedCard ? 'Jouer cette carte' : 'Choisis une carte'}
+                  {selectedCard
+                    ? vatoutArmed
+                      ? 'Jouer en x2 🔥'
+                      : 'Jouer cette carte'
+                    : 'Choisis une carte'}
                 </span>
                 {selectedCard && <ChevronRight size={24} />}
               </div>
@@ -887,6 +1011,32 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 choisit ce qu'il {revealIsLike ? 'aime' : 'aime pas'}
               </span>
             </div>
+            {sorts.espion && (
+              <button
+                onClick={() =>
+                  !myUsed.espion && !espionDone && setEspionArming((v) => !v)
+                }
+                disabled={myUsed.espion || espionDone}
+                className="mt-3 inline-flex items-center gap-2 border-2 px-3 py-1.5 disabled:opacity-40"
+                style={{
+                  borderColor: espionArming ? YELLOW : '#666',
+                  backgroundColor: espionArming ? YELLOW : 'transparent',
+                  color: espionArming ? '#000' : '#FFF',
+                }}
+              >
+                <span className="text-base leading-none">🕵️</span>
+                <span
+                  style={{ fontFamily: '"Anton", sans-serif' }}
+                  className="text-sm uppercase leading-none"
+                >
+                  {myUsed.espion || espionDone
+                    ? 'Espion utilisé'
+                    : espionArming
+                      ? 'Tape une carte…'
+                      : 'Espion'}
+                </span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -907,13 +1057,20 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 if (!card) return null;
                 const isBossPick = room.bossPick === entry.cardId;
                 const rot = i % 2 === 0 ? '-1.5deg' : '1.5deg';
+                const revealed = espionReveal[entry.cardId];
+                const author = playerById[entry.playerId];
                 return (
                   <div
                     key={i}
+                    onClick={() => consumeEspion(entry.cardId)}
                     style={{
                       backgroundColor: isBossPick ? '#FFF' : '#33333a',
                       color: isBossPick ? '#000' : '#c9c9d2',
-                      borderColor: isBossPick ? PINK : '#55555f',
+                      borderColor: isBossPick
+                        ? PINK
+                        : espionArming && !revealed
+                          ? YELLOW
+                          : '#55555f',
                       boxShadow: isBossPick
                         ? `0 0 0 4px ${PINK}, 0 0 32px ${PINK}`
                         : 'none',
@@ -923,6 +1080,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                         : `rotate(${rot})`,
                       minHeight: '120px',
                       transition: 'all 160ms',
+                      cursor: espionArming && !revealed ? 'pointer' : 'default',
                     }}
                     className="border-4 p-4 text-center flex items-center justify-center relative"
                   >
@@ -943,6 +1101,23 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                     >
                       {card.t}
                     </div>
+                    {revealed && author && (
+                      <div
+                        className="absolute -bottom-3 left-1/2 -translate-x-1/2 border-2 border-black px-2 py-0.5 whitespace-nowrap"
+                        style={{
+                          backgroundColor: colorHex(author.color) || '#000',
+                          color: colorHex(author.color)
+                            ? colorFg(author.color)
+                            : '#FFF',
+                          fontFamily: '"Anton", sans-serif',
+                          boxShadow: '2px 2px 0 #000',
+                        }}
+                      >
+                        <span className="text-sm uppercase leading-none">
+                          🕵️ {author.name || '?'}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -957,7 +1132,8 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   if (room.phase === 'result' && room.winnerInfo) {
     const winnerP = playerById[room.winnerInfo.playerId];
     const winnerCard = pool[room.winnerInfo.cardId];
-    const winnerNewScore = (winnerP?.score || 0) + 1;
+    const winnerGain = room.vatout?.[room.winnerInfo.playerId] ? 2 : 1;
+    const winnerNewScore = (winnerP?.score || 0) + winnerGain;
     const willWinGame = winnerNewScore >= (room.settings?.winningScore ?? WINNING_SCORE);
     const iAmWinner = room.winnerInfo.playerId === playerId;
 
@@ -1029,8 +1205,22 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
             }}
             className="inline-block border-4 border-black px-3 py-2 text-2xl uppercase"
           >
-            +1 point
+            +{winnerGain} point{winnerGain > 1 ? 's' : ''}
           </div>
+          {winnerGain > 1 && (
+            <div
+              style={{
+                fontFamily: '"Anton", sans-serif',
+                backgroundColor: DISLIKE_RED,
+                color: '#FFF',
+                boxShadow: '4px 4px 0 #000',
+                transform: 'rotate(-2deg)',
+              }}
+              className="inline-block border-4 border-black px-3 py-1 text-lg uppercase mt-3 ml-2"
+            >
+              🔥 x2 réussi
+            </div>
+          )}
         </div>
 
         <div

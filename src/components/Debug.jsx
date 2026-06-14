@@ -56,7 +56,11 @@ export default function Debug() {
     pool: POOL,
     deck: [],
     discard: [],
-    settings: { winningScore: 5, cats: {} },
+    settings: {
+      winningScore: 5,
+      cats: {},
+      sorts: { reroll: true, espion: true, vatout: true },
+    },
     players: PLAYERS,
   };
 

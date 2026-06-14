@@ -1,7 +1,7 @@
 import { ref, set, remove, update } from 'firebase/database';
 import { db } from '../firebase';
 import { shuffle, getStoredName, setStoredName } from '../utils';
-import { HAND_SIZE, YELLOW, PINK, PLAYER_COLORS, colorHex, colorFg } from '../cards';
+import { HAND_SIZE, YELLOW, PINK, PLAYER_COLORS, SORTS, colorHex, colorFg } from '../cards';
 import { subscribeCards, seedDefaultsIfEmpty } from '../cardsStore';
 import { subscribeCategories, seedCategoriesIfEmpty } from '../categoriesStore';
 import { ChevronRight, X, LogOut, Copy, Check } from 'lucide-react';
@@ -48,6 +48,12 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
   async function toggleCat(id) {
     if (!isHost) return;
     await set(ref(db, `rooms/${roomCode}/settings/cats/${id}`), !cats[id]);
+  }
+
+  const sorts = room.settings?.sorts || {};
+  async function toggleSort(id) {
+    if (!isHost) return;
+    await set(ref(db, `rooms/${roomCode}/settings/sorts/${id}`), !sorts[id]);
   }
 
   const winningScore = room.settings?.winningScore ?? 5;
@@ -463,6 +469,69 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
                   >
                     {cat.label}
                   </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        )}
+
+        {isHost && (
+        <div className="mb-8">
+          <div
+            style={{ fontFamily: '"Anton", sans-serif' }}
+            className="text-2xl uppercase mb-1"
+          >
+            Sorts
+          </div>
+          <div
+            style={{ fontFamily: '"Space Mono", monospace' }}
+            className="text-[10px] uppercase tracking-widest mb-3 opacity-70"
+          >
+            Pouvoirs spéciaux · 1 usage chacun par joueur
+          </div>
+          <div className="flex flex-col gap-3">
+            {SORTS.map((s) => {
+              const on = !!sorts[s.id];
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => toggleSort(s.id)}
+                  disabled={!isHost}
+                  style={{
+                    backgroundColor: on ? '#000' : '#FFF',
+                    color: on ? '#FFF' : '#000',
+                    boxShadow: on ? '4px 4px 0 #000' : '2px 2px 0 #000',
+                    transition: 'all 100ms',
+                    opacity: on ? 1 : 0.55,
+                  }}
+                  className="border-4 border-black px-3 py-3 text-left flex items-center gap-3 active:translate-x-[2px] active:translate-y-[2px] disabled:cursor-not-allowed"
+                >
+                  <span className="text-2xl shrink-0">{s.emoji}</span>
+                  <div className="min-w-0 flex-1">
+                    <div
+                      style={{ fontFamily: '"Anton", sans-serif' }}
+                      className="uppercase text-lg leading-none"
+                    >
+                      {s.label}
+                    </div>
+                    <div
+                      style={{ fontFamily: '"Space Mono", monospace' }}
+                      className="text-[9px] uppercase tracking-widest opacity-70 mt-1"
+                    >
+                      {s.desc}
+                    </div>
+                  </div>
+                  <div
+                    className="shrink-0 border-2 px-2 py-1 text-[10px] uppercase tracking-widest"
+                    style={{
+                      fontFamily: '"Space Mono", monospace',
+                      borderColor: on ? YELLOW : '#000',
+                      color: on ? YELLOW : '#000',
+                    }}
+                  >
+                    {on ? 'ON' : 'OFF'}
+                  </div>
                 </button>
               );
             })}

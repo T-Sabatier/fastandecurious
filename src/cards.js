@@ -175,6 +175,14 @@ export const CATEGORIES = [
   { id: 'coquin', label: 'Coquin', emoji: '🌶️', spicy: true },
 ];
 
+// Sorts (pouvoirs) — desactives par defaut, l'host les active dans le salon.
+// Chaque joueur en a 1 charge par partie pour chaque sort active.
+export const SORTS = [
+  { id: 'reroll', label: 'Reroll', emoji: '🎲', desc: 'Rejette ta main et repioche 7 cartes' },
+  { id: 'espion', label: 'Espion', emoji: '🕵️', desc: "Révèle qui a posé une carte" },
+  { id: 'vatout', label: 'x2', emoji: '🔥', desc: 'Ta carte vaut +2 si le boss la choisit' },
+];
+
 export const HAND_SIZE = 7;
 export const WINNING_SCORE = 5;
 export const YELLOW = '#FFE600';
