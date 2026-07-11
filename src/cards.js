@@ -87,14 +87,15 @@ export const DEFAULT_CARDS = [
   ['Cyprien', 'culture'], ['Konbini', 'culture'], ['Tibo InShape', 'culture'],
 
   // ABSURDE
-  ['Voler', 'absurde'], ['Lire dans les pensées', 'absurde'],
+  ['Voler comme un oiseau', 'absurde'], ['Lire dans les pensées', 'absurde'],
   ['Téléportation', 'absurde'], ['Voyage temporel', 'absurde'],
   ['Invisibilité', 'absurde'], ['Dormir 18h', 'absurde'],
   ['Ne plus dormir', 'absurde'], ['Toujours dire vrai', 'absurde'],
-  ['Toujours mentir', 'absurde'], ['Cheval taille canard', 'absurde'],
-  ['100 canards taille cheval', 'absurde'],
+  ['Toujours mentir', 'absurde'],
   ['Parler toutes les langues', 'absurde'],
-  ['Jouer de tout instrument', 'absurde'], ['Pieds énormes', 'absurde'],
+  ['Jouer de tout instrument', 'absurde'],
+  ['Manger sans grossir', 'absurde'], ['Respirer sous l\'eau', 'absurde'],
+  ['Parler aux animaux', 'absurde'],
 
   // NATURE
   ['Coucher de soleil', 'nature'], ['Forêt en automne', 'nature'],
