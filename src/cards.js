@@ -136,6 +136,16 @@ export const DEFAULT_CARDS = [
   ['Avatar (dernier maître)', 'cartoons'], ['Scooby-Doo', 'cartoons'],
   ['Code Lyoko', 'cartoons'],
 
+  // CÉLÉBRITÉ
+  ['Emma Watson', 'celebrite'], ['Zendaya', 'celebrite'],
+  ['Margot Robbie', 'celebrite'], ['Ryan Gosling', 'celebrite'],
+  ['Sydney Sweeney', 'celebrite'], ['Cillian Murphy', 'celebrite'],
+  ['Anya Taylor-Joy', 'celebrite'], ['Jenna Ortega', 'celebrite'],
+  ['Sylvester Stallone', 'celebrite'], ['Sigourney Weaver', 'celebrite'],
+  ['Al Pacino', 'celebrite'], ['Denzel Washington', 'celebrite'],
+  ['Steven Spielberg', 'celebrite'], ['Martin Scorsese', 'celebrite'],
+  ['Clint Eastwood', 'celebrite'], ['Pedro Pascal', 'celebrite'],
+
   // COQUIN
   ['Tirer les cheveux', 'coquin'], ['Yeux bandés', 'coquin'],
   ['Mains attachées au lit', 'coquin'], ['Mordre la lèvre', 'coquin'],
@@ -172,6 +182,7 @@ export const CATEGORIES = [
   { id: 'mode', label: 'Mode', emoji: '👕' },
   { id: 'gaming', label: 'Jeux vidéo', emoji: '🎮' },
   { id: 'cartoons', label: 'Dessins animés', emoji: '🧸' },
+  { id: 'celebrite', label: 'Célébrité', emoji: '⭐' },
   { id: 'coquin', label: 'Coquin', emoji: '🌶️', spicy: true },
 ];
 
