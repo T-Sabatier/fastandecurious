@@ -1,78 +1,66 @@
 export const DEFAULT_CARDS = [
   // BOUFFE
-  ['Pizza', 'bouffe'], ['Sushis', 'bouffe'], ['Kebab', 'bouffe'],
-  ['Tacos', 'bouffe'], ['Burger', 'bouffe'], ['Pâtes carbo', 'bouffe'],
-  ['Croissant', 'bouffe'], ['Pain au choc', 'bouffe'],
-  ['Frites', 'bouffe'],
+  ['Pizza', 'bouffe'], ['Sushis', 'bouffe'],
+  ['Tacos', 'bouffe'], ['Pâtes carbo', 'bouffe'],
+  ['Croissant', 'bouffe'],
   ['Glace vanille', 'bouffe'],
-  ['Nutella', 'bouffe'], ['Camembert', 'bouffe'], ['Roquefort', 'bouffe'],
+  ['Nutella', 'bouffe'], ['Camembert', 'bouffe'],
   ['Ramen', 'bouffe'],
-  ['Crêpe sucrée', 'bouffe'], ['Raclette', 'bouffe'], ['Fondue', 'bouffe'],
-  ['Couscous', 'bouffe'], ['Tajine', 'bouffe'], ['Resto étoilé', 'bouffe'],
-  ['McDo', 'bouffe'], ['Brunch', 'bouffe'], ['Burrata', 'bouffe'],
+  ['Crêpe sucrée', 'bouffe'], ['Raclette', 'bouffe'],
+  ['Couscous', 'bouffe'],
   ['Tiramisu', 'bouffe'],
   ['Cheesecake', 'bouffe'], ['Poke bowl', 'bouffe'],
-  ['Cookies', 'bouffe'], ['Blanquette de veau', 'bouffe'],
-  ['Bœuf bourguignon', 'bouffe'], ['Cassoulet', 'bouffe'],
-  ['Gratin dauphinois', 'bouffe'], ['Poulet/frites/Walker Texas Ranger', 'bouffe'],
+  ['Blanquette de veau', 'bouffe'],
+  ['Bœuf bourguignon', 'bouffe'],
+  ['Gratin dauphinois', 'bouffe'],
 
   // BOISSON
   ['Coca', 'boisson'], ['Café', 'boisson'], ['Vin rouge', 'boisson'],
   ['Vin blanc', 'boisson'], ['Bière fraîche', 'boisson'], ['Cocktail', 'boisson'],
   ['Champagne', 'boisson'], ['Whisky', 'boisson'], ['Red Bull', 'boisson'],
-  ['Bubble tea', 'boisson'],
+  ['Bubble tea', 'boisson'], ['Mojito', 'boisson'], ['Chocolat chaud', 'boisson'],
+  ['Pastis', 'boisson'],
 
   // VOYAGES
   ['Plage déserte', 'voyages'], ['Montagne enneigée', 'voyages'],
   ['Paris', 'voyages'], ['New York', 'voyages'], ['Tokyo', 'voyages'],
-  ['Bali', 'voyages'], ['Maldives', 'voyages'], ['Marrakech', 'voyages'],
-  ['Islande', 'voyages'], ['Norvège', 'voyages'], ['Lisbonne', 'voyages'],
-  ['Barcelone', 'voyages'], ['Berlin', 'voyages'], ['Londres', 'voyages'],
-  ['Rome', 'voyages'], ['Séoul', 'voyages'], ['Bangkok', 'voyages'],
-  ['Mexico', 'voyages'], ['Train de nuit', 'voyages'], ['Road trip USA', 'voyages'],
+  ['Bali', 'voyages'], ['Londres', 'voyages'],
+  ['Rome', 'voyages'], ['Séoul', 'voyages'],
+  ['Train de nuit', 'voyages'], ['Road trip USA', 'voyages'],
   ['Airbnb', 'voyages'], ['Palace 5 étoiles', 'voyages'], ['Camping sauvage', 'voyages'],
 
   // MUSIQUE
   ['Taylor Swift', 'musique'], ['Beyoncé', 'musique'], ['Daft Punk', 'musique'],
-  ['The Beatles', 'musique'], ['Queen', 'musique'], ['Michael Jackson', 'musique'],
-  ['Madonna', 'musique'], ['Pink Floyd', 'musique'], ['Led Zeppelin', 'musique'],
+  ['Queen', 'musique'], ['Michael Jackson', 'musique'],
+  ['Pink Floyd', 'musique'],
   ['AC/DC', 'musique'], ['Nirvana', 'musique'], ['Coldplay', 'musique'],
   ['Adele', 'musique'], ['Bruno Mars', 'musique'], ['Ed Sheeran', 'musique'],
-  ['Dua Lipa', 'musique'], ['Lady Gaga', 'musique'], ['Arctic Monkeys', 'musique'],
-  ['Radiohead', 'musique'], ['ABBA', 'musique'], ['Elvis Presley', 'musique'],
-  ['David Bowie', 'musique'], ['Karaoké', 'musique'],
-  ['Concert intimiste', 'musique'], ['Festival géant', 'musique'],
-  ['Lil Pump', 'musique'], ['6ix9ine', 'musique'],
-  ['Maître Gims', 'musique'], ['Lartiste', 'musique'],
+  ['Dua Lipa', 'musique'], ['Lady Gaga', 'musique'],
+  ['ABBA', 'musique'], ['Elvis Presley', 'musique'],
 
   // CINÉ & SÉRIES
   ['Marvel', 'cine'], ['Star Wars', 'cine'], ['Harry Potter', 'cine'],
   ['Seigneur des Anneaux', 'cine'], ['Game of Thrones', 'cine'],
   ['Breaking Bad', 'cine'], ['Peaky Blinders', 'cine'], ['Friends', 'cine'],
-  ['The Office', 'cine'], ['Squid Game', 'cine'], ['Casa de Papel', 'cine'],
-  ['Stranger Things', 'cine'], ['Lupin', 'cine'], ['Bureau des Légendes', 'cine'],
-  ['Inception', 'cine'], ['Interstellar', 'cine'], ['Tarantino', 'cine'],
-  ['OSS 117', 'cine'], ['Les Tuche', 'cine'],
-  ['Intouchables', 'cine'], ['Amélie Poulain', 'cine'], ['Studio Ghibli', 'cine'],
-  ['Pixar', 'cine'],
+  ['Squid Game', 'cine'], ['Stranger Things', 'cine'],
+  ['Interstellar', 'cine'], ['OSS 117', 'cine'], ['Les Tuche', 'cine'],
+  ['Studio Ghibli', 'cine'], ['Pixar', 'cine'],
 
   // TECH
   ['iPhone', 'tech'], ['Android', 'tech'], ['TikTok', 'tech'],
   ['Instagram', 'tech'], ['Twitter/X', 'tech'], ['Snapchat', 'tech'],
-  ['BeReal', 'tech'], ['Mac', 'tech'], ['ChatGPT', 'tech'],
-  ['Claude', 'tech'], ['Tinder', 'tech'], ['Hinge', 'tech'],
-  ['Deliveroo', 'tech'], ['UberEats', 'tech'],
-  ['YouTube', 'tech'], ['Twitch', 'tech'], ['AirPods', 'tech'],
-  ['Casque audio', 'tech'], ['Discord', 'tech'], ['WhatsApp', 'tech'],
+  ['ChatGPT', 'tech'], ['Tinder', 'tech'],
+  ['UberEats', 'tech'], ['YouTube', 'tech'],
+  ['PlayStation', 'tech'], ['Xbox', 'tech'], ['Switch', 'tech'],
+  ['Netflix', 'tech'], ['Vinted', 'tech'],
 
   // LIFESTYLE
   ['Sport', 'lifestyle'], ['Sieste', 'lifestyle'], ['Matinal', 'lifestyle'],
   ['Couche-tard', 'lifestyle'], ['Chat', 'lifestyle'], ['Chien', 'lifestyle'],
   ['Bain chaud', 'lifestyle'], ['Lecture', 'lifestyle'], ['Podcast', 'lifestyle'],
-  ['Vélo', 'lifestyle'], ['Maison à la campagne', 'lifestyle'],
+  ['Maison à la campagne', 'lifestyle'],
   ['Appart en ville', 'lifestyle'], ['Tatouage', 'lifestyle'],
-  ['Piercing', 'lifestyle'], ['Méditation', 'lifestyle'], ['Muscu', 'lifestyle'],
-  ['Yoga', 'lifestyle'],
+  ['Piercing', 'lifestyle'], ['Méditation', 'lifestyle'],
 
   // RELATIONS
   ['Amour passion', 'relations'], ['Amour stable', 'relations'],
@@ -85,12 +73,10 @@ export const DEFAULT_CARDS = [
   ['Couple cocon', 'relations'], ['Couple aventurier', 'relations'],
 
   // SPORT
-  ['Foot', 'sport'], ['Basket', 'sport'], ['Real Madrid', 'sport'],
-  ['Barça', 'sport'], ['PSG', 'sport'], ['OM', 'sport'],
-  ['Messi', 'sport'], ['Ronaldo', 'sport'], ['Mbappé', 'sport'],
-  ['Haaland', 'sport'], ['Tennis', 'sport'], ['Padel', 'sport'],
-  ['Course à pied', 'sport'], ['NBA', 'sport'], ['NFL', 'sport'],
-  ['Zidane', 'sport'], ['Boxe', 'sport'], ['MMA', 'sport'],
+  ['Foot', 'sport'], ['Basket', 'sport'],
+  ['Tennis', 'sport'], ['Padel', 'sport'],
+  ['Course à pied', 'sport'], ['Boxe', 'sport'], ['MMA', 'sport'],
+  ['F1', 'sport'], ['Rugby', 'sport'], ['CrossFit', 'sport'],
 
   // CULTURE FR
   ['Koh-Lanta', 'culture'], ['Top Chef', 'culture'],
@@ -123,8 +109,9 @@ export const DEFAULT_CARDS = [
   // MODE
   ['Crocs', 'mode'], ['Costume cintré', 'mode'],
   ['Survêt assorti', 'mode'], ['Sac Vuitton', 'mode'],
-  ['Tatouage tribal', 'mode'], ['Doudoune Moncler', 'mode'],
   ['Air Force 1', 'mode'], ['Mocassins sans chaussettes', 'mode'],
+  ['Chaussettes-claquettes', 'mode'], ['Chemise hawaïenne', 'mode'],
+  ['Look gothique', 'mode'], ['Streetwear', 'mode'],
 
   // JEUX VIDÉO
   ['Mario Kart', 'gaming'], ['GTA V', 'gaming'], ['Fortnite', 'gaming'],
@@ -152,6 +139,7 @@ export const DEFAULT_CARDS = [
   ['Al Pacino', 'celebrite'], ['Denzel Washington', 'celebrite'],
   ['Steven Spielberg', 'celebrite'], ['Martin Scorsese', 'celebrite'],
   ['Clint Eastwood', 'celebrite'], ['Pedro Pascal', 'celebrite'],
+  ['Quentin Tarantino', 'celebrite'],
 
   // POLITIQUE
   ['Barack Obama', 'politique'], ['Donald Trump', 'politique'],
@@ -159,24 +147,13 @@ export const DEFAULT_CARDS = [
   ['Marine Le Pen', 'politique'], ['Éric Zemmour', 'politique'],
 
   // COQUIN
-  ['Tirer les cheveux', 'coquin'], ['Yeux bandés', 'coquin'],
-  ['Mains attachées au lit', 'coquin'], ['Mordre la lèvre', 'coquin'],
-  ['Souffler dans le cou', 'coquin'], ["Mordiller l'oreille", 'coquin'],
-  ['Massage avec happy end', 'coquin'], ['Slow collé-serré au lit', 'coquin'],
   ['Strip-tease', 'coquin'], ['Lingerie noire fine', 'coquin'],
-  ['Sexe sous la douche', 'coquin'], ['Bain coquin à deux', 'coquin'],
-  ['Coup du matin', 'coquin'], ['Coup du soir', 'coquin'],
-  ['Chuchoter cru à l\'oreille', 'coquin'], ['Se fixer pendant l\'acte', 'coquin'],
-  ['Sexto explicite', 'coquin'], ['Vocal coquin envoyé', 'coquin'],
-  ['Photo coquine', 'coquin'], ['Utiliser un sextoy', 'coquin'],
-  ['Jeu de rôle coquin', 'coquin'], ['Avoir le contrôle au lit', 'coquin'],
-  ['Donner les rênes au lit', 'coquin'], ['Se regarder dans le miroir', 'coquin'],
-  ['Quickie sur la banquette', 'coquin'], ["Quickie dans l'ascenseur", 'coquin'],
-  ['Nuit torride à l\'hôtel', 'coquin'], ['Direct au plat principal', 'coquin'],
-  ['Préliminaires interminables', 'coquin'], ['Confesser un fantasme', 'coquin'],
-  ['Sieste coquine à deux', 'coquin'], ['Se faire réveiller câlinement', 'coquin'],
-  ['Sexe lent et sensuel', 'coquin'], ['Coup sauvage', 'coquin'],
-  ['Se laisser guider au lit', 'coquin'], ['Tout diriger au lit', 'coquin'],
+  ['Se fixer pendant l\'acte', 'coquin'], ['Préliminaires interminables', 'coquin'],
+  ['Sexe lent et sensuel', 'coquin'], ['Confesser un fantasme', 'coquin'],
+  ['Sieste coquine à deux', 'coquin'], ['Sexe sous la douche', 'coquin'],
+  ['Coup du matin', 'coquin'], ['Vocal coquin envoyé', 'coquin'],
+  ['Photo coquine', 'coquin'], ['Se regarder dans le miroir', 'coquin'],
+  ['Massage sensuel', 'coquin'],
 ].map(([t, cat]) => ({ t, cat, spicy: cat === 'coquin' }));
 
 export const CATEGORIES = [
