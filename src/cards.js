@@ -2,21 +2,25 @@ export const DEFAULT_CARDS = [
   // BOUFFE
   ['Pizza', 'bouffe'], ['Sushis', 'bouffe'], ['Kebab', 'bouffe'],
   ['Tacos', 'bouffe'], ['Burger', 'bouffe'], ['Pâtes carbo', 'bouffe'],
-  ['Coca', 'bouffe'], ['Café', 'bouffe'],
   ['Croissant', 'bouffe'], ['Pain au choc', 'bouffe'],
   ['Frites', 'bouffe'],
   ['Glace vanille', 'bouffe'],
   ['Nutella', 'bouffe'], ['Camembert', 'bouffe'], ['Roquefort', 'bouffe'],
-  ['Vin rouge', 'bouffe'], ['Vin blanc', 'bouffe'], ['Bière fraîche', 'bouffe'],
-  ['Cocktail', 'bouffe'], ['Ramen', 'bouffe'],
+  ['Ramen', 'bouffe'],
   ['Crêpe sucrée', 'bouffe'], ['Raclette', 'bouffe'], ['Fondue', 'bouffe'],
   ['Couscous', 'bouffe'], ['Tajine', 'bouffe'], ['Resto étoilé', 'bouffe'],
   ['McDo', 'bouffe'], ['Brunch', 'bouffe'], ['Burrata', 'bouffe'],
-  ['Tiramisu', 'bouffe'], ['Champagne', 'bouffe'],
-  ['Whisky', 'bouffe'], ['Cheesecake', 'bouffe'], ['Poke bowl', 'bouffe'],
+  ['Tiramisu', 'bouffe'],
+  ['Cheesecake', 'bouffe'], ['Poke bowl', 'bouffe'],
   ['Cookies', 'bouffe'], ['Blanquette de veau', 'bouffe'],
   ['Bœuf bourguignon', 'bouffe'], ['Cassoulet', 'bouffe'],
   ['Gratin dauphinois', 'bouffe'], ['Poulet/frites/Walker Texas Ranger', 'bouffe'],
+
+  // BOISSON
+  ['Coca', 'boisson'], ['Café', 'boisson'], ['Vin rouge', 'boisson'],
+  ['Vin blanc', 'boisson'], ['Bière fraîche', 'boisson'], ['Cocktail', 'boisson'],
+  ['Champagne', 'boisson'], ['Whisky', 'boisson'], ['Red Bull', 'boisson'],
+  ['Bubble tea', 'boisson'],
 
   // VOYAGES
   ['Plage déserte', 'voyages'], ['Montagne enneigée', 'voyages'],
@@ -48,7 +52,7 @@ export const DEFAULT_CARDS = [
   ['The Office', 'cine'], ['Squid Game', 'cine'], ['Casa de Papel', 'cine'],
   ['Stranger Things', 'cine'], ['Lupin', 'cine'], ['Bureau des Légendes', 'cine'],
   ['Inception', 'cine'], ['Interstellar', 'cine'], ['Tarantino', 'cine'],
-  ['Scorsese', 'cine'], ['OSS 117', 'cine'], ['Les Tuche', 'cine'],
+  ['OSS 117', 'cine'], ['Les Tuche', 'cine'],
   ['Intouchables', 'cine'], ['Amélie Poulain', 'cine'], ['Studio Ghibli', 'cine'],
   ['Pixar', 'cine'],
 
@@ -57,7 +61,7 @@ export const DEFAULT_CARDS = [
   ['Instagram', 'tech'], ['Twitter/X', 'tech'], ['Snapchat', 'tech'],
   ['BeReal', 'tech'], ['Mac', 'tech'], ['ChatGPT', 'tech'],
   ['Claude', 'tech'], ['Tinder', 'tech'], ['Hinge', 'tech'],
-  ['Uber', 'tech'], ['Deliveroo', 'tech'], ['UberEats', 'tech'],
+  ['Deliveroo', 'tech'], ['UberEats', 'tech'],
   ['YouTube', 'tech'], ['Twitch', 'tech'], ['AirPods', 'tech'],
   ['Casque audio', 'tech'], ['Discord', 'tech'], ['WhatsApp', 'tech'],
 
@@ -68,7 +72,7 @@ export const DEFAULT_CARDS = [
   ['Vélo', 'lifestyle'], ['Maison à la campagne', 'lifestyle'],
   ['Appart en ville', 'lifestyle'], ['Tatouage', 'lifestyle'],
   ['Piercing', 'lifestyle'], ['Méditation', 'lifestyle'], ['Muscu', 'lifestyle'],
-  ['Yoga', 'lifestyle'], ['Café au lait', 'lifestyle'],
+  ['Yoga', 'lifestyle'],
 
   // RELATIONS
   ['Amour passion', 'relations'], ['Amour stable', 'relations'],
@@ -172,6 +176,7 @@ export const DEFAULT_CARDS = [
 
 export const CATEGORIES = [
   { id: 'bouffe', label: 'Bouffe', emoji: '🍕' },
+  { id: 'boisson', label: 'Boisson', emoji: '🥤' },
   { id: 'voyages', label: 'Voyages', emoji: '✈️' },
   { id: 'musique', label: 'Musique', emoji: '🎵' },
   { id: 'cine', label: 'Ciné & Séries', emoji: '🎬' },
