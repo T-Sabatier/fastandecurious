@@ -153,6 +153,11 @@ export const DEFAULT_CARDS = [
   ['Steven Spielberg', 'celebrite'], ['Martin Scorsese', 'celebrite'],
   ['Clint Eastwood', 'celebrite'], ['Pedro Pascal', 'celebrite'],
 
+  // POLITIQUE
+  ['Barack Obama', 'politique'], ['Donald Trump', 'politique'],
+  ['Emmanuel Macron', 'politique'], ['Jean-Luc Mélenchon', 'politique'],
+  ['Marine Le Pen', 'politique'], ['Éric Zemmour', 'politique'],
+
   // COQUIN
   ['Tirer les cheveux', 'coquin'], ['Yeux bandés', 'coquin'],
   ['Mains attachées au lit', 'coquin'], ['Mordre la lèvre', 'coquin'],
@@ -191,6 +196,7 @@ export const CATEGORIES = [
   { id: 'gaming', label: 'Jeux vidéo', emoji: '🎮' },
   { id: 'cartoons', label: 'Dessins animés', emoji: '🧸' },
   { id: 'celebrite', label: 'Célébrité', emoji: '⭐' },
+  { id: 'politique', label: 'Politique', emoji: '🏛️' },
   { id: 'coquin', label: 'Coquin', emoji: '🌶️', spicy: true },
 ];
 
