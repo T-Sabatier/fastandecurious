@@ -92,13 +92,19 @@ export async function cleanupStaleDefaults() {
   const existing = snap.val() || {};
   const currentIds = new Set(DEFAULT_CARDS.map((c) => defaultId(c.cat, c.t)));
   const updates = {};
+  const tombstones = {};
   for (const id of Object.keys(existing)) {
     if (id.startsWith('def_') && !currentIds.has(id)) {
       updates[id] = null;
+      // Pierre tombale : les clients qui tournent encore sur une VIEILLE
+      // version de l'app (cache PWA) re-seedent leur ancienne liste de
+      // defauts — sans ca, les cartes purgees ressuscitent.
+      tombstones[id] = true;
     }
   }
   const n = Object.keys(updates).length;
   if (n > 0) {
+    await update(ref(db, DELETED_DEFAULTS_PATH), tombstones);
     await update(ref(db, CARDS_PATH), updates);
   }
   return n;
