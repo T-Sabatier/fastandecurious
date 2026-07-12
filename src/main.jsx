@@ -16,11 +16,15 @@ window.addEventListener('beforeinstallprompt', (e) => {
 
 // On attend la connexion anonyme avant de monter l'app : les abonnements
 // Firebase (rooms, cartes) partiraient sinon avant l'auth et seraient refuses
-// par les regles de securite. Quasi instantane (session persistee en local).
-authReady.then(() => {
+// par les regles de securite. Quasi instantane (session persistee en local),
+// et de toute facon borne a 5s (garde-fou dans firebase.js) : l'app se monte
+// TOUJOURS, meme si l'auth echoue.
+function mount() {
   ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
       <App />
     </React.StrictMode>
   );
-});
+}
+
+authReady.then(mount, mount);

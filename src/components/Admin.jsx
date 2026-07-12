@@ -32,6 +32,7 @@ export default function Admin() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
+    if (!auth) return undefined;
     return onAuthStateChanged(auth, setUser);
   }, []);
 
@@ -39,6 +40,10 @@ export default function Admin() {
   const unlocked = user && !user.isAnonymous;
 
   async function handleLogin() {
+    if (!auth) {
+      setAuthError('Auth Firebase indisponible (clé API invalide ?)');
+      return;
+    }
     if (!emailInput.trim() || !passwordInput) {
       setAuthError('Email et mot de passe requis');
       return;

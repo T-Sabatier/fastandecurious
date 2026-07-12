@@ -14,30 +14,62 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const db = getDatabase(app);
-export const auth = getAuth(app);
+
+// getAuth() LEVE une exception si la cle API est absente/invalide (la RTDB,
+// elle, tolere une cle invalide). On ne laisse pas ce cas bloquer toute
+// l'app : auth vaut null et l'app se lance sans authentification.
+let authInstance = null;
+try {
+  authInstance = getAuth(app);
+} catch (e) {
+  console.warn('[auth] Initialisation Auth impossible :', e.code || e.message);
+}
+export const auth = authInstance;
 
 // Connexion anonyme automatique : les regles de securite exigent auth != null.
 // Invisible pour le joueur (aucun compte a creer). La session persiste en
 // local, donc pas de re-connexion reseau a chaque ouverture.
 // Resolue des qu'un utilisateur (anonyme ou admin) est disponible.
-export const authReady = new Promise((resolve) => {
+// Garde-fou : quoi qu'il arrive (adblocker, reseau lent, auth desactivee),
+// on rend la main au bout de 5s pour ne jamais bloquer l'app sur un ecran vide.
+const authAttempt = new Promise((resolve) => {
+  if (!auth) {
+    resolve(null);
+    return;
+  }
   let settled = false;
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      if (!settled) {
-        settled = true;
-        resolve(user);
-      }
-      return;
+  const settle = (user) => {
+    if (!settled) {
+      settled = true;
+      resolve(user);
     }
-    signInAnonymously(auth).catch((e) => {
-      // Offline au premier lancement ou auth anonyme non activee dans la
-      // console : on lance quand meme l'app, les regles refuseront les acces.
-      console.warn('Connexion anonyme impossible :', e.message);
-      if (!settled) {
-        settled = true;
-        resolve(null);
+  };
+  onAuthStateChanged(
+    auth,
+    (user) => {
+      if (user) {
+        settle(user);
+        return;
       }
-    });
-  });
+      signInAnonymously(auth).catch((e) => {
+        // Offline au premier lancement ou auth anonyme non activee dans la
+        // console : on lance quand meme l'app, les regles refuseront les acces.
+        console.warn('[auth] Connexion anonyme impossible :', e.code || e.message);
+        settle(null);
+      });
+    },
+    (e) => {
+      console.warn('[auth] Erreur onAuthStateChanged :', e.code || e.message);
+      settle(null);
+    }
+  );
 });
+
+const authTimeout = new Promise((resolve) => {
+  setTimeout(() => {
+    console.warn('[auth] Timeout de connexion (5s), lancement sans auth');
+    resolve(null);
+  }, 5000);
+});
+
+export const authReady = Promise.race([authAttempt, authTimeout]);
