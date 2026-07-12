@@ -14,48 +14,25 @@ export function subscribeCategories(cb) {
   });
 }
 
+// Seed de BOOTSTRAP uniquement : remplit une base totalement VIDE avec les
+// categories par defaut du code (premiere installation). Si la base contient
+// la moindre categorie, ne touche a RIEN — l'admin est la seule source de
+// verite, rien ne s'ajoute ou ne se supprime automatiquement.
 let inFlight = null;
 export async function seedCategoriesIfEmpty() {
   if (inFlight) return inFlight;
   inFlight = (async () => {
     const catsSnap = await get(ref(db, CATEGORIES_PATH));
-    let tombstones = new Set();
-    try {
-      const deletedSnap = await get(ref(db, DELETED_PATH));
-      tombstones = new Set(Object.keys(deletedSnap.val() || {}));
-    } catch {
-      // Permission denied, on continue sans tombstones
-    }
-
-    if (!catsSnap.exists()) {
-      const obj = {};
-      DEFAULT_CATEGORIES.forEach((c) => {
-        if (!tombstones.has(c.id)) {
-          obj[c.id] = {
-            label: c.label,
-            emoji: c.emoji,
-            ...(c.spicy ? { spicy: true } : {}),
-          };
-        }
-      });
-      await set(ref(db, CATEGORIES_PATH), obj);
-      return;
-    }
-
-    const existing = catsSnap.val() || {};
-    const updates = {};
+    if (catsSnap.exists()) return;
+    const obj = {};
     DEFAULT_CATEGORIES.forEach((c) => {
-      if (!existing[c.id] && !tombstones.has(c.id)) {
-        updates[c.id] = {
-          label: c.label,
-          emoji: c.emoji,
-          ...(c.spicy ? { spicy: true } : {}),
-        };
-      }
+      obj[c.id] = {
+        label: c.label,
+        emoji: c.emoji,
+        ...(c.spicy ? { spicy: true } : {}),
+      };
     });
-    if (Object.keys(updates).length > 0) {
-      await update(ref(db, CATEGORIES_PATH), updates);
-    }
+    await set(ref(db, CATEGORIES_PATH), obj);
   })();
   try {
     await inFlight;
@@ -78,16 +55,8 @@ export async function setCategoryPack(id, pack) {
   await update(ref(db, `${CATEGORIES_PATH}/${id}`), { pack: pack || null });
 }
 
+// Suppression definitive : le seed ne tournant que sur base vide, une
+// categorie supprimee ne revient jamais.
 export async function deleteCategory(id) {
-  const isDefault = DEFAULT_CATEGORIES.some((c) => c.id === id);
-  if (isDefault) {
-    try {
-      await set(ref(db, `${DELETED_PATH}/${id}`), true);
-    } catch (e) {
-      console.warn(
-        `Tombstone categorie failed (regles Firebase ?). ${e.message}`
-      );
-    }
-  }
   await remove(ref(db, `${CATEGORIES_PATH}/${id}`));
 }

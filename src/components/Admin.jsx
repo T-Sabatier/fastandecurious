@@ -6,8 +6,6 @@ import {
   addCard,
   updateCard,
   deleteCard,
-  getStaleDefaults,
-  purgeStaleDefaults,
 } from '../cardsStore';
 import {
   subscribeCategories,
@@ -201,19 +199,8 @@ function Dashboard({ onLogout }) {
   const [catsExpanded, setCatsExpanded] = useState(false);
 
   useEffect(() => {
-    // Seed puis purge automatique : supprime (avec tombstone) les cartes par
-    // defaut obsoletes — anciennes versions renommees/deplacees que de vieux
-    // clients en cache pourraient avoir re-seedees. Silencieux et idempotent.
-    seedDefaultsIfEmpty()
-      .then(() => getStaleDefaults())
-      .then((stale) => {
-        if (stale.length > 0) {
-          console.log(`[admin] purge de ${stale.length} carte(s) obsolete(s)`, stale.map((s) => `${s.t} (${s.cat})`));
-          return purgeStaleDefaults(stale);
-        }
-        return 0;
-      })
-      .catch(() => {});
+    // Seeds de bootstrap uniquement (base vide) — sinon aucun effet.
+    seedDefaultsIfEmpty().catch(() => {});
     seedCategoriesIfEmpty().catch(() => {});
     const unsubCards = subscribeCards(setCards);
     const unsubCats = subscribeCategories(setCategories);
