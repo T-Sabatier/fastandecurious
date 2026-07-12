@@ -201,7 +201,19 @@ function Dashboard({ onLogout }) {
   const [catsExpanded, setCatsExpanded] = useState(false);
 
   useEffect(() => {
-    seedDefaultsIfEmpty().catch(() => {});
+    // Seed puis purge automatique : supprime (avec tombstone) les cartes par
+    // defaut obsoletes — anciennes versions renommees/deplacees que de vieux
+    // clients en cache pourraient avoir re-seedees. Silencieux et idempotent.
+    seedDefaultsIfEmpty()
+      .then(() => getStaleDefaults())
+      .then((stale) => {
+        if (stale.length > 0) {
+          console.log(`[admin] purge de ${stale.length} carte(s) obsolete(s)`, stale.map((s) => `${s.t} (${s.cat})`));
+          return purgeStaleDefaults(stale);
+        }
+        return 0;
+      })
+      .catch(() => {});
     seedCategoriesIfEmpty().catch(() => {});
     const unsubCards = subscribeCards(setCards);
     const unsubCats = subscribeCategories(setCategories);
@@ -311,42 +323,6 @@ function Dashboard({ onLogout }) {
       setNewCatLabel('');
       setNewCatEmoji('');
       setNewCatSpicy(false);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function handleCleanup() {
-    if (busy) return;
-    setBusy(true);
-    try {
-      const stale = await getStaleDefaults();
-      if (stale.length === 0) {
-        alert('Aucune carte obsolète trouvée 👌');
-        return;
-      }
-      // Resume detaille de ce qui va etre supprime, AVANT confirmation.
-      const catLabel = (id) => {
-        const c = categories.find((x) => x.id === id);
-        return c ? `${c.emoji} ${c.label}` : id;
-      };
-      const MAX_LINES = 25;
-      const lines = stale
-        .slice(0, MAX_LINES)
-        .map((s) => `  • ${s.t}  (${catLabel(s.cat)})`);
-      if (stale.length > MAX_LINES) {
-        lines.push(`  … et ${stale.length - MAX_LINES} autre(s)`);
-      }
-      const ok = confirm(
-        `${stale.length} carte(s) obsolète(s) — anciennes versions de cartes renommées, déplacées ou retirées du deck par défaut :\n\n${lines.join(
-          '\n'
-        )}\n\nLes supprimer définitivement ? (Les cartes ajoutées via cet admin ne sont pas concernées.)`
-      );
-      if (!ok) return;
-      const n = await purgeStaleDefaults(stale);
-      alert(`${n} carte(s) supprimée(s) ✅`);
-    } catch (e) {
-      alert(`Erreur pendant la purge : ${e.message}`);
     } finally {
       setBusy(false);
     }
@@ -616,15 +592,6 @@ function Dashboard({ onLogout }) {
               </option>
             ))}
           </select>
-          <button
-            onClick={handleCleanup}
-            disabled={busy}
-            title="Supprime les cartes par défaut obsolètes (renommées ou déplacées de catégorie dans le code)"
-            className="border-4 border-black bg-white px-3 py-2 disabled:opacity-40 active:translate-x-[2px] active:translate-y-[2px]"
-            style={{ boxShadow: '3px 3px 0 #000', fontFamily: '"Space Mono", monospace' }}
-          >
-            <span className="text-[10px] uppercase tracking-widest">🧹 Purger obsolètes</span>
-          </button>
         </div>
 
         <div className="space-y-2 pb-10">
