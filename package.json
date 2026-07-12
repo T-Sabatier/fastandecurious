@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "gen-icons": "node scripts/gen-icons.mjs"
+    "gen-icons": "node scripts/gen-icons.mjs",
+    "gen-native-assets": "node scripts/gen-native-assets.mjs && npx @capacitor/assets generate --android"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.1",
