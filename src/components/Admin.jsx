@@ -14,40 +14,76 @@ import {
   deleteCategory,
 } from '../categoriesStore';
 import { Lock, Plus, Pencil, Trash2, Check, X, ArrowLeft } from 'lucide-react';
+import { auth } from '../firebase';
+import {
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+} from 'firebase/auth';
 
-const ADMIN_CODE = import.meta.env.VITE_ADMIN_CODE || '';
-
+// L'acces admin passe par Firebase Auth (email/mot de passe) : la verification
+// est faite COTE SERVEUR par les regles de securite (voir database.rules.json,
+// noeud /admins). Un simple code cote client serait lisible dans le bundle JS.
 export default function Admin() {
-  const [unlocked, setUnlocked] = useState(false);
-  const [codeInput, setCodeInput] = useState('');
-  const [codeError, setCodeError] = useState('');
+  const [user, setUser] = useState(null);
+  const [emailInput, setEmailInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    return onAuthStateChanged(auth, setUser);
+  }, []);
+
+  // Les joueurs sont connectes anonymement : seul un compte email = admin.
+  const unlocked = user && !user.isAnonymous;
+
+  async function handleLogin() {
+    if (!emailInput.trim() || !passwordInput) {
+      setAuthError('Email et mot de passe requis');
+      return;
+    }
+    setBusy(true);
+    setAuthError('');
+    try {
+      await signInWithEmailAndPassword(auth, emailInput.trim(), passwordInput);
+    } catch (e) {
+      setAuthError(
+        e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password'
+          ? 'Identifiants incorrects'
+          : `Connexion impossible (${e.code || e.message})`
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
 
   if (!unlocked) {
     return (
       <LockScreen
-        codeInput={codeInput}
-        setCodeInput={setCodeInput}
-        codeError={codeError}
-        onSubmit={() => {
-          if (!ADMIN_CODE) {
-            setCodeError("Aucun code admin configuré (VITE_ADMIN_CODE)");
-            return;
-          }
-          if (codeInput === ADMIN_CODE) {
-            setUnlocked(true);
-            setCodeError('');
-          } else {
-            setCodeError('Code incorrect');
-          }
-        }}
+        emailInput={emailInput}
+        setEmailInput={setEmailInput}
+        passwordInput={passwordInput}
+        setPasswordInput={setPasswordInput}
+        codeError={authError}
+        busy={busy}
+        onSubmit={handleLogin}
       />
     );
   }
 
-  return <Dashboard />;
+  return <Dashboard onLogout={() => signOut(auth)} />;
 }
 
-function LockScreen({ codeInput, setCodeInput, codeError, onSubmit }) {
+function LockScreen({
+  emailInput,
+  setEmailInput,
+  passwordInput,
+  setPasswordInput,
+  codeError,
+  busy,
+  onSubmit,
+}) {
   return (
     <div style={{ backgroundColor: YELLOW, minHeight: '100vh' }} className="text-black">
       <div className="max-w-md mx-auto px-5 py-10">
@@ -93,25 +129,36 @@ function LockScreen({ codeInput, setCodeInput, codeError, onSubmit }) {
               style={{ fontFamily: '"Space Mono", monospace' }}
               className="text-[10px] uppercase tracking-widest"
             >
-              Code admin
+              Connexion admin
             </span>
           </div>
           <input
+            type="email"
+            value={emailInput}
+            onChange={(e) => setEmailInput(e.target.value)}
+            placeholder="admin@email.com"
+            autoComplete="username"
+            className="w-full border-4 border-black bg-white px-3 py-3 outline-none text-lg mb-3"
+            style={{ boxShadow: '4px 4px 0 #000' }}
+          />
+          <input
             type="password"
-            value={codeInput}
-            onChange={(e) => setCodeInput(e.target.value)}
+            value={passwordInput}
+            onChange={(e) => setPasswordInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
             placeholder="••••••••"
+            autoComplete="current-password"
             className="w-full border-4 border-black bg-white px-3 py-3 outline-none text-lg mb-3"
             style={{ boxShadow: '4px 4px 0 #000' }}
           />
           <button
             onClick={onSubmit}
-            className="w-full border-4 border-black bg-black text-white py-3 active:translate-x-[2px] active:translate-y-[2px]"
+            disabled={busy}
+            className="w-full border-4 border-black bg-black text-white py-3 active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-60"
             style={{ boxShadow: '4px 4px 0 #000' }}
           >
             <span style={{ fontFamily: '"Anton", sans-serif' }} className="text-xl uppercase">
-              Entrer
+              {busy ? 'Connexion…' : 'Entrer'}
             </span>
           </button>
           {codeError && (
@@ -125,7 +172,7 @@ function LockScreen({ codeInput, setCodeInput, codeError, onSubmit }) {
   );
 }
 
-function Dashboard() {
+function Dashboard({ onLogout }) {
   const [cards, setCards] = useState([]);
   const [categories, setCategories] = useState([]);
   const [filterCat, setFilterCat] = useState('all');
@@ -292,11 +339,24 @@ function Dashboard() {
               Retour au jeu
             </span>
           </button>
-          <div
-            style={{ fontFamily: '"Anton", sans-serif' }}
-            className="text-2xl uppercase"
-          >
-            Admin · Cartes
+          <div className="flex items-center gap-3">
+            <div
+              style={{ fontFamily: '"Anton", sans-serif' }}
+              className="text-2xl uppercase"
+            >
+              Admin · Cartes
+            </div>
+            <button
+              onClick={onLogout}
+              title="Se déconnecter"
+              className="border-2 border-black bg-white px-2 py-1"
+              style={{
+                fontFamily: '"Space Mono", monospace',
+                boxShadow: '2px 2px 0 #000',
+              }}
+            >
+              <span className="text-[10px] uppercase tracking-widest">Sortir</span>
+            </button>
           </div>
           <div className="w-14" />
         </div>

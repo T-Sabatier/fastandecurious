@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
+import { authReady } from './firebase';
 import './index.css';
 
 // Capture l'event d'installation le plus tôt possible : il peut se declencher
@@ -13,8 +14,13 @@ window.addEventListener('beforeinstallprompt', (e) => {
   window.dispatchEvent(new Event('pwa-installable'));
 });
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+// On attend la connexion anonyme avant de monter l'app : les abonnements
+// Firebase (rooms, cartes) partiraient sinon avant l'auth et seraient refuses
+// par les regles de securite. Quasi instantane (session persistee en local).
+authReady.then(() => {
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+});

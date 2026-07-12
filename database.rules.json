@@ -1,0 +1,56 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "rooms": {
+      ".read": "auth != null",
+      ".indexOn": ["createdAt"],
+
+      "$code": {
+        ".write": "auth != null && $code.matches(/^[A-HJ-NP-Z2-9]{4}$/)",
+        ".validate": "newData.hasChildren(['createdAt', 'host', 'players', 'phase'])",
+
+        "createdAt": { ".validate": "newData.isNumber()" },
+        "host": { ".validate": "newData.isString()" },
+        "phase": { ".validate": "newData.isString()" },
+
+        "players": {
+          "$playerId": {
+            "name": { ".validate": "newData.isString() && newData.val().length <= 30" },
+            "score": { ".validate": "newData.isNumber()" }
+          }
+        }
+      }
+    },
+
+    "cards": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()",
+      "$cardId": {
+        "t": { ".validate": "newData.isString() && newData.val().length <= 80" },
+        "cat": { ".validate": "newData.isString() && newData.val().length <= 40" }
+      }
+    },
+
+    "categories": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
+    },
+
+    "deletedDefaults": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
+    },
+
+    "deletedCategories": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
+    },
+
+    "admins": {
+      ".read": false,
+      ".write": false
+    }
+  }
+}
