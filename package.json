@@ -10,6 +10,10 @@
     "gen-icons": "node scripts/gen-icons.mjs"
   },
   "dependencies": {
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/app": "^8.1.0",
+    "@capacitor/cli": "^8.4.1",
+    "@capacitor/core": "^8.4.1",
     "firebase": "^10.7.1",
     "lucide-react": "^0.383.0",
     "qrcode.react": "^4.2.0",

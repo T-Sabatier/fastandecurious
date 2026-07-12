@@ -1,0 +1,8 @@
+{
+  "appId": "com.snaptap.game",
+  "appName": "Snap Tap",
+  "webDir": "dist",
+  "android": {
+    "backgroundColor": "#FFE600"
+  }
+}

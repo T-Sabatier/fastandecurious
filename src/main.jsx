@@ -1,8 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { Capacitor } from '@capacitor/core';
+import { App as CapacitorApp } from '@capacitor/app';
 import App from './App.jsx';
 import { authReady } from './firebase';
 import './index.css';
+
+// App native Android : le bouton retour systeme minimise l'app au lieu de la
+// tuer — on ne perd jamais une partie en cours (l'etat vit dans Firebase de
+// toute facon, mais ca evite le rechargement complet + la deconnexion visuelle).
+if (Capacitor.isNativePlatform()) {
+  CapacitorApp.addListener('backButton', () => {
+    CapacitorApp.minimizeApp();
+  });
+}
 
 // Capture l'event d'installation le plus tôt possible : il peut se declencher
 // avant que le composant InstallButton soit monte (ex: sur la Home, avant le

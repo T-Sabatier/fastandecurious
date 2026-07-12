@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Download, Share, X } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
 import { YELLOW } from '../cards';
 
 function isStandalone() {
   if (typeof window === 'undefined') return false;
   return (
+    // App native (Capacitor) : on est deja "installe", pas de bouton
+    Capacitor.isNativePlatform() ||
     window.matchMedia?.('(display-mode: standalone)').matches ||
     window.navigator.standalone === true
   );
