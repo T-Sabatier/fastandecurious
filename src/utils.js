@@ -1,3 +1,6 @@
+// URL publique du jeu (QR codes, liens de partage depuis l'app native).
+export const PUBLIC_URL = 'https://snap-tap.vercel.app';
+
 // Duree de vie max d'une room (lobby OU partie en cours). Au-dela, la room est
 // consideree comme abandonnee et supprimee — meme en pleine partie.
 export const ROOM_TTL_MS = 4 * 60 * 60 * 1000; // 4h

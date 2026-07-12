@@ -1,6 +1,7 @@
 import { ref, set, remove, update } from 'firebase/database';
+import { Capacitor } from '@capacitor/core';
 import { db } from '../firebase';
-import { shuffle, getStoredName, setStoredName } from '../utils';
+import { shuffle, getStoredName, setStoredName, PUBLIC_URL } from '../utils';
 import { HAND_SIZE, YELLOW, PINK, PLAYER_COLORS, SORTS, colorHex, colorFg } from '../cards';
 import { subscribeCards, seedDefaultsIfEmpty } from '../cardsStore';
 import { subscribeCategories, seedCategoriesIfEmpty } from '../categoriesStore';
@@ -17,8 +18,12 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
   const myName = (me?.name || '').trim();
   const [nameInput, setNameInput] = useState(() => me?.name || getStoredName());
   const allNamed = players.every((p) => (p.name || '').trim().length > 0);
-  const joinUrl =
-    typeof window !== 'undefined'
+  // Dans l'app native, window.location.origin vaut capacitor://localhost :
+  // le QR doit toujours pointer vers l'URL publique (fallback navigateur pour
+  // ceux qui n'ont pas l'app ; App Link ouvre l'app chez ceux qui l'ont).
+  const joinUrl = Capacitor.isNativePlatform()
+    ? `${PUBLIC_URL}/?room=${roomCode}`
+    : typeof window !== 'undefined'
       ? `${window.location.origin}/?room=${roomCode}`
       : '';
   const [allCards, setAllCards] = useState([]);

@@ -18,6 +18,14 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- App Links : https://snap-tap.vercel.app/?room=CODE ouvre l'app
+                 (vérifié via /.well-known/assetlinks.json sur le domaine) -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="snap-tap.vercel.app" />
+            </intent-filter>
         </activity>
 
         <provider

@@ -13,6 +13,18 @@ if (Capacitor.isNativePlatform()) {
   CapacitorApp.addListener('backButton', () => {
     CapacitorApp.minimizeApp();
   });
+
+  // App Link (QR scanne / lien https://snap-tap.vercel.app/?room=CODE tape
+  // alors que l'app est installee) : on recharge la webview avec ?room=CODE,
+  // la logique d'auto-join de App.jsx fait le reste.
+  CapacitorApp.addListener('appUrlOpen', ({ url }) => {
+    try {
+      const room = new URL(url).searchParams.get('room');
+      if (room) window.location.href = `/?room=${encodeURIComponent(room)}`;
+    } catch {
+      // URL invalide : on ignore
+    }
+  });
 }
 
 // Capture l'event d'installation le plus tôt possible : il peut se declencher
