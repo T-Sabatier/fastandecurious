@@ -64,12 +64,18 @@ export async function seedCategoriesIfEmpty() {
   }
 }
 
-export async function addCategory({ id, label, emoji, spicy }) {
+export async function addCategory({ id, label, emoji, spicy, pack }) {
   await set(ref(db, `${CATEGORIES_PATH}/${id}`), {
     label,
     emoji,
     ...(spicy ? { spicy: true } : {}),
+    ...(pack ? { pack } : {}),
   });
+}
+
+// Affecte une categorie a un pack premium (null = gratuite).
+export async function setCategoryPack(id, pack) {
+  await update(ref(db, `${CATEGORIES_PATH}/${id}`), { pack: pack || null });
 }
 
 export async function deleteCategory(id) {

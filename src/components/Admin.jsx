@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { YELLOW, PINK } from '../cards';
+import { YELLOW, PINK, PACKS } from '../cards';
 import {
   subscribeCards,
   seedDefaultsIfEmpty,
@@ -12,6 +12,7 @@ import {
   seedCategoriesIfEmpty,
   addCategory,
   deleteCategory,
+  setCategoryPack,
 } from '../categoriesStore';
 import { Lock, Plus, Pencil, Trash2, Check, X, ArrowLeft } from 'lucide-react';
 import { auth } from '../firebase';
@@ -415,6 +416,21 @@ function Dashboard({ onLogout }) {
                       >
                         {n} cart{n > 1 ? 'es' : 'e'}
                       </span>
+                      <select
+                        value={c.pack || ''}
+                        onChange={(e) => setCategoryPack(c.id, e.target.value || null)}
+                        disabled={busy}
+                        title="Pack premium (vide = gratuite)"
+                        style={{ fontFamily: '"Space Mono", monospace' }}
+                        className="border-2 border-black bg-white text-[10px] uppercase px-1 py-1 max-w-[110px]"
+                      >
+                        <option value="">Gratuit</option>
+                        {PACKS.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.emoji} {p.label}
+                          </option>
+                        ))}
+                      </select>
                       <button
                         onClick={() => handleDeleteCat(c)}
                         disabled={busy}

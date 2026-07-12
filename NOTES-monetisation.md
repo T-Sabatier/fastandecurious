@@ -1,6 +1,36 @@
-# Notes monétisation — Fast & Curious
+# Notes monétisation — Snap Tap
 
 Réflexion stratégique sur les packs payants (à implémenter plus tard).
+
+## DÉCISION (12/07/2026) : freemium dès le lancement
+
+Le deck actuel (18 catégories / 252 cartes) est trop généreux pour être
+monétisable a posteriori. Règle d'or : ne JAMAIS retirer du gratuit → la
+structure freemium doit être en place au jour 1 du Play Store.
+
+- **Base gratuite (8 catégories ~130 cartes)** : Bouffe, Boisson, Ciné,
+  Musique, Sport, Voyages, Absurde, Lifestyle. Doit rester excellente seule.
+- **Packs premium ~1,99 €** :
+  - 🌶️ Pack Coquin (+18) : Coquin (à regonfler à ~20 cartes)
+  - ⭐ Pack Pop Culture : Célébrité, Jeux vidéo, Dessins animés, Tech
+  - 🇫🇷 Pack France : Culture FR, Politique
+  - ❤️ Pack Feelings : Relations, Nature, Mode
+- **👑 Tout débloquer : 7,99 €** (source de revenus principale attendue).
+- **Le verrou s'applique à l'hôte** : si l'hôte possède un pack, tout le
+  salon en profite (argument de vente, et techniquement simple : c'est
+  l'hôte qui coche les catégories du salon).
+- **Web aligné** : mêmes verrous côté web (catégories premium grisées),
+  achats dans l'app uniquement. Sinon le web devient le contournement.
+- **Multi-appareils (décidé 12/07/2026)** : un acheteur retrouve ses packs
+  sur le web via « Se connecter avec Google » (optionnel, Firebase Auth
+  provider Google). Achats liés au compte Google et stockés dans Firebase
+  (entitlements par UID), pas seulement en local. L'achat lui-même reste
+  in-app uniquement (règle Play Billing) ; le web consomme les droits.
+  Les joueurs non-acheteurs ne voient jamais d'écran de connexion.
+- Attentes réalistes : conversion 1-3 % des joueurs actifs. La priorité
+  reste la DISTRIBUTION (viralité multi-tel + web fallback gratuit).
+- Pas de pubs (interstitiel = ambiance de soirée tuée, bannière = ~1-2 €
+  RPM, RGPD en plus). Décision ferme.
 
 ## Principe de base : pack = nouvelle(s) catégorie(s), jamais d'ajout au deck gratuit
 - Un pack payant = **une (ou plusieurs) nouvelle(s) catégorie(s)** activable(s) via le toggle du salon.

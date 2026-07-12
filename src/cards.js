@@ -178,6 +178,18 @@ export const CATEGORIES = [
   { id: 'coquin', label: 'Coquin', emoji: '🌶️', spicy: true },
 ];
 
+// Packs premium : une categorie avec un champ `pack` (id ci-dessous) est
+// verrouillee pour les hotes qui ne possedent pas ce pack. Les PRIX vivent
+// dans Google Play Console (produits in-app du meme id), jamais ici.
+// `tout_debloquer` est le bundle qui donne acces a tous les packs.
+export const PACKS = [
+  { id: 'pack_coquin', label: 'Pack Coquin', emoji: '🌶️' },
+  { id: 'pack_popculture', label: 'Pack Pop Culture', emoji: '⭐' },
+  { id: 'pack_france', label: 'Pack France', emoji: '🇫🇷' },
+  { id: 'pack_feelings', label: 'Pack Feelings', emoji: '❤️' },
+];
+export const UNLOCK_ALL_ID = 'tout_debloquer';
+
 // Sorts (pouvoirs) — desactives par defaut, l'host les active dans le salon.
 // Chaque joueur en a 1 charge par partie pour chaque sort active.
 export const SORTS = [

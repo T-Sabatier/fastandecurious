@@ -5,6 +5,7 @@ import { shuffle, getStoredName, setStoredName, PUBLIC_URL } from '../utils';
 import { HAND_SIZE, YELLOW, PINK, PLAYER_COLORS, SORTS, colorHex, colorFg } from '../cards';
 import { subscribeCards, seedDefaultsIfEmpty } from '../cardsStore';
 import { subscribeCategories, seedCategoriesIfEmpty } from '../categoriesStore';
+import { subscribeMyPacks, ownsPack } from '../entitlements';
 import { ChevronRight, X, LogOut, Copy, Check } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useState, useEffect } from 'react';
@@ -28,10 +29,20 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
       : '';
   const [allCards, setAllCards] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
+  const [myPacks, setMyPacks] = useState({});
+
+  // Categorie premium verrouillee pour MOI (en tant qu'hote potentiel).
+  // Sans champ `pack`, une categorie est gratuite → jamais verrouillee.
+  const isLocked = (cat) => !!cat.pack && !ownsPack(myPacks, cat.pack);
 
   const storedCats = room.settings?.cats || {};
   const cats = Object.fromEntries(
-    allCategories.map((c) => [c.id, storedCats[c.id] ?? true])
+    allCategories.map((c) => [
+      c.id,
+      // L'hote ne peut pas jouer une categorie qu'il ne possede pas, meme si
+      // les settings de la room disaient true (defaut ou ancien hote).
+      isHost && isLocked(c) ? false : (storedCats[c.id] ?? true),
+    ])
   );
 
   useEffect(() => {
@@ -39,9 +50,11 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
     seedCategoriesIfEmpty().catch(() => {});
     const unsubCards = subscribeCards(setAllCards);
     const unsubCats = subscribeCategories(setAllCategories);
+    const unsubPacks = subscribeMyPacks(setMyPacks);
     return () => {
       unsubCards();
       unsubCats();
+      unsubPacks();
     };
   }, []);
 
@@ -52,6 +65,8 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
 
   async function toggleCat(id) {
     if (!isHost) return;
+    const cat = allCategories.find((c) => c.id === id);
+    if (cat && isLocked(cat)) return; // premium non possede : achat requis
     await set(ref(db, `rooms/${roomCode}/settings/cats/${id}`), !cats[id]);
   }
 
@@ -451,13 +466,14 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             {allCategories.map((cat) => {
-              const on = !!cats[cat.id];
+              const locked = isHost && isLocked(cat);
+              const on = !locked && !!cats[cat.id];
               const isSpicy = cat.spicy;
               return (
                 <button
                   key={cat.id}
                   onClick={() => toggleCat(cat.id)}
-                  disabled={!isHost}
+                  disabled={!isHost || locked}
                   style={{
                     backgroundColor: on && isSpicy ? PINK : '#FFF',
                     color: on && isSpicy ? '#FFF' : '#000',
@@ -467,7 +483,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
                   }}
                   className="border-4 border-black px-3 py-3 text-left flex items-center gap-2 active:translate-x-[2px] active:translate-y-[2px] disabled:cursor-not-allowed"
                 >
-                  <span className="text-xl">{cat.emoji}</span>
+                  <span className="text-xl">{locked ? '🔒' : cat.emoji}</span>
                   <span
                     style={{ fontFamily: '"Anton", sans-serif' }}
                     className="uppercase text-lg leading-none"
