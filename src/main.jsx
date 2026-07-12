@@ -16,8 +16,6 @@ if (Capacitor.isNativePlatform()) {
 
   // App Link (QR scanne / lien https://snap-tap.vercel.app/?room=CODE) : on
   // recharge la webview avec ?room=CODE, l'auto-join de App.jsx fait le reste.
-  // Garde anti-boucle : on ne navigue pas si la webview est deja sur ce code
-  // (getLaunchUrl renvoie la meme URL apres notre propre rechargement).
   const openRoomFromUrl = (url) => {
     try {
       const room = new URL(url).searchParams.get('room');
@@ -35,9 +33,17 @@ if (Capacitor.isNativePlatform()) {
 
   // Demarrage "a froid" : l'app a ete LANCEE par le lien — l'event appUrlOpen
   // est parti avant que ce code soit charge, on recupere l'URL de lancement.
-  CapacitorApp.getLaunchUrl().then((res) => {
-    if (res?.url) openRoomFromUrl(res.url);
-  });
+  // ATTENTION : getLaunchUrl renvoie l'URL d'origine pendant TOUTE la vie du
+  // process (y compris apres nos propres rechargements et apres un appUrlOpen
+  // plus recent) → on ne la consomme qu'UNE fois par session webview, sinon
+  // elle ecrase les liens suivants avec un vieux code room.
+  const LAUNCH_HANDLED = 'snaptap_launch_url_handled';
+  if (!sessionStorage.getItem(LAUNCH_HANDLED)) {
+    sessionStorage.setItem(LAUNCH_HANDLED, '1');
+    CapacitorApp.getLaunchUrl().then((res) => {
+      if (res?.url) openRoomFromUrl(res.url);
+    });
+  }
 }
 
 // Capture l'event d'installation le plus tôt possible : il peut se declencher
