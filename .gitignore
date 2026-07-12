@@ -7,3 +7,6 @@ dev-dist
 .DS_Store
 .vscode
 *.log
+
+# Identifiants admin locaux (outil d'edition du deck) — JAMAIS versionnes
+scripts/.admin-credentials.json

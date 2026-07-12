@@ -1,0 +1,162 @@
+// Outil d'édition du deck EN BASE (la source de vérité), authentifié admin.
+// Identifiants : scripts/.admin-credentials.json (local, gitignoré).
+// Config Firebase : lue depuis .env (les VITE_FIREBASE_*).
+//
+// Usage :
+//   node scripts/deck-tool.mjs count                    → total + par catégorie
+//   node scripts/deck-tool.mjs list <catId>             → cartes d'une catégorie
+//   node scripts/deck-tool.mjs cats                     → liste des catégories
+//   node scripts/deck-tool.mjs add <catId> "Texte" [--spicy]
+//   node scripts/deck-tool.mjs del <cardId>
+//   node scripts/deck-tool.mjs rename <cardId> "Nouveau texte"
+//   node scripts/deck-tool.mjs addcat <id> "Label" <emoji> [--spicy] [--pack <packId>]
+//   node scripts/deck-tool.mjs export <fichier.json>    → sauvegarde complète
+import { readFileSync, writeFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import {
+  getDatabase,
+  ref,
+  get,
+  set,
+  update,
+  remove,
+  push,
+} from 'firebase/database';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+
+// --- Config depuis .env (parse minimal, pas de dependance) ---
+const env = {};
+for (const line of readFileSync(join(root, '.env'), 'utf8').split(/\r?\n/)) {
+  const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
+  if (m) env[m[1]] = m[2].trim();
+}
+
+const app = initializeApp({
+  apiKey: env.VITE_FIREBASE_API_KEY,
+  authDomain: env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: env.VITE_FIREBASE_DATABASE_URL,
+  projectId: env.VITE_FIREBASE_PROJECT_ID,
+});
+
+// --- Connexion admin ---
+const creds = JSON.parse(
+  readFileSync(join(root, 'scripts', '.admin-credentials.json'), 'utf8')
+);
+const auth = getAuth(app);
+await signInWithEmailAndPassword(auth, creds.email, creds.password);
+const db = getDatabase(app);
+
+const [, , cmd, ...args] = process.argv;
+
+async function loadAll() {
+  const [cardsSnap, catsSnap] = await Promise.all([
+    get(ref(db, 'cards')),
+    get(ref(db, 'categories')),
+  ]);
+  return { cards: cardsSnap.val() || {}, categories: catsSnap.val() || {} };
+}
+
+switch (cmd) {
+  case 'count': {
+    const { cards, categories } = await loadAll();
+    const byCat = {};
+    Object.values(cards).forEach((c) => {
+      byCat[c.cat] = (byCat[c.cat] || 0) + 1;
+    });
+    console.log(`TOTAL : ${Object.keys(cards).length} cartes\n`);
+    Object.entries(byCat)
+      .sort((a, b) => b[1] - a[1])
+      .forEach(([cat, n]) => {
+        const meta = categories[cat];
+        const label = meta ? `${meta.emoji} ${meta.label}` : `⚠️ ${cat} (catégorie inconnue)`;
+        console.log(`  ${String(n).padStart(3)}  ${label}`);
+      });
+    break;
+  }
+
+  case 'cats': {
+    const { categories } = await loadAll();
+    Object.entries(categories).forEach(([id, c]) => {
+      console.log(
+        `  ${c.emoji} ${c.label}  (id: ${id})${c.spicy ? ' [spicy]' : ''}${c.pack ? ` [pack: ${c.pack}]` : ''}`
+      );
+    });
+    break;
+  }
+
+  case 'list': {
+    const catId = args[0];
+    if (!catId) throw new Error('Usage: list <catId>');
+    const { cards } = await loadAll();
+    const inCat = Object.entries(cards).filter(([, c]) => c.cat === catId);
+    console.log(`${inCat.length} carte(s) dans "${catId}" :\n`);
+    inCat
+      .sort((a, b) => a[1].t.localeCompare(b[1].t))
+      .forEach(([id, c]) => console.log(`  ${c.t}${c.spicy ? ' 🌶️' : ''}  (${id})`));
+    break;
+  }
+
+  case 'add': {
+    const [catId, text] = args;
+    if (!catId || !text) throw new Error('Usage: add <catId> "Texte" [--spicy]');
+    const { categories } = await loadAll();
+    if (!categories[catId]) throw new Error(`Catégorie inconnue: ${catId}`);
+    const r = push(ref(db, 'cards'));
+    await set(r, { t: text, cat: catId, spicy: args.includes('--spicy') });
+    console.log(`✅ Ajoutée : "${text}" dans ${catId} (${r.key})`);
+    break;
+  }
+
+  case 'del': {
+    const [cardId] = args;
+    if (!cardId) throw new Error('Usage: del <cardId>');
+    const snap = await get(ref(db, `cards/${cardId}`));
+    if (!snap.exists()) throw new Error(`Carte introuvable: ${cardId}`);
+    const c = snap.val();
+    await remove(ref(db, `cards/${cardId}`));
+    console.log(`🗑️ Supprimée : "${c.t}" (${c.cat})`);
+    break;
+  }
+
+  case 'rename': {
+    const [cardId, text] = args;
+    if (!cardId || !text) throw new Error('Usage: rename <cardId> "Nouveau texte"');
+    await update(ref(db, `cards/${cardId}`), { t: text });
+    console.log(`✏️ Renommée : ${cardId} → "${text}"`);
+    break;
+  }
+
+  case 'addcat': {
+    const [id, label, emoji] = args;
+    if (!id || !label || !emoji)
+      throw new Error('Usage: addcat <id> "Label" <emoji> [--spicy] [--pack <packId>]');
+    const packIdx = args.indexOf('--pack');
+    await set(ref(db, `categories/${id}`), {
+      label,
+      emoji,
+      ...(args.includes('--spicy') ? { spicy: true } : {}),
+      ...(packIdx !== -1 && args[packIdx + 1] ? { pack: args[packIdx + 1] } : {}),
+    });
+    console.log(`✅ Catégorie créée : ${emoji} ${label} (${id})`);
+    break;
+  }
+
+  case 'export': {
+    const file = args[0] || `deck-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    const data = await loadAll();
+    writeFileSync(file, JSON.stringify(data, null, 2), 'utf8');
+    console.log(
+      `💾 Export : ${Object.keys(data.cards).length} cartes, ${Object.keys(data.categories).length} catégories → ${file}`
+    );
+    break;
+  }
+
+  default:
+    console.log('Commandes : count | cats | list <cat> | add <cat> "Texte" [--spicy] | del <id> | rename <id> "Texte" | addcat <id> "Label" <emoji> | export [fichier]');
+}
+
+process.exit(0);
