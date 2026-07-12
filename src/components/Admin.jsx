@@ -6,7 +6,8 @@ import {
   addCard,
   updateCard,
   deleteCard,
-  cleanupStaleDefaults,
+  getStaleDefaults,
+  purgeStaleDefaults,
 } from '../cardsStore';
 import {
   subscribeCategories,
@@ -317,16 +318,33 @@ function Dashboard({ onLogout }) {
 
   async function handleCleanup() {
     if (busy) return;
-    if (
-      !confirm(
-        'Purger les cartes par défaut obsolètes ?\n\nSupprime les anciennes versions des cartes renommées ou déplacées de catégorie (ex: doublon "Bière fraîche" resté en Bouffe). Les cartes ajoutées via cet admin ne sont pas touchées.'
-      )
-    )
-      return;
     setBusy(true);
     try {
-      const n = await cleanupStaleDefaults();
-      alert(n > 0 ? `${n} carte(s) obsolète(s) supprimée(s) ✅` : 'Aucune carte obsolète trouvée 👌');
+      const stale = await getStaleDefaults();
+      if (stale.length === 0) {
+        alert('Aucune carte obsolète trouvée 👌');
+        return;
+      }
+      // Resume detaille de ce qui va etre supprime, AVANT confirmation.
+      const catLabel = (id) => {
+        const c = categories.find((x) => x.id === id);
+        return c ? `${c.emoji} ${c.label}` : id;
+      };
+      const MAX_LINES = 25;
+      const lines = stale
+        .slice(0, MAX_LINES)
+        .map((s) => `  • ${s.t}  (${catLabel(s.cat)})`);
+      if (stale.length > MAX_LINES) {
+        lines.push(`  … et ${stale.length - MAX_LINES} autre(s)`);
+      }
+      const ok = confirm(
+        `${stale.length} carte(s) obsolète(s) — anciennes versions de cartes renommées, déplacées ou retirées du deck par défaut :\n\n${lines.join(
+          '\n'
+        )}\n\nLes supprimer définitivement ? (Les cartes ajoutées via cet admin ne sont pas concernées.)`
+      );
+      if (!ok) return;
+      const n = await purgeStaleDefaults(stale);
+      alert(`${n} carte(s) supprimée(s) ✅`);
     } catch (e) {
       alert(`Erreur pendant la purge : ${e.message}`);
     } finally {

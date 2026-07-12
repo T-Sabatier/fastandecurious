@@ -82,32 +82,30 @@ export async function seedDefaultsIfEmpty() {
   }
 }
 
-// Supprime les cartes par defaut OBSOLETES : entrees `def_...` presentes en
-// base mais qui ne correspondent plus a DEFAULT_CARDS (cartes renommees,
-// deplacees de categorie ou retirees du code — le seed ne fait qu'ajouter,
-// jamais retirer). Les cartes creees via l'admin (ids push) sont conservees.
-// Retourne le nombre de cartes purgees.
-export async function cleanupStaleDefaults() {
+// Cartes par defaut OBSOLETES : entrees `def_...` presentes en base mais qui
+// ne correspondent plus a DEFAULT_CARDS (cartes renommees, deplacees de
+// categorie ou retirees du code — le seed ne fait qu'ajouter, jamais retirer).
+// Les cartes creees via l'admin (ids push) ne sont jamais concernees.
+export async function getStaleDefaults() {
   const snap = await get(ref(db, CARDS_PATH));
   const existing = snap.val() || {};
   const currentIds = new Set(DEFAULT_CARDS.map((c) => defaultId(c.cat, c.t)));
-  const updates = {};
-  const tombstones = {};
-  for (const id of Object.keys(existing)) {
-    if (id.startsWith('def_') && !currentIds.has(id)) {
-      updates[id] = null;
-      // Pierre tombale : les clients qui tournent encore sur une VIEILLE
-      // version de l'app (cache PWA) re-seedent leur ancienne liste de
-      // defauts — sans ca, les cartes purgees ressuscitent.
-      tombstones[id] = true;
-    }
-  }
-  const n = Object.keys(updates).length;
-  if (n > 0) {
-    await update(ref(db, DELETED_DEFAULTS_PATH), tombstones);
-    await update(ref(db, CARDS_PATH), updates);
-  }
-  return n;
+  return Object.entries(existing)
+    .filter(([id]) => id.startsWith('def_') && !currentIds.has(id))
+    .map(([id, c]) => ({ id, t: c.t, cat: c.cat }));
+}
+
+// Supprime les cartes listees par getStaleDefaults, avec pierre tombale :
+// les clients qui tournent encore sur une VIEILLE version de l'app (cache
+// PWA) re-seedent leur ancienne liste de defauts — sans tombstone, les
+// cartes purgees ressuscitent.
+export async function purgeStaleDefaults(stale) {
+  if (!stale.length) return 0;
+  const tombstones = Object.fromEntries(stale.map((s) => [s.id, true]));
+  const removals = Object.fromEntries(stale.map((s) => [s.id, null]));
+  await update(ref(db, DELETED_DEFAULTS_PATH), tombstones);
+  await update(ref(db, CARDS_PATH), removals);
+  return stale.length;
 }
 
 export async function addCard({ t, cat, spicy }) {
