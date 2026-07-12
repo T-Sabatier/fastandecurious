@@ -677,6 +677,19 @@ function Dashboard({ onLogout }) {
                 >
                   {c.t}
                 </span>
+                {c.draft && (
+                  <span
+                    style={{
+                      backgroundColor: '#FFF',
+                      fontFamily: '"Space Mono", monospace',
+                      border: '2px dashed #000',
+                    }}
+                    className="text-[9px] uppercase tracking-widest px-1.5 py-0.5"
+                    title="Invisible en partie tant que non publiée"
+                  >
+                    📝 Brouillon
+                  </span>
+                )}
                 <button
                   onClick={() => startEdit(c)}
                   disabled={busy}

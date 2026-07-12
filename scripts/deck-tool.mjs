@@ -101,13 +101,69 @@ switch (cmd) {
   }
 
   case 'add': {
+    // Par defaut : BROUILLON (draft) → invisible en partie tant que non
+    // publie. --live pour publier directement (a eviter sans validation).
     const [catId, text] = args;
-    if (!catId || !text) throw new Error('Usage: add <catId> "Texte" [--spicy]');
+    if (!catId || !text) throw new Error('Usage: add <catId> "Texte" [--spicy] [--live]');
     const { categories } = await loadAll();
     if (!categories[catId]) throw new Error(`Catégorie inconnue: ${catId}`);
+    const live = args.includes('--live');
     const r = push(ref(db, 'cards'));
-    await set(r, { t: text, cat: catId, spicy: args.includes('--spicy') });
-    console.log(`✅ Ajoutée : "${text}" dans ${catId} (${r.key})`);
+    await set(r, {
+      t: text,
+      cat: catId,
+      spicy: args.includes('--spicy'),
+      ...(live ? {} : { draft: true }),
+    });
+    console.log(`${live ? '✅ Publiée' : '📝 Brouillon'} : "${text}" dans ${catId} (${r.key})`);
+    break;
+  }
+
+  case 'drafts': {
+    const { cards, categories } = await loadAll();
+    const drafts = Object.entries(cards).filter(([, c]) => c.draft);
+    if (!drafts.length) {
+      console.log('Aucun brouillon.');
+      break;
+    }
+    console.log(`${drafts.length} brouillon(s) en attente de validation :\n`);
+    drafts.forEach(([id, c]) => {
+      const cat = categories[c.cat];
+      console.log(`  📝 ${c.t}${c.spicy ? ' 🌶️' : ''}  — ${cat ? cat.emoji + ' ' + cat.label : c.cat}  (${id})`);
+    });
+    break;
+  }
+
+  case 'publish': {
+    // publish all → publie tous les brouillons ; publish <id> → un seul
+    const target = args[0];
+    if (!target) throw new Error('Usage: publish <cardId|all>');
+    const { cards } = await loadAll();
+    const updates = {};
+    if (target === 'all') {
+      Object.entries(cards).forEach(([id, c]) => {
+        if (c.draft) updates[`${id}/draft`] = null;
+      });
+    } else {
+      if (!cards[target]) throw new Error(`Carte introuvable: ${target}`);
+      updates[`${target}/draft`] = null;
+    }
+    const n = Object.keys(updates).length;
+    if (n === 0) {
+      console.log('Rien à publier.');
+      break;
+    }
+    await update(ref(db, 'cards'), updates);
+    console.log(`🚀 ${n} carte(s) publiée(s) — jouables dès la prochaine partie.`);
+    break;
+  }
+
+  case 'unpublish': {
+    // Repasse une carte en brouillon (retrait de circulation sans suppression)
+    const [cardId] = args;
+    if (!cardId) throw new Error('Usage: unpublish <cardId>');
+    await update(ref(db, `cards/${cardId}`), { draft: true });
+    console.log(`📝 Repassée en brouillon : ${cardId}`);
     break;
   }
 
@@ -156,7 +212,7 @@ switch (cmd) {
   }
 
   default:
-    console.log('Commandes : count | cats | list <cat> | add <cat> "Texte" [--spicy] | del <id> | rename <id> "Texte" | addcat <id> "Label" <emoji> | export [fichier]');
+    console.log('Commandes : count | cats | list <cat> | add <cat> "Texte" [--spicy] [--live] | drafts | publish <id|all> | unpublish <id> | del <id> | rename <id> "Texte" | addcat <id> "Label" <emoji> | export [fichier]');
 }
 
 process.exit(0);

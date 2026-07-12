@@ -58,10 +58,13 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
     };
   }, []);
 
-  const totalAvailable = allCards.filter((c) => cats[c.cat]).length;
+  // Les brouillons (draft) sont invisibles en partie : ils n'existent que
+  // dans l'admin, en attente de validation/publication.
+  const playableCards = allCards.filter((c) => !c.draft);
+  const totalAvailable = playableCards.filter((c) => cats[c.cat]).length;
   const enoughPlayers = players.length >= 3;
   const enoughCards = totalAvailable >= players.length * HAND_SIZE + 8;
-  const canStart = enoughPlayers && enoughCards && allCards.length > 0 && allNamed;
+  const canStart = enoughPlayers && enoughCards && playableCards.length > 0 && allNamed;
 
   async function toggleCat(id) {
     if (!isHost) return;
@@ -98,7 +101,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
   async function startGame() {
     if (!isHost || !canStart) return;
 
-    const enabled = allCards.filter((c) => cats[c.cat]);
+    const enabled = playableCards.filter((c) => cats[c.cat]);
     const shuffled = shuffle(enabled).map((c, i) => ({ ...c, id: `c${i}` }));
     const poolObj = Object.fromEntries(
       shuffled.map((c) => [c.id, { t: c.t, cat: c.cat, spicy: !!c.spicy }])
