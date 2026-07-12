@@ -82,6 +82,28 @@ export async function seedDefaultsIfEmpty() {
   }
 }
 
+// Supprime les cartes par defaut OBSOLETES : entrees `def_...` presentes en
+// base mais qui ne correspondent plus a DEFAULT_CARDS (cartes renommees,
+// deplacees de categorie ou retirees du code — le seed ne fait qu'ajouter,
+// jamais retirer). Les cartes creees via l'admin (ids push) sont conservees.
+// Retourne le nombre de cartes purgees.
+export async function cleanupStaleDefaults() {
+  const snap = await get(ref(db, CARDS_PATH));
+  const existing = snap.val() || {};
+  const currentIds = new Set(DEFAULT_CARDS.map((c) => defaultId(c.cat, c.t)));
+  const updates = {};
+  for (const id of Object.keys(existing)) {
+    if (id.startsWith('def_') && !currentIds.has(id)) {
+      updates[id] = null;
+    }
+  }
+  const n = Object.keys(updates).length;
+  if (n > 0) {
+    await update(ref(db, CARDS_PATH), updates);
+  }
+  return n;
+}
+
 export async function addCard({ t, cat, spicy }) {
   const r = push(ref(db, CARDS_PATH));
   await set(r, { t, cat, spicy: !!spicy });

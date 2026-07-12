@@ -6,6 +6,7 @@ import {
   addCard,
   updateCard,
   deleteCard,
+  cleanupStaleDefaults,
 } from '../cardsStore';
 import {
   subscribeCategories,
@@ -314,6 +315,25 @@ function Dashboard({ onLogout }) {
     }
   }
 
+  async function handleCleanup() {
+    if (busy) return;
+    if (
+      !confirm(
+        'Purger les cartes par défaut obsolètes ?\n\nSupprime les anciennes versions des cartes renommées ou déplacées de catégorie (ex: doublon "Bière fraîche" resté en Bouffe). Les cartes ajoutées via cet admin ne sont pas touchées.'
+      )
+    )
+      return;
+    setBusy(true);
+    try {
+      const n = await cleanupStaleDefaults();
+      alert(n > 0 ? `${n} carte(s) obsolète(s) supprimée(s) ✅` : 'Aucune carte obsolète trouvée 👌');
+    } catch (e) {
+      alert(`Erreur pendant la purge : ${e.message}`);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function handleDeleteCat(cat) {
     const n = countByCat[cat.id] || 0;
     const msg =
@@ -578,6 +598,15 @@ function Dashboard({ onLogout }) {
               </option>
             ))}
           </select>
+          <button
+            onClick={handleCleanup}
+            disabled={busy}
+            title="Supprime les cartes par défaut obsolètes (renommées ou déplacées de catégorie dans le code)"
+            className="border-4 border-black bg-white px-3 py-2 disabled:opacity-40 active:translate-x-[2px] active:translate-y-[2px]"
+            style={{ boxShadow: '3px 3px 0 #000', fontFamily: '"Space Mono", monospace' }}
+          >
+            <span className="text-[10px] uppercase tracking-widest">🧹 Purger obsolètes</span>
+          </button>
         </div>
 
         <div className="space-y-2 pb-10">

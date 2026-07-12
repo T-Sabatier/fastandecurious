@@ -265,6 +265,9 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
       const targetScore = room.settings?.winningScore ?? WINNING_SCORE;
       if (winnerNewScore >= targetScore) {
         updates['phase'] = 'game_over';
+        // Compteur de victoires de la session : il survit au retour au lobby
+        // (backToLobby ne touche pas `wins`) et meurt avec la room.
+        updates[`wins/${winnerId}`] = (room.wins?.[winnerId] || 0) + 1;
       } else {
         updates['phase'] = 'boss_choose';
         updates['bossId'] = winnerId;
@@ -1356,6 +1359,15 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                     >
                       {p.name}
                     </span>
+                    {(room.wins?.[p.id] || 0) > 0 && (
+                      <span
+                        style={{ fontFamily: '"Space Mono", monospace' }}
+                        className="text-xs whitespace-nowrap"
+                        title="Victoires dans cette room"
+                      >
+                        🏆×{room.wins[p.id]}
+                      </span>
+                    )}
                   </div>
                   <span
                     style={{ fontFamily: '"Anton", sans-serif' }}

@@ -335,6 +335,15 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
                   >
                     {p.name?.trim() || '…'}
                   </span>
+                  {(room.wins?.[p.id] || 0) > 0 && (
+                    <span
+                      style={{ fontFamily: '"Space Mono", monospace' }}
+                      className="text-xs whitespace-nowrap"
+                      title="Victoires dans cette room"
+                    >
+                      🏆×{room.wins[p.id]}
+                    </span>
+                  )}
                   {isTheHost && (
                     <span
                       style={{
