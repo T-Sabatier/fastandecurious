@@ -23,7 +23,7 @@ import {
 
 // L'acces admin passe par Firebase Auth (email/mot de passe) : la verification
 // est faite COTE SERVEUR par les regles de securite (voir database.rules.json,
-// noeud /admins). Un simple code cote client serait lisible dans le bundle JS.
+// noeud /admin). Un simple code cote client serait lisible dans le bundle JS.
 export default function Admin() {
   const [user, setUser] = useState(null);
   const [emailInput, setEmailInput] = useState('');

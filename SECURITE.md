@@ -25,11 +25,11 @@ Console → **Realtime Database** → onglet **Données** :
 - [ ] Créer à la racine un nœud :
 
 ```
-admins/
+admin/
   <UID copié à l'étape 2>: true
 ```
 
-(Ce nœud n'est ni lisible ni modifiable par les clients — règles `admins`.)
+(Ce nœud n'est ni lisible ni modifiable par les clients — règles `admin`.)
 
 ## 4. Publier les règles de sécurité
 
@@ -54,7 +54,7 @@ Ou en CLI : `npx firebase-tools deploy --only database` (le projet contient
 | `rooms/*` | joueurs connectés (anonymes inclus) | joueurs connectés, code room 4 chars valide |
 | `cards`, `categories` | joueurs connectés | **admin uniquement** |
 | `deletedDefaults`, `deletedCategories` | joueurs connectés | **admin uniquement** |
-| `admins` | personne | personne (console uniquement) |
+| `admin` | personne | personne (console uniquement) |
 | tout le reste | refusé | refusé |
 
 Conséquence : le seed automatique des cartes par défaut (au premier lancement
