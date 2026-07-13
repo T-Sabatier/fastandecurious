@@ -156,7 +156,7 @@ export default function Home({ playerId, onJoin, initialError }) {
             }}
             className="uppercase whitespace-nowrap flex items-end gap-3"
           >
-            <span>Snap</span>
+            <span>Love</span>
             <span
               className="inline-block px-5 py-2 -rotate-2 leading-none"
               style={{
@@ -166,7 +166,7 @@ export default function Home({ playerId, onJoin, initialError }) {
                 boxShadow: '6px 6px 0 #000',
               }}
             >
-              Tap
+              Hate
             </span>
           </h1>
           <div className="mt-4 flex items-center gap-2">

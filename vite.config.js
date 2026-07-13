@@ -9,9 +9,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['apple-touch-icon.png', 'favicon-32x32.png', 'icon-src.svg'],
       manifest: {
-        name: 'Snap Tap',
-        short_name: 'Snap Tap',
-        description: 'Le jeu de cartes Snap Tap — chacun sur son tel.',
+        name: 'Love Hate',
+        short_name: 'Love Hate',
+        description: 'Devine ce que tes amis aiment ou détestent. Chacun sur son tel.',
         lang: 'fr',
         theme_color: '#FFE600',
         background_color: '#FFE600',
