@@ -65,12 +65,14 @@ ${content}
 const targets = [
   // Icône "classique" (stores, fallback) : logo plein cadre sur fond jaune
   { file: 'icon-only.png', size: 1024, svg: svgCanvas(1024, 1.0, YELLOW) },
-  // Icône adaptative Android : fond uni + logo réduit (zone sûre ~66%)
+  // Icône adaptative Android : fond uni + logo dans la zone sûre. 0.70 remplit
+  // mieux la pastille (0.62 rendait le texte trop petit) en restant dans les
+  // clous du masque rond.
   { file: 'icon-background.png', size: 1024, svg: svgCanvas(1024, 0, YELLOW) },
-  { file: 'icon-foreground.png', size: 1024, svg: svgCanvas(1024, 0.62, null) },
+  { file: 'icon-foreground.png', size: 1024, svg: svgCanvas(1024, 0.78, null) },
   // Splash screens : logo centré sur fond jaune
-  { file: 'splash.png', size: 2732, svg: svgCanvas(2732, 0.34, YELLOW) },
-  { file: 'splash-dark.png', size: 2732, svg: svgCanvas(2732, 0.34, YELLOW) },
+  { file: 'splash.png', size: 2732, svg: svgCanvas(2732, 0.5, YELLOW) },
+  { file: 'splash-dark.png', size: 2732, svg: svgCanvas(2732, 0.5, YELLOW) },
 ];
 
 for (const { file, size, svg } of targets) {
