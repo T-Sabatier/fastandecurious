@@ -18,12 +18,16 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!-- App Links : https://snap-tap.vercel.app/?room=CODE ouvre l'app
-                 (vérifié via /.well-known/assetlinks.json sur le domaine) -->
+            <!-- App Links : https://www.snaptapparty.com/?room=CODE ouvre l'app
+                 (vérifié via /.well-known/assetlinks.json sur chaque domaine).
+                 snap-tap.vercel.app conservé pour les anciens liens/QR.
+                 L'apex snaptapparty.com est exclu : il répond en 308 (redirect)
+                 et la vérification Android ne suit pas les redirections. -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="www.snaptapparty.com" />
                 <data android:scheme="https" android:host="snap-tap.vercel.app" />
             </intent-filter>
         </activity>

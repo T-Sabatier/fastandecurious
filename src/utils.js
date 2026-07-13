@@ -1,5 +1,6 @@
 // URL publique du jeu (QR codes, liens de partage depuis l'app native).
-export const PUBLIC_URL = 'https://snap-tap.vercel.app';
+// www est le domaine de production Vercel (l'apex snaptapparty.com redirige).
+export const PUBLIC_URL = 'https://www.snaptapparty.com';
 
 // Duree de vie max d'une room (lobby OU partie en cours). Au-dela, la room est
 // consideree comme abandonnee et supprimee — meme en pleine partie.
