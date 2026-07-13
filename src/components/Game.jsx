@@ -1331,7 +1331,9 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
             {ranked.map((p, i) => {
               const pColor = colorHex(p.color);
               const bg = pColor || (i === 0 ? '#000' : '#FFF');
-              const fg = pColor ? colorFg(p.color) : (i === 0 ? YELLOW : '#000');
+              // Noms en blanc (lisere noir) sur les fonds colores : plus
+              // lisible et plus homogene que le noir sur certaines couleurs.
+              const fg = pColor ? '#FFF' : (i === 0 ? YELLOW : '#000');
               return (
                 <div
                   key={p.id}
