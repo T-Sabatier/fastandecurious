@@ -761,23 +761,27 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                     transition: 'all 120ms',
                     minHeight: '100px',
                   }}
-                  className="border-4 border-black p-3 text-center flex items-center justify-center relative"
+                  className="border-4 border-black p-3 text-center flex flex-col relative"
                 >
+                  {/* Emoji dans le flux (sa propre ligne) : les textes longs ne
+                      peuvent plus remonter dessus. */}
                   <span
-                    className="absolute top-1 left-2 text-2xl leading-none opacity-80 select-none"
+                    className="self-start text-2xl leading-none opacity-80 select-none"
                     aria-hidden
                   >
                     {catEmojiOf(card)}
                   </span>
-                  <div
-                    style={{
-                      fontFamily: '"Anton", sans-serif',
-                      lineHeight: 0.95,
-                      fontSize: fitCard(card.t),
-                    }}
-                    className="uppercase"
-                  >
-                    {card.t}
+                  <div className="flex-1 flex items-center justify-center">
+                    <div
+                      style={{
+                        fontFamily: '"Anton", sans-serif',
+                        lineHeight: 0.95,
+                        fontSize: fitCard(card.t),
+                      }}
+                      className="uppercase"
+                    >
+                      {card.t}
+                    </div>
                   </div>
                 </button>
               );
@@ -942,23 +946,25 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                       minHeight: '120px',
                       transition: 'all 120ms',
                     }}
-                    className="border-4 border-black p-4 text-center flex items-center justify-center active:translate-x-[2px] active:translate-y-[2px] relative"
+                    className="border-4 border-black p-4 text-center flex flex-col active:translate-x-[2px] active:translate-y-[2px] relative"
                   >
                     <span
-                      className="absolute top-1 left-2 text-2xl leading-none opacity-80 select-none"
+                      className="self-start text-2xl leading-none opacity-80 select-none"
                       aria-hidden
                     >
                       {catEmojiOf(card)}
                     </span>
-                    <div
-                      style={{
-                        fontFamily: '"Anton", sans-serif',
-                        lineHeight: 0.95,
-                        fontSize: fitCard(card.t),
-                      }}
-                      className="uppercase"
-                    >
-                      {card.t}
+                    <div className="flex-1 flex items-center justify-center">
+                      <div
+                        style={{
+                          fontFamily: '"Anton", sans-serif',
+                          lineHeight: 0.95,
+                          fontSize: fitCard(card.t),
+                        }}
+                        className="uppercase"
+                      >
+                        {card.t}
+                      </div>
                     </div>
                   </button>
                 );
@@ -1119,24 +1125,26 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                       transition: 'all 160ms',
                       cursor: espionArming && !revealed ? 'pointer' : 'default',
                     }}
-                    className="border-4 p-4 text-center flex items-center justify-center relative"
+                    className="border-4 p-4 text-center flex flex-col relative"
                   >
                     <span
-                      className="absolute top-1 left-2 text-2xl leading-none select-none"
+                      className="self-start text-2xl leading-none select-none"
                       style={{ filter: isBossPick ? 'none' : 'grayscale(0.6)', opacity: isBossPick ? 0.85 : 0.6 }}
                       aria-hidden
                     >
                       {catEmojiOf(card)}
                     </span>
-                    <div
-                      style={{
-                        fontFamily: '"Anton", sans-serif',
-                        lineHeight: 0.95,
-                        fontSize: fitCard(card.t),
-                      }}
-                      className="uppercase"
-                    >
-                      {card.t}
+                    <div className="flex-1 flex items-center justify-center">
+                      <div
+                        style={{
+                          fontFamily: '"Anton", sans-serif',
+                          lineHeight: 0.95,
+                          fontSize: fitCard(card.t),
+                        }}
+                        className="uppercase"
+                      >
+                        {card.t}
+                      </div>
                     </div>
                     {revealed && author && (
                       <div
