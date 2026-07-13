@@ -81,7 +81,11 @@ export default function App() {
       .trim()
       .toUpperCase()
       .slice(0, 4);
-    if (!code || code.length !== 4 || roomCode) return;
+    if (!code || code.length !== 4) return;
+    // Deja dans cette room : rien a faire. Mais si une AUTRE room traine en
+    // memoire (session precedente), le QR scanne GAGNE : on bascule dessus —
+    // sinon le scan etait ignore et on atterrissait sur l'accueil.
+    if (code === roomCode) return;
     let cancelled = false;
     setAutoJoining(true);
     (async () => {
