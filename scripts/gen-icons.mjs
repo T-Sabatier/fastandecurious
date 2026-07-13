@@ -33,11 +33,11 @@ function textBlock(text, targetWidth, cx, cy) {
 
 const S = 512;
 
-// --- LOVE (noir, en haut) ---
-const snap = textBlock('LOVE', 400, S / 2, 150);
+// --- HATE (noir, en haut) ---
+const snap = textBlock('HATE', 400, S / 2, 150);
 
-// --- HATE (blanc) dans un encadré rose ---
-const tap = textBlock('HATE', 260, S / 2, 350);
+// --- LOVE (blanc) dans un encadré rose ---
+const tap = textBlock('LOVE', 260, S / 2, 350);
 const padX = 40;
 const padY = 30;
 const bx = S / 2 - tap.w / 2 - padX;
