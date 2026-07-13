@@ -82,6 +82,16 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
   const winningScore = room.settings?.winningScore ?? 5;
   const SCORE_OPTIONS = [3, 5, 7, 10, 12, 15];
 
+  // Timer par tour (secondes) : 0 = desactive. A l'expiration, une carte
+  // est jouee automatiquement pour les retardataires (voir Game.jsx).
+  const turnTimer = room.settings?.turnTimer ?? 0;
+  const TIMER_OPTIONS = [0, 15, 30, 60];
+
+  async function pickTurnTimer(n) {
+    if (!isHost) return;
+    await set(ref(db, `rooms/${roomCode}/settings/turnTimer`), n);
+  }
+
   async function pickWinningScore(n) {
     if (!isHost) return;
     await set(ref(db, `rooms/${roomCode}/settings/winningScore`), n);
@@ -463,6 +473,52 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
                     className="uppercase text-2xl leading-none"
                   >
                     {n}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        )}
+
+        {isHost && (
+        <div className="mb-8">
+          <div
+            style={{ fontFamily: '"Anton", sans-serif' }}
+            className="text-2xl uppercase mb-1"
+          >
+            Timer par tour
+          </div>
+          <div
+            style={{ fontFamily: '"Space Mono", monospace' }}
+            className="text-[10px] uppercase tracking-widest mb-3 opacity-70"
+          >
+            {turnTimer > 0
+              ? `${turnTimer}s pour jouer sa carte, sinon carte au hasard !`
+              : 'Sans limite de temps'}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {TIMER_OPTIONS.map((n) => {
+              const selected = turnTimer === n;
+              return (
+                <button
+                  key={n}
+                  onClick={() => pickTurnTimer(n)}
+                  disabled={!isHost}
+                  style={{
+                    backgroundColor: selected ? '#000' : '#FFF',
+                    color: selected ? YELLOW : '#000',
+                    boxShadow: '4px 4px 0 #000',
+                    opacity: !isHost && !selected ? 0.6 : 1,
+                    minWidth: 56,
+                  }}
+                  className="border-4 border-black px-4 py-2 active:translate-x-[2px] active:translate-y-[2px] disabled:cursor-not-allowed"
+                >
+                  <span
+                    style={{ fontFamily: '"Anton", sans-serif' }}
+                    className="uppercase text-2xl leading-none"
+                  >
+                    {n === 0 ? 'Off' : `${n}s`}
                   </span>
                 </button>
               );

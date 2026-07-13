@@ -87,6 +87,56 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     }
   }, [room.phase, playedCount, nonBossCount, roomCode]);
 
+  // --- Timer par tour (settings.turnTimer, 0 = off) -----------------------
+  // Demarre quand le VIP annonce j'aime/j'aime pas (playStartedAt). A zero,
+  // le client du retardataire joue sa PREMIERE carte (tri par id : choix
+  // deterministe → idempotent meme si le host enforce en parallele).
+  const turnTimer = room.settings?.turnTimer || 0;
+  const timerActive =
+    turnTimer > 0 && room.phase === 'play' && !!room.playStartedAt;
+  const [nowTs, setNowTs] = useState(Date.now());
+  useEffect(() => {
+    if (!timerActive) return undefined;
+    const iv = setInterval(() => setNowTs(Date.now()), 250);
+    return () => clearInterval(iv);
+  }, [timerActive]);
+  const timerRemaining = timerActive
+    ? Math.max(0, Math.ceil((room.playStartedAt + turnTimer * 1000 - nowTs) / 1000))
+    : null;
+
+  // Expiration (moi) : je n'ai pas joue → une carte part toute seule.
+  useEffect(() => {
+    if (!timerActive || isBoss || iHavePlayed || timerRemaining > 0) return;
+    const first = [...myHandCardIds].sort()[0];
+    if (!first) return;
+    update(ref(db, `rooms/${roomCode}`), {
+      [`hands/${playerId}/${first}`]: null,
+      [`played/${playerId}`]: first,
+    }).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timerActive, timerRemaining, isBoss, iHavePlayed]);
+
+  // Filet de securite (host, +4s de grace) : joue pour les joueurs absents
+  // (tel verrouille, app fermee) pour ne jamais bloquer la manche. Meme
+  // carte deterministe que l'auto-play local → pas de double jeu.
+  useEffect(() => {
+    if (!timerActive || !isHost) return;
+    if (room.playStartedAt + (turnTimer + 4) * 1000 > nowTs) return;
+    const updates = {};
+    players.forEach((p) => {
+      if (p.id === room.bossId || playedObj[p.id]) return;
+      const hand = Object.keys(room.hands?.[p.id] || {}).sort();
+      if (hand.length === 0) return;
+      updates[`hands/${p.id}/${hand[0]}`] = null;
+      updates[`played/${p.id}`] = hand[0];
+    });
+    if (Object.keys(updates).length > 0) {
+      update(ref(db, `rooms/${roomCode}`), updates).catch(() => {});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timerActive, isHost, nowTs]);
+  // -------------------------------------------------------------------------
+
   // Safety net: si bossId pointe vers un joueur disparu (boss qui a quitte
   // sans nettoyer), le host reassigne le boss et reset la phase
   useEffect(() => {
@@ -131,6 +181,8 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         played: null,
         bossPick: null,
         vatout: null,
+        // Depart du timer par tour (si active dans les reglages du salon)
+        playStartedAt: Date.now(),
       });
     } finally {
       setBusy(false);
@@ -791,6 +843,30 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
           style={{ backgroundColor: YELLOW }}
         >
           <div className="max-w-xl mx-auto">
+            {timerActive && !isBoss && !iHavePlayed && (
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <span className="text-lg leading-none" aria-hidden>
+                  ⏱
+                </span>
+                <span
+                  style={{
+                    fontFamily: '"Anton", sans-serif',
+                    color: timerRemaining <= 5 ? DISLIKE_RED : '#000',
+                  }}
+                  className="text-2xl uppercase leading-none tabular-nums"
+                >
+                  {timerRemaining}s
+                </span>
+                {timerRemaining <= 5 && (
+                  <span
+                    style={{ fontFamily: '"Space Mono", monospace', color: DISLIKE_RED }}
+                    className="text-[10px] uppercase tracking-widest"
+                  >
+                    dépêche-toi !
+                  </span>
+                )}
+              </div>
+            )}
             {(sorts.reroll || sorts.vatout) &&
               (sortsOpen ? (
                 <div className="flex gap-2 mb-2 items-stretch">
