@@ -315,8 +315,18 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
           >
             Min. 3 joueurs pour lancer
           </div>
+          {/* Pastilles triées par largeur (longs noms d'abord) puis étirées
+              pour remplir chaque ligne : plus de vide en drapeau à droite. */}
           <div className="flex flex-wrap gap-2">
-            {players.map((p) => {
+            {[...players]
+              .sort((a, b) => {
+                const w = (p) =>
+                  (p.name?.trim().length || 1) +
+                  (p.id === room.host ? 5 : 2) +
+                  ((room.wins?.[p.id] || 0) > 0 ? 4 : 0);
+                return w(b) - w(a);
+              })
+              .map((p) => {
               const isMe = p.id === playerId;
               const isTheHost = p.id === room.host;
               const pColor = colorHex(p.color);
@@ -330,11 +340,11 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
                     color: fg,
                     boxShadow: '3px 3px 0 #000',
                   }}
-                  className="border-2 border-black px-3.5 py-2 flex items-center gap-2"
+                  className="border-2 border-black px-3.5 py-2 flex items-center gap-2 min-w-0 grow"
                 >
                   <span
                     style={{ fontFamily: '"Anton", sans-serif' }}
-                    className="uppercase text-xl leading-none"
+                    className="uppercase text-xl leading-none flex-1 truncate"
                   >
                     {p.name?.trim() || '…'}
                   </span>
