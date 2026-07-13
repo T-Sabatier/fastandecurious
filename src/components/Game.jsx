@@ -665,7 +665,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               }}
             >
               <span
-                className="absolute top-2 left-3 text-3xl leading-none select-none"
+                className="absolute top-1.5 right-2 text-lg leading-none opacity-80 select-none"
                 aria-hidden
               >
                 {catEmojiOf(myCard)}
@@ -1196,7 +1196,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
             }}
           >
             <span
-              className="absolute top-2 left-3 text-3xl leading-none select-none"
+              className="absolute top-1.5 right-2 text-lg leading-none opacity-80 select-none"
               aria-hidden
             >
               {catEmojiOf(winnerCard)}
