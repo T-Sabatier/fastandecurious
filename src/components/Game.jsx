@@ -407,7 +407,9 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   // ============ COMMON SUBCOMPONENTS ============
 
   const TopBar = ({ right }) => (
-    <div className="px-4 py-3 border-b-4 border-black bg-yellow-300" style={{ backgroundColor: YELLOW }}>
+    // text-black explicite : la barre reste jaune sur TOUS les ecrans, y
+    // compris le mode projecteur (fond noir + text-white herite sinon).
+    <div className="px-4 py-3 border-b-4 border-black bg-yellow-300 text-black" style={{ backgroundColor: YELLOW }}>
       <div className="flex items-center justify-between max-w-xl mx-auto">
         <button onClick={leaveGame} className="flex items-center gap-1.5">
           <LogOut size={16} />
