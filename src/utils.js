@@ -8,6 +8,9 @@ export const NAME_STYLE = {
   color: '#FFF',
   WebkitTextStroke: '0.12em #000',
   paintOrder: 'stroke fill',
+  // Anton est tres condensee : un peu d'air entre les lettres, d'autant que
+  // le contour noir grignote l'espace inter-lettres.
+  letterSpacing: '0.09em',
 };
 
 // Duree de vie max d'une room (lobby OU partie en cours). Au-dela, la room est
