@@ -1,5 +1,15 @@
 # Notes monétisation — Snap Tap
 
+## IDÉE VALIDÉE À CONCEVOIR : mode "Soirée" (jeu à boire) 🍻
+
+Voulu par l'utilisateur (14/07/2026), rendu possible par le 18+ assumé.
+Principe : même boucle de jeu, seule la récompense change. Carte choisie =
+tu distribues des gorgées ; carte ignorée = tu bois ; compteur de gorgées
+distribuées à la place des points/trophées. Toggle dans le lobby (comme le
+timer). Techniquement : couche d'affichage sur le moteur existant, chantier
+léger. À trancher : gratuit (viralité) ou cœur d'un Pack Soirée payant.
+Mention "à consommer avec modération" à afficher.
+
 Réflexion stratégique sur les packs payants (à implémenter plus tard).
 
 ## DÉCISION (12/07/2026) : freemium dès le lancement
