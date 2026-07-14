@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ref, onValue, remove, get, set } from 'firebase/database';
 import { db } from './firebase';
+import { MAX_PLAYERS } from './cards';
 import {
   getOrCreatePlayerId,
   getStoredRoom,
@@ -101,6 +102,11 @@ export default function App() {
         const alreadyIn = r.players && r.players[playerId];
         if (!alreadyIn && r.phase !== 'lobby') {
           setJoinError('Partie déjà en cours dans cette room');
+          setAutoJoining(false);
+          return;
+        }
+        if (!alreadyIn && Object.keys(r.players || {}).length >= MAX_PLAYERS) {
+          setJoinError(`Room complète (${MAX_PLAYERS} joueurs max)`);
           setAutoJoining(false);
           return;
         }

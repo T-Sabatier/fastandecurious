@@ -205,28 +205,41 @@ export const LIKE_GREEN = '#00C853';
 export const DISLIKE_RED = '#FF1744';
 
 export const PLAYER_COLORS = [
-  { id: 'yellow', hex: '#EBF704', fg: '#000' },
-  { id: 'red',    hex: '#FF0040', fg: '#000' },
-  { id: 'blue',   hex: '#00B0FF', fg: '#000' },
-  { id: 'green',  hex: '#00E676', fg: '#000' },
-  { id: 'violet', hex: '#D500F9', fg: '#000' },
-  { id: 'orange', hex: '#FF6D00', fg: '#000' },
-  { id: 'pink',   hex: '#FF1493', fg: '#000' },
-  { id: 'lime',   hex: '#39FF14', fg: '#000' },
-  { id: 'cyan',   hex: '#00E5FF', fg: '#000' },
-  { id: 'teal',   hex: '#00BFA5', fg: '#000' },
-  { id: 'amber',  hex: '#FFC400', fg: '#000' },
-  { id: 'purple', hex: '#7C4DFF', fg: '#FFF' },
-  { id: 'indigo', hex: '#304FFE', fg: '#FFF' },
-  { id: 'coral',  hex: '#FF5252', fg: '#000' },
-  { id: 'brown',  hex: '#8D6E63', fg: '#FFF' },
-  { id: 'white',  hex: '#FFFFFF', fg: '#000' },
+  { id: 'yellow', hex: '#EBF704' },
+  { id: 'red',    hex: '#FF0040' },
+  { id: 'blue',   hex: '#00B0FF' },
+  { id: 'green',  hex: '#00E676' },
+  { id: 'violet', hex: '#D500F9' },
+  { id: 'orange', hex: '#FF6D00' },
+  { id: 'pink',   hex: '#FF1493' },
+  { id: 'lime',   hex: '#39FF14' },
+  { id: 'cyan',   hex: '#00E5FF' },
+  { id: 'teal',   hex: '#00BFA5' },
+  { id: 'amber',  hex: '#FFC400' },
+  { id: 'purple', hex: '#7C4DFF' },
+  { id: 'indigo', hex: '#304FFE' },
+  { id: 'coral',  hex: '#FF5252' },
+  { id: 'brown',  hex: '#8D6E63' },
+  { id: 'white',  hex: '#FFFFFF' },
 ];
+
+// Nombre max de joueurs par room (le nuancier de 16 couleurs couvre toujours)
+export const MAX_PLAYERS = 10;
 
 export function colorHex(id) {
   return PLAYER_COLORS.find((c) => c.id === id)?.hex || null;
 }
 
+// Noir ou blanc selon la LUMINANCE percue de la couleur de fond : le texte
+// est toujours lisible, quelle que soit la couleur choisie par le joueur
+// (avant : valeurs figees a la main, parfois illisibles — violet/rose/rouge
+// avec texte noir).
 export function colorFg(id) {
-  return PLAYER_COLORS.find((c) => c.id === id)?.fg || '#FFF';
+  const hex = colorHex(id);
+  if (!hex) return '#FFF';
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+  return lum >= 145 ? '#000' : '#FFF';
 }

@@ -7,7 +7,7 @@ import {
   setStoredName,
   ROOM_TTL_MS,
 } from '../utils';
-import { CATEGORIES, YELLOW, PINK } from '../cards';
+import { CATEGORIES, YELLOW, PINK, MAX_PLAYERS } from '../cards';
 import { ChevronRight } from 'lucide-react';
 import InstallButton from './InstallButton.jsx';
 
@@ -121,6 +121,12 @@ export default function Home({ playerId, onJoin, initialError }) {
 
       if (r.phase !== 'lobby' && !alreadyIn) {
         setError('Partie déjà en cours dans cette room');
+        setBusy(false);
+        return;
+      }
+
+      if (!alreadyIn && Object.keys(r.players || {}).length >= MAX_PLAYERS) {
+        setError(`Room complète (${MAX_PLAYERS} joueurs max)`);
         setBusy(false);
         return;
       }
