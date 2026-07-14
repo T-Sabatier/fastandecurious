@@ -6,6 +6,7 @@ import {
   toArray,
   fitCard,
   fitBig,
+  NAME_STYLE,
 } from '../utils';
 import {
   WINNING_SCORE,
@@ -459,7 +460,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               }}
               className="border-2 border-black px-2 py-1 flex items-center gap-1.5 whitespace-nowrap shrink-0"
             >
-              <span className="uppercase text-sm leading-none">
+              <span style={NAME_STYLE} className="uppercase text-sm leading-none">
                 {p.name}
               </span>
               <span
@@ -668,16 +669,15 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                   const hasPlayed = !!playedObj[p.id];
                   const pColor = colorHex(p.color);
                   const bg = pColor || (hasPlayed ? '#000' : '#FFF');
-                  const fg = pColor ? colorFg(p.color) : (hasPlayed ? YELLOW : '#000');
                   return (
                     <div
                       key={p.id}
                       style={{
                         backgroundColor: bg,
-                        color: fg,
                         opacity: hasPlayed ? 1 : 0.5,
                         fontFamily: '"Anton", sans-serif',
                         boxShadow: '3px 3px 0 #000',
+                        ...NAME_STYLE,
                       }}
                       className="border-2 border-black px-4 py-2 uppercase text-xl leading-none"
                     >
@@ -1220,14 +1220,11 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                         className="absolute -bottom-3 left-1/2 -translate-x-1/2 border-2 border-black px-2 py-0.5 whitespace-nowrap"
                         style={{
                           backgroundColor: colorHex(author.color) || '#000',
-                          color: colorHex(author.color)
-                            ? colorFg(author.color)
-                            : '#FFF',
                           fontFamily: '"Anton", sans-serif',
                           boxShadow: '2px 2px 0 #000',
                         }}
                       >
-                        <span className="text-sm uppercase leading-none">
+                        <span style={NAME_STYLE} className="text-sm uppercase leading-none">
                           🕵️ {author.name || '?'}
                         </span>
                       </div>
@@ -1430,9 +1427,8 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                     <span
                       style={{
                         fontFamily: '"Anton", sans-serif',
-                        WebkitTextStroke: '1px #000',
-                        paintOrder: 'stroke fill',
                         letterSpacing: '0.05em',
+                        ...NAME_STYLE,
                       }}
                       className="text-xl uppercase leading-none"
                     >

@@ -1,7 +1,7 @@
 import { ref, set, remove, update } from 'firebase/database';
 import { Capacitor } from '@capacitor/core';
 import { db } from '../firebase';
-import { shuffle, getStoredName, setStoredName, PUBLIC_URL } from '../utils';
+import { shuffle, getStoredName, setStoredName, PUBLIC_URL, NAME_STYLE } from '../utils';
 import { HAND_SIZE, YELLOW, PINK, PLAYER_COLORS, SORTS, colorHex, colorFg } from '../cards';
 import { subscribeCards, seedDefaultsIfEmpty } from '../cardsStore';
 import { subscribeCategories, seedCategoriesIfEmpty } from '../categoriesStore';
@@ -353,7 +353,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
                   className="border-2 border-black px-3.5 py-2 flex items-center gap-2 min-w-0 grow"
                 >
                   <span
-                    style={{ fontFamily: '"Anton", sans-serif' }}
+                    style={{ fontFamily: '"Anton", sans-serif', ...NAME_STYLE }}
                     className="uppercase text-xl leading-none flex-1 truncate"
                   >
                     {p.name?.trim() || '…'}

@@ -2,6 +2,14 @@
 // www est le domaine de production Vercel (l'apex snaptapparty.com redirige).
 export const PUBLIC_URL = 'https://www.snaptapparty.com';
 
+// Style "sticker" des pseudos : blanc + contour noir, IDENTIQUE pour tous
+// les joueurs et lisible sur n'importe quelle couleur de fond.
+export const NAME_STYLE = {
+  color: '#FFF',
+  WebkitTextStroke: '0.12em #000',
+  paintOrder: 'stroke fill',
+};
+
 // Duree de vie max d'une room (lobby OU partie en cours). Au-dela, la room est
 // consideree comme abandonnee et supprimee — meme en pleine partie.
 export const ROOM_TTL_MS = 4 * 60 * 60 * 1000; // 4h
