@@ -10,6 +10,16 @@ timer). Techniquement : couche d'affichage sur le moteur existant, chantier
 léger. À trancher : gratuit (viralité) ou cœur d'un Pack Soirée payant.
 Mention "à consommer avec modération" à afficher.
 
+## IDÉE À CONCEVOIR : mode "1 téléphone" (hors-ligne) 📵
+
+Demandé le 14/07. Multi-téléphones sans internet = non réaliste (tout
+repose sur Firebase ; technos locales trop fragiles ; en pratique un
+partage de connexion suffit). En revanche : mode PASS-THE-PHONE sur un
+seul téléphone, 100% hors-ligne (deck embarqué dans l'app, état local).
+Boucle : VIP annonce → le tel circule, chacun choisit en secret → VIP
+juge → points. Cas d'usage : avion, camping, sans forfait. Chantier
+moyen (nouveaux écrans, moteur réutilisable). Post-lancement.
+
 Mode vs app séparée (discuté 14/07) : conclusion = MODE dans Snap Tap
 d'abord (même cible, downloads/avis concentrés sur une fiche, découverte
 croisée, maintenance unique). Le seul argument de l'app séparée est de
