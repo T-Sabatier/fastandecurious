@@ -50,8 +50,10 @@ Tes amis n'ont pas l'app ? Ils peuvent rejoindre la partie depuis leur navigateu
 - Site web : https://www.snaptapparty.com
 - Politique de confidentialité : https://www.snaptapparty.com/privacy
 - Catégorie d'app : Jeux > Jeux de société (ou Party)
-- Classification IARC : à remplir honnêtement (catégorie Coquin activable → contenu
-  à caractère sexuel évoqué → classement adulte probable)
+- Classification IARC : DÉCIDÉ (14/07/2026) → on assume le 18+. Remplir
+  honnêtement : références sexuelles explicites (Coquin) + références à
+  l'alcool (Boisson). Une seule app, pas de version soft. Positionnement
+  « jeu d'apéro pour adultes »
 - Interactions utilisateurs : OUI (pseudos visibles entre joueurs d'un salon)
 - Reste à produire : captures d'écran téléphone (min 2, idéalement 4 à 8),
   bannière "feature graphic" 1024x500, icône 512x512 (déjà dispo : assets/icon-only.png)
