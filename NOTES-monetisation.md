@@ -10,6 +10,13 @@ timer). Techniquement : couche d'affichage sur le moteur existant, chantier
 léger. À trancher : gratuit (viralité) ou cœur d'un Pack Soirée payant.
 Mention "à consommer avec modération" à afficher.
 
+Mode vs app séparée (discuté 14/07) : conclusion = MODE dans Snap Tap
+d'abord (même cible, downloads/avis concentrés sur une fiche, découverte
+croisée, maintenance unique). Le seul argument de l'app séparée est de
+capter les recherches "jeu à boire" avec une fiche dédiée — pertinent
+uniquement avec du volume. Spin-off possible plus tard avec des données
+(même code, deuxième fiche) si le mode domine l'usage.
+
 Réflexion stratégique sur les packs payants (à implémenter plus tard).
 
 ## DÉCISION (12/07/2026) : freemium dès le lancement
