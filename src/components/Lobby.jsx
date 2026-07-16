@@ -2,11 +2,11 @@ import { ref, set, remove, update } from 'firebase/database';
 import { Capacitor } from '@capacitor/core';
 import { db } from '../firebase';
 import { shuffle, getStoredName, setStoredName, PUBLIC_URL, NAME_STYLE } from '../utils';
-import { HAND_SIZE, YELLOW, PINK, PLAYER_COLORS, SORTS, colorHex, colorFg } from '../cards';
+import { HAND_SIZE, YELLOW, AMBER, PINK, PLAYER_COLORS, SORTS, PACKS, colorHex, colorFg } from '../cards';
 import { subscribeCards, seedDefaultsIfEmpty } from '../cardsStore';
 import { subscribeCategories, seedCategoriesIfEmpty } from '../categoriesStore';
 import { subscribeMyPacks, ownsPack } from '../entitlements';
-import { ChevronRight, X, LogOut, Copy, Check } from 'lucide-react';
+import { ChevronRight, X, LogOut, Copy, Check, Lock } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useState, useEffect } from 'react';
 import InstallButton from './InstallButton.jsx';
@@ -30,6 +30,11 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
   const [allCards, setAllCards] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
   const [myPacks, setMyPacks] = useState({});
+  // Pack dont on affiche le teaser (tap sur une categorie verrouillee).
+  const [teaserPackId, setTeaserPackId] = useState(null);
+
+  // Meta des packs premium (emoji + label) indexee par id, pour l'affichage.
+  const packById = Object.fromEntries(PACKS.map((p) => [p.id, p]));
 
   // Categorie premium verrouillee pour MOI (en tant qu'hote potentiel).
   // Sans champ `pack`, une categorie est gratuite → jamais verrouillee.
@@ -44,6 +49,12 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
       isHost && isLocked(c) ? false : (storedCats[c.id] ?? true),
     ])
   );
+
+  // Affichage : categories gratuites d'abord, packs verrouilles regroupes a la fin.
+  const sortedCategories = [...allCategories].sort(
+    (a, b) => (isLocked(a) ? 1 : 0) - (isLocked(b) ? 1 : 0)
+  );
+  const lockedCount = allCategories.filter(isLocked).length;
 
   useEffect(() => {
     seedDefaultsIfEmpty().catch(() => {});
@@ -92,6 +103,13 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
     await set(ref(db, `rooms/${roomCode}/settings/turnTimer`), n);
   }
 
+  // Mode Apero (jeu a boire) : active a la CREATION de la partie via le switch
+  // de l'accueil (settings.partyMode). Ici on l'affiche seulement (encart de
+  // regles visible par tous quand le mode est actif).
+  const partyMode = !!room.settings?.partyMode;
+  // Fond ambre "biere" quand le Mode Apero est actif (sinon jaune).
+  const baseColor = partyMode ? AMBER : YELLOW;
+
   async function pickWinningScore(n) {
     if (!isHost) return;
     await set(ref(db, `rooms/${roomCode}/settings/winningScore`), n);
@@ -121,6 +139,17 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
     const handsObj = {};
     const playersUpdate = {};
 
+    // Auto-attribution d'une couleur aux joueurs qui n'en ont pas choisi :
+    // sinon leur nom s'affiche en noir en jeu. On pioche une couleur LIBRE au
+    // hasard (les 16 couleurs couvrent toujours les 10 joueurs max).
+    const usedColors = new Set(players.filter((p) => p.color).map((p) => p.color));
+    const freeColors = shuffle(
+      PLAYER_COLORS.filter((c) => !usedColors.has(c.id)).map((c) => c.id)
+    );
+    let colorCursor = 0;
+    const colorFor = (p) =>
+      p.color || freeColors[colorCursor++] || PLAYER_COLORS[0].id;
+
     players.forEach((p) => {
       const handCards = shuffled.slice(cursor, cursor + HAND_SIZE);
       cursor += HAND_SIZE;
@@ -129,7 +158,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
         name: p.name,
         score: 0,
         joinedAt: p.joinedAt,
-        ...(p.color ? { color: p.color } : {}),
+        color: colorFor(p),
       };
     });
 
@@ -188,7 +217,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
   }
 
   return (
-    <div style={{ backgroundColor: YELLOW, minHeight: '100vh' }} className="text-black">
+    <div style={{ backgroundColor: baseColor, minHeight: '100vh' }} className={`text-black${partyMode ? ' apero-bg' : ''}`}>
       <div className="max-w-md mx-auto px-5 py-6 pb-32">
         <div className="flex items-center justify-between mb-6">
           <button onClick={leaveLobby} className="flex items-center gap-1.5">
@@ -258,6 +287,34 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
             </div>
           </div>
         </div>
+
+        {/* Regles du Mode Apero — visibles par TOUS les joueurs (pas que l'hote)
+            quand le mode est active, pour que chacun connaisse la regle a boire. */}
+        {partyMode && (
+        <div
+          className="border-4 border-black p-4 mb-6"
+          style={{ backgroundColor: PINK, color: '#FFF', boxShadow: '6px 6px 0 #000' }}
+        >
+          <div
+            style={{ fontFamily: '"Anton", sans-serif' }}
+            className="text-2xl uppercase mb-2"
+          >
+            🍻 Mode Apéro
+          </div>
+          <ul className="text-sm leading-relaxed space-y-1">
+            <li>• En jouant, tu <b>mises 1 à 4 gorgées</b> sur ta carte</li>
+            <li>• Ta carte choisie → tu ne bois pas, tu marques, et <b>tout le monde boit ta mise</b></li>
+            <li>• Sinon → tu bois la <b>mise de la carte gagnante</b></li>
+            <li>• Premier à <b>{winningScore} manches</b> = Roi·ne de la soirée</li>
+          </ul>
+          <div
+            style={{ fontFamily: '"Space Mono", monospace' }}
+            className="text-[9px] uppercase tracking-widest mt-3 opacity-80"
+          >
+            À consommer avec modération
+          </div>
+        </div>
+        )}
 
         {/* Saisie du prenom — affichee seulement tant qu'on n'a pas de prenom.
             L'host (et tout joueur deja nomme) ne la voit pas : il l'a deja mis. */}
@@ -543,15 +600,44 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
             {!isHost && ' · Seul le host peut changer'}
           </div>
           <div className="grid grid-cols-2 gap-3">
-            {allCategories.map((cat) => {
-              const locked = isHost && isLocked(cat);
-              const on = !locked && !!cats[cat.id];
+            {sortedCategories.map((cat) => {
+              // Pack premium non possede : tuile verrouillee (grisee, hachuree,
+              // cadenas + pastille du pack). Tap → teaser d'achat (a venir).
+              if (isLocked(cat)) {
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setTeaserPackId(cat.pack)}
+                    style={{
+                      backgroundColor: '#E9E9E9',
+                      backgroundImage:
+                        'repeating-linear-gradient(45deg, transparent 0 7px, rgba(0,0,0,0.05) 7px 14px)',
+                      boxShadow: '2px 2px 0 #000',
+                    }}
+                    className="relative border-4 border-black px-3 py-3 text-left flex items-center gap-2.5 active:translate-x-[2px] active:translate-y-[2px]"
+                  >
+                    <span
+                      style={{ backgroundColor: PINK }}
+                      className="shrink-0 w-7 h-7 border-2 border-black flex items-center justify-center"
+                    >
+                      <Lock size={15} strokeWidth={3.5} color="#FFF" />
+                    </span>
+                    <span
+                      style={{ fontFamily: '"Anton", sans-serif' }}
+                      className="uppercase text-lg leading-none flex-1 truncate text-black/45"
+                    >
+                      {cat.label}
+                    </span>
+                  </button>
+                );
+              }
+              const on = !!cats[cat.id];
               const isSpicy = cat.spicy;
               return (
                 <button
                   key={cat.id}
                   onClick={() => toggleCat(cat.id)}
-                  disabled={!isHost || locked}
+                  disabled={!isHost}
                   style={{
                     backgroundColor: on && isSpicy ? PINK : '#FFF',
                     color: on && isSpicy ? '#FFF' : '#000',
@@ -561,7 +647,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
                   }}
                   className="border-4 border-black px-3 py-3 text-left flex items-center gap-2 active:translate-x-[2px] active:translate-y-[2px] disabled:cursor-not-allowed"
                 >
-                  <span className="text-xl">{locked ? '🔒' : cat.emoji}</span>
+                  <span className="text-xl">{cat.emoji}</span>
                   <span
                     style={{ fontFamily: '"Anton", sans-serif' }}
                     className="uppercase text-lg leading-none"
@@ -572,6 +658,15 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
               );
             })}
           </div>
+          {lockedCount > 0 && (
+            <div
+              style={{ fontFamily: '"Space Mono", monospace' }}
+              className="text-[10px] uppercase tracking-widest mt-3 opacity-60 flex items-center gap-1.5"
+            >
+              <Lock size={12} strokeWidth={3} />
+              {lockedCount} catégories verrouillées · Pack Ultra
+            </div>
+          )}
         </div>
         )}
 
@@ -643,7 +738,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
 
       <div
         className="fixed bottom-0 left-0 right-0 p-4 border-t-4 border-black"
-        style={{ backgroundColor: YELLOW }}
+        style={{ backgroundColor: baseColor }}
       >
         <div className="max-w-md mx-auto">
           {!isHost ? (
@@ -699,6 +794,109 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
           )}
         </div>
       </div>
+
+      {/* Teaser pack premium (tap sur une categorie verrouillee). Le paiement
+          n'est pas encore branche : on annonce "bientot". */}
+      {teaserPackId && (() => {
+        const pack = packById[teaserPackId];
+        const packCats = allCategories.filter((c) => c.pack === teaserPackId);
+        const packCardCount = playableCards.filter((c) =>
+          packCats.some((pc) => pc.id === c.cat)
+        ).length;
+        const hasSpicy = packCats.some((c) => c.spicy);
+        return (
+          <div
+            onClick={() => setTeaserPackId(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center p-6"
+            style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="relative border-4 border-black bg-white w-full max-w-sm p-6"
+              style={{ boxShadow: '8px 8px 0 #000' }}
+            >
+              <button
+                onClick={() => setTeaserPackId(null)}
+                aria-label="Fermer"
+                className="absolute top-3 right-3 active:opacity-50"
+              >
+                <X size={24} strokeWidth={3} />
+              </button>
+              <div
+                style={{ fontFamily: '"Anton", sans-serif' }}
+                className="text-3xl uppercase leading-none mb-1 mt-1 text-center"
+              >
+                {pack?.label}
+              </div>
+              <div
+                style={{ fontFamily: '"Space Mono", monospace' }}
+                className="text-[10px] uppercase tracking-widest opacity-60 mb-4 text-center"
+              >
+                Pack premium · {packCats.length} catégorie
+                {packCats.length > 1 ? 's' : ''} · {packCardCount} cartes
+              </div>
+              {hasSpicy && (
+                <div
+                  style={{
+                    backgroundColor: PINK,
+                    color: '#FFF',
+                    boxShadow: '3px 3px 0 #000',
+                  }}
+                  className="border-2 border-black px-3 py-2 mb-4 flex items-center justify-center gap-2"
+                >
+                  <span className="text-lg leading-none">🌶️</span>
+                  <span
+                    style={{ fontFamily: '"Anton", sans-serif' }}
+                    className="uppercase text-sm leading-tight"
+                  >
+                    Inclut le Coquin +18
+                  </span>
+                </div>
+              )}
+              <div className="flex flex-wrap gap-2 mb-5 justify-center">
+                {packCats.map((c) => (
+                  <span
+                    key={c.id}
+                    className="border-2 border-black px-2 py-1 flex items-center gap-1.5"
+                    style={{ boxShadow: '2px 2px 0 #000' }}
+                  >
+                    <span className="text-base">{c.emoji}</span>
+                    <span
+                      style={{ fontFamily: '"Anton", sans-serif' }}
+                      className="uppercase text-sm leading-none"
+                    >
+                      {c.label}
+                    </span>
+                  </span>
+                ))}
+              </div>
+              <div className="border-t-2 border-black/10 pt-4 flex items-end justify-between gap-3">
+                <p className="text-sm opacity-80 flex-1">
+                  Si l'hôte a le pack, <b>tout le salon</b> en profite.
+                </p>
+                <div
+                  style={{ fontFamily: '"Anton", sans-serif' }}
+                  className="text-3xl leading-none shrink-0"
+                >
+                  4,99&nbsp;€
+                </div>
+              </div>
+              <button
+                onClick={() => setTeaserPackId(null)}
+                className="mt-5 w-full border-4 border-black bg-black text-white py-3 active:translate-x-[2px] active:translate-y-[2px]"
+                style={{ boxShadow: '4px 4px 0 #000' }}
+              >
+                <span
+                  style={{ fontFamily: '"Anton", sans-serif' }}
+                  className="text-xl uppercase"
+                >
+                  Bientôt en boutique
+                </span>
+              </button>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

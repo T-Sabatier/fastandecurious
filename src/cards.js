@@ -182,11 +182,12 @@ export const CATEGORIES = [
 // verrouillee pour les hotes qui ne possedent pas ce pack. Les PRIX vivent
 // dans Google Play Console (produits in-app du meme id), jamais ici.
 // `tout_debloquer` est le bundle qui donne acces a tous les packs.
+//
+// Lancement : UN seul pack premium (Pack Ultra, 7 categories dont Coquin +18,
+// mis en avant comme argument de vente). Le mode "Apero" (jeu a boire) sera un
+// 2e produit paye a part (deblocage de MODE, pas de categories) — post-lancement.
 export const PACKS = [
-  { id: 'pack_coquin', label: 'Pack Coquin', emoji: '🌶️' },
-  { id: 'pack_popculture', label: 'Pack Pop Culture', emoji: '⭐' },
-  { id: 'pack_france', label: 'Pack France', emoji: '🇫🇷' },
-  { id: 'pack_feelings', label: 'Pack Feelings', emoji: '❤️' },
+  { id: 'pack_ultra', label: 'Pack Ultra', emoji: '🔒' },
 ];
 export const UNLOCK_ALL_ID = 'tout_debloquer';
 
@@ -200,6 +201,9 @@ export const SORTS = [
 export const HAND_SIZE = 7;
 export const WINNING_SCORE = 5;
 export const YELLOW = '#FFE600';
+// Couleur de fond du Mode Apero (jeu a boire) : ambre "biere/golden", en
+// gardant les contours noirs + l'accent rose. Remplace le jaune sur les fonds.
+export const AMBER = '#FFA000';
 export const PINK = '#FF2D6F';
 export const LIKE_GREEN = '#00C853';
 export const DISLIKE_RED = '#FF1744';
@@ -223,8 +227,8 @@ export const PLAYER_COLORS = [
   { id: 'white',  hex: '#FFFFFF' },
 ];
 
-// Nombre max de joueurs par room (le nuancier de 16 couleurs couvre toujours)
-export const MAX_PLAYERS = 10;
+// Nombre max de joueurs par room (le nuancier de 16 couleurs couvre pile 16)
+export const MAX_PLAYERS = 16;
 
 export function colorHex(id) {
   return PLAYER_COLORS.find((c) => c.id === id)?.hex || null;
