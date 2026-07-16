@@ -54,6 +54,7 @@ Ou en CLI : `npx firebase-tools deploy --only database` (le projet contient
 | `rooms/*` | joueurs connectés (anonymes inclus) | joueurs connectés, code room 4 chars valide |
 | `cards`, `categories` | joueurs connectés | **admin uniquement** |
 | `deletedDefaults`, `deletedCategories` | joueurs connectés | **admin uniquement** |
+| `users/$uid` | le joueur lui-même | **personne côté client** (serveur uniquement) |
 | `admin` | personne | personne (console uniquement) |
 | tout le reste | refusé | refusé |
 
@@ -70,10 +71,51 @@ dashboard, avec les droits admin).
 - L'auth anonyme n'empêche pas un script d'obtenir un jeton anonyme. La vraie
   parade est **App Check** (voir ci-dessous).
 
+## Monétisation : attribution des packs (CRITIQUE avant le 1er pack payant)
+
+Le nœud `users/$uid` est en **lecture seule côté client** (`.write: false`).
+Le joueur consulte ses droits (`users/$uid/packs`) mais **ne peut pas se les
+attribuer** — sinon n'importe qui débloquerait les packs payants gratuitement
+en écrivant `packs/pack_coquin: true` depuis la console du navigateur.
+
+L'écriture des packs doit donc se faire **côté serveur uniquement**, après
+vérification du reçu d'achat :
+
+- [ ] **Cloud Function / webhook RevenueCat** (Admin SDK, qui contourne les
+      règles) qui, à réception d'un achat validé (Play Billing), écrit
+      `users/$uid/packs/<packId>: true`.
+- [ ] Tant que ce back-end n'existe pas, **aucun pack ne peut être débloqué**
+      (c'est voulu : mieux vaut « pas encore de packs » que « packs gratuits
+      pour tous »).
+- [ ] Rappel : le *contenu* des cartes premium reste téléchargeable par tout
+      client (`cards` lisible par tous). Le verrou est côté sélection, pas côté
+      données. Acceptable pour des packs à ~2 € ; à revoir si on veut une vraie
+      protection du contenu (livraison via fonction serveur).
+
 ## À faire plus tard (phase Android / avant gros trafic)
 
 - [ ] **Firebase App Check** : reCAPTCHA v3 (web) + Play Integrity (Android via
       Capacitor). Bloque les clients qui ne sont pas l'app officielle.
+      ⚠️ Ne PAS activer l'« enforcement » avant d'avoir enregistré les deux
+      fournisseurs dans la console + intégré le SDK client, sinon TOUTES les
+      requêtes sont rejetées et l'app casse.
 - [ ] **Plan Blaze** + alertes budget : le plan gratuit est limité à
-      **100 connexions simultanées** (~15-25 parties en même temps).
+      **100 connexions simultanées** (~15-25 parties en même temps). À activer
+      avant toute promo, sinon l'app cesse de répondre aux nouveaux joueurs.
 - [ ] Exclure la route `/admin` du build natif Android (admin = web only).
+- [ ] (Hygiène) Passer Firebase du SDK v10 à v11. Les 12 vulns `npm audit`
+      viennent de `undici` via `firestore`/`functions`/`storage`, modules NON
+      importés → tree-shakés hors du bundle, risque réel faible. À faire à froid
+      (pas sur un build prêt à publier), avec re-test complet.
+
+## Déploiement des règles après modification
+
+Toute modif de `database.rules.json` doit être **publiée** pour prendre effet :
+
+```
+npx firebase-tools deploy --only database
+```
+
+(ou coller le contenu du fichier dans Console → Realtime Database → Règles →
+Publier). Tant que ce n'est pas fait, les règles en vigueur restent les
+anciennes.
