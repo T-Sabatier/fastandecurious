@@ -41,3 +41,20 @@ input {
 .boss-glow {
   animation: boss-glow 2.2s ease-in-out infinite;
 }
+
+/* Fond Mode Apero (jeu a boire) : texture biere. Applique sur la racine des
+   ecrans quand le mode est actif. `fixed` = le fond ne defile pas avec le
+   contenu ; sur mobile ou fixed est ignore, il defile simplement (ok). La
+   couleur de fond inline (ambre) reste en secours si l'image ne charge pas. */
+.apero-bg {
+  background-image: url('/apero-bg.webp');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+@media (min-width: 768px) {
+  .apero-bg {
+    background-image: url('/apero-bg-wide.webp');
+  }
+}

@@ -5,10 +5,14 @@ import {
   makeRoomCode,
   getStoredName,
   setStoredName,
+  getStoredParty,
+  setStoredParty,
+  getStoredAperoUnlock,
+  setStoredAperoUnlock,
   ROOM_TTL_MS,
 } from '../utils';
-import { CATEGORIES, YELLOW, PINK, MAX_PLAYERS } from '../cards';
-import { ChevronRight } from 'lucide-react';
+import { CATEGORIES, YELLOW, AMBER, PINK, MAX_PLAYERS } from '../cards';
+import { ChevronRight, Lock, X } from 'lucide-react';
 import InstallButton from './InstallButton.jsx';
 
 function getCodeFromUrl() {
@@ -23,6 +27,24 @@ export default function Home({ playerId, onJoin, initialError }) {
   const [error, setError] = useState(initialError || '');
   const [busy, setBusy] = useState(false);
   const [invitedCode] = useState(getCodeFromUrl);
+  // Preference "Mode Apero" (jeu a boire) + possession du mode (produit paye).
+  // Le mode ne s'active que si l'utilisateur le POSSEDE (aperoOwned). Tant que
+  // le billing n'est pas branche : verrouille, deblocable via bouton dev.
+  const [party, setParty] = useState(getStoredParty);
+  const [aperoOwned, setAperoOwned] = useState(getStoredAperoUnlock);
+  const [aperoTeaser, setAperoTeaser] = useState(false);
+  // Mode apero reellement actif = voulu ET possede.
+  const partyActive = party && aperoOwned;
+  function toggleParty() {
+    const v = !party;
+    setParty(v);
+    setStoredParty(v);
+  }
+  function unlockAperoForTest() {
+    setStoredAperoUnlock(true);
+    setAperoOwned(true);
+    setAperoTeaser(false);
+  }
 
   useEffect(() => {
     // Sweep au chargement : on ne recupere QUE les rooms trop vieilles (> TTL)
@@ -82,6 +104,8 @@ export default function Home({ playerId, onJoin, initialError }) {
         cats: defaultCats,
         winningScore: 5,
         sorts: { reroll: false, espion: false, vatout: false },
+        // Mode Apero pre-active si l'hote le POSSEDE et l'a choisi sur l'accueil.
+        ...(partyActive ? { partyMode: true } : {}),
       },
     };
 
@@ -148,8 +172,8 @@ export default function Home({ playerId, onJoin, initialError }) {
 
   return (
     <div
-      style={{ backgroundColor: YELLOW, minHeight: '100vh' }}
-      className="text-black overflow-x-hidden"
+      style={{ backgroundColor: partyActive ? AMBER : YELLOW, minHeight: '100vh' }}
+      className={`text-black overflow-x-hidden${partyActive ? ' apero-bg' : ''}`}
     >
       <div className="max-w-md mx-auto px-5 py-10">
         <div className="mb-10">
@@ -179,12 +203,88 @@ export default function Home({ playerId, onJoin, initialError }) {
             <div className="h-1 flex-1 bg-black"></div>
             <div
               style={{ fontFamily: '"Space Mono", monospace' }}
-              className="text-[10px] uppercase tracking-widest whitespace-nowrap"
+              className="text-[10px] uppercase tracking-widest whitespace-nowrap text-black"
             >
-              Devine ce qu'ils aiment ou pas…
+              {partyActive ? 'Mode apéro : on joue à boire' : "Devine ce qu'ils aiment ou pas…"}
             </div>
           </div>
         </div>
+
+        {/* Switch Mode Apero (jeu a boire) — sur l'accueil pour la decouverte.
+            Pre-active le mode a la creation d'une partie ; change l'ambiance. */}
+        {aperoOwned ? (
+          // Mode possede : simple interrupteur On/Off.
+          <button
+            onClick={toggleParty}
+            className="w-full border-4 border-black p-4 mb-8 flex items-center justify-between active:translate-x-[2px] active:translate-y-[2px]"
+            style={{
+              backgroundColor: party ? PINK : '#FFF',
+              color: party ? '#FFF' : '#000',
+              boxShadow: party ? '6px 6px 0 #000' : '4px 4px 0 #000',
+              transition: 'all 120ms',
+            }}
+          >
+            <div className="text-left min-w-0">
+              <div
+                style={{ fontFamily: '"Anton", sans-serif' }}
+                className="text-2xl uppercase leading-none"
+              >
+                Mode Apéro
+              </div>
+              <div
+                style={{ fontFamily: '"Space Mono", monospace' }}
+                className="text-[10px] uppercase tracking-widest mt-1 opacity-80"
+              >
+                {party ? 'Activé · on joue à boire !' : 'Jeu à boire · active-le'}
+              </div>
+            </div>
+            <div
+              className="border-2 px-3 py-1.5 text-sm uppercase tracking-widest shrink-0"
+              style={{
+                fontFamily: '"Space Mono", monospace',
+                borderColor: party ? '#FFF' : '#000',
+              }}
+            >
+              {party ? 'ON' : 'OFF'}
+            </div>
+          </button>
+        ) : (
+          // Mode NON possede : verrouille, affiche le prix, ouvre le teaser.
+          <button
+            onClick={() => setAperoTeaser(true)}
+            className="w-full border-4 border-black bg-white p-4 mb-8 flex items-center justify-between gap-3 active:translate-x-[2px] active:translate-y-[2px]"
+            style={{ boxShadow: '4px 4px 0 #000' }}
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <span
+                style={{ backgroundColor: PINK }}
+                className="shrink-0 w-8 h-8 border-2 border-black flex items-center justify-center"
+              >
+                <Lock size={16} strokeWidth={3.5} color="#FFF" />
+              </span>
+              <div className="text-left min-w-0">
+                <div
+                  style={{ fontFamily: '"Anton", sans-serif' }}
+                  className="text-2xl uppercase leading-none"
+                >
+                  Mode Apéro
+                </div>
+                <div
+                  style={{ fontFamily: '"Space Mono", monospace' }}
+                  className="text-[10px] uppercase tracking-widest mt-1 opacity-70"
+                >
+                  Jeu à boire · premium
+                </div>
+              </div>
+            </div>
+            <div
+              className="border-2 border-black px-2.5 py-1.5 text-sm uppercase tracking-widest shrink-0"
+              style={{ fontFamily: '"Space Mono", monospace' }}
+            >
+              4,99 €
+            </div>
+          </button>
+        )}
 
         {invitedCode && (
           <div
@@ -338,6 +438,84 @@ export default function Home({ playerId, onJoin, initialError }) {
         >
           🐛 Debug
         </a>
+      )}
+
+      {/* Teaser Mode Apero (produit paye). Le paiement n'est pas branche :
+          CTA "bientot", + bouton dev pour debloquer et tester. */}
+      {aperoTeaser && (
+        <div
+          onClick={() => setAperoTeaser(false)}
+          className="fixed inset-0 z-50 flex items-center justify-center p-6"
+          style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative border-4 border-black bg-white w-full max-w-sm p-6"
+            style={{ boxShadow: '8px 8px 0 #000' }}
+          >
+            <button
+              onClick={() => setAperoTeaser(false)}
+              aria-label="Fermer"
+              className="absolute top-3 right-3 active:opacity-50"
+            >
+              <X size={24} strokeWidth={3} />
+            </button>
+            <div
+              style={{ fontFamily: '"Anton", sans-serif' }}
+              className="text-3xl uppercase leading-none mb-1 mt-1 text-center"
+            >
+              Mode Apéro
+            </div>
+            <div
+              style={{ fontFamily: '"Space Mono", monospace' }}
+              className="text-[10px] uppercase tracking-widest opacity-60 mb-4 text-center"
+            >
+              Premium · jeu à boire
+            </div>
+            <p className="text-sm mb-2">
+              Transforme Snap Tap en <b>jeu à boire</b> : tu mises des gorgées
+              sur tes cartes, et la carte choisie fait boire tout le salon.
+            </p>
+            <p
+              style={{ fontFamily: '"Space Mono", monospace' }}
+              className="text-[9px] uppercase tracking-widest opacity-50 mb-4"
+            >
+              À consommer avec modération
+            </p>
+            <div className="border-t-2 border-black/10 pt-4 flex items-end justify-between gap-3">
+              <p className="text-sm opacity-80 flex-1">
+                L'hôte débloque, <b>tout le salon</b> en profite.
+              </p>
+              <div
+                style={{ fontFamily: '"Anton", sans-serif' }}
+                className="text-3xl leading-none shrink-0"
+              >
+                4,99&nbsp;€
+              </div>
+            </div>
+            <button
+              onClick={() => setAperoTeaser(false)}
+              className="mt-5 w-full border-4 border-black bg-black text-white py-3 active:translate-x-[2px] active:translate-y-[2px]"
+              style={{ boxShadow: '4px 4px 0 #000' }}
+            >
+              <span
+                style={{ fontFamily: '"Anton", sans-serif' }}
+                className="text-xl uppercase"
+              >
+                Bientôt en boutique
+              </span>
+            </button>
+            {import.meta.env.DEV && (
+              <button
+                onClick={unlockAperoForTest}
+                className="mt-2 w-full border-2 border-black bg-white py-2 text-[10px] uppercase tracking-widest active:opacity-60"
+                style={{ fontFamily: '"Space Mono", monospace' }}
+              >
+                🔧 Activer pour tester (dev)
+              </button>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

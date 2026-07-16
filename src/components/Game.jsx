@@ -12,6 +12,7 @@ import {
   WINNING_SCORE,
   HAND_SIZE,
   YELLOW,
+  AMBER,
   PINK,
   LIKE_GREEN,
   DISLIKE_RED,
@@ -42,6 +43,9 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   const [selectedCard, setSelectedCard] = useState(null);
   const [busy, setBusy] = useState(false);
   const [vatoutArmed, setVatoutArmed] = useState(false);
+  // Mode Apero : mise (1-4 gorgees) posee avec sa carte. Si ta carte est
+  // choisie par le boss, tous les autres boivent ta mise.
+  const [bet, setBet] = useState(1);
   const [espionArming, setEspionArming] = useState(false);
   const [espionReveal, setEspionReveal] = useState({});
   const [espionDone, setEspionDone] = useState(false);
@@ -49,6 +53,15 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
 
   const isHost = room.host === playerId;
   const isBoss = room.bossId === playerId;
+
+  // Mode Apero (jeu a boire) : couche d'affichage par-dessus le moteur normal.
+  // Systeme de mise (gorgees). Regle du jeu inchangee.
+  const partyMode = !!room.settings?.partyMode;
+  // Fond ambre "biere" quand le Mode Apero est actif (sinon jaune), en gardant
+  // les accents jaunes sur noir et le rose. La couleur sert de SECOURS derriere
+  // la texture biere (classe .apero-bg) appliquee sur la racine des ecrans.
+  const baseColor = partyMode ? AMBER : YELLOW;
+  const baseClass = partyMode ? 'apero-bg' : '';
 
   const players = Object.entries(room.players || {}).map(([id, p]) => ({
     id,
@@ -182,6 +195,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         played: null,
         bossPick: null,
         vatout: null,
+        bets: null, // Mode Apero : on repart avec des mises vierges chaque manche
         // Depart du timer par tour (si active dans les reglages du salon)
         playStartedAt: Date.now(),
       });
@@ -203,11 +217,16 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         updates[`vatout/${playerId}`] = true;
         updates[`players/${playerId}/sortsUsed/vatout`] = true;
       }
+      // Mode Apero : on enregistre la mise posee avec la carte.
+      if (partyMode) {
+        updates[`bets/${playerId}`] = bet;
+      }
       await update(ref(db, `rooms/${roomCode}`), updates);
     } finally {
       setBusy(false);
       setSelectedCard(null);
       setVatoutArmed(false);
+      setBet(1);
     }
   }
 
@@ -409,7 +428,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   const TopBar = ({ right }) => (
     // text-black explicite : la barre reste jaune sur TOUS les ecrans, y
     // compris le mode projecteur (fond noir + text-white herite sinon).
-    <div className="px-4 py-3 border-b-4 border-black bg-yellow-300 text-black" style={{ backgroundColor: YELLOW }}>
+    <div className="px-4 py-3 border-b-4 border-black bg-yellow-300 text-black" style={{ backgroundColor: baseColor }}>
       <div className="flex items-center justify-between max-w-xl mx-auto">
         <button onClick={leaveGame} className="flex items-center gap-1.5">
           <LogOut size={16} />
@@ -430,7 +449,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
           style={{ fontFamily: '"Space Mono", monospace' }}
           className="text-[10px] uppercase tracking-widest text-right min-w-[60px]"
         >
-          {right || ''}
+          {right || (partyMode ? '🍻 Apéro' : '')}
         </div>
       </div>
     </div>
@@ -483,14 +502,14 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
 
   const baseWrap = {
     minHeight: '100vh',
-    backgroundColor: YELLOW,
+    backgroundColor: baseColor,
   };
 
   // ============ PHASE: BOSS_CHOOSE ============
   if (room.phase === 'boss_choose') {
     if (isBoss) {
       return (
-        <div style={baseWrap} className="text-black flex flex-col">
+        <div style={baseWrap} className={`text-black flex flex-col ${baseClass}`}>
           <TopBar right={`TOUR ${room.round || 1}`} />
           <Scoreboard />
           <div className="flex-1 px-5 py-6 flex flex-col max-w-xl mx-auto w-full text-center">
@@ -578,7 +597,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     }
     // Non-boss waiting
     return (
-      <div style={baseWrap} className="text-black flex flex-col">
+      <div style={baseWrap} className={`text-black flex flex-col ${baseClass}`}>
         <TopBar right={`TOUR ${room.round || 1}`} />
         <Scoreboard />
         <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
@@ -619,7 +638,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     if (isBoss) {
       // Boss waits while others play
       return (
-        <div style={baseWrap} className="text-black flex flex-col">
+        <div style={baseWrap} className={`text-black flex flex-col ${baseClass}`}>
           <TopBar right={`${playedCount}/${nonBossCount}`} />
           <Scoreboard />
           <div className="flex-1 flex flex-col items-center justify-center px-4 text-center max-w-xl mx-auto w-full">
@@ -699,7 +718,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
       const myPlayedCardId = playedObj[playerId];
       const myCard = pool[myPlayedCardId];
       return (
-        <div style={baseWrap} className="text-black flex flex-col">
+        <div style={baseWrap} className={`text-black flex flex-col ${baseClass}`}>
           <TopBar right={`${playedCount}/${nonBossCount}`} />
           <Scoreboard />
           <div className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-xl mx-auto w-full">
@@ -760,7 +779,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     // Non-boss player : main directement, banniere mode en haut
     const isLike = room.mode === 'like';
     return (
-      <div style={baseWrap} className="text-black flex flex-col">
+      <div style={baseWrap} className={`text-black flex flex-col ${baseClass}`}>
         <TopBar right={`${playedCount}/${nonBossCount}`} />
         <Scoreboard />
         <div className="px-4 pt-3 pb-6 max-w-xl mx-auto w-full">
@@ -842,7 +861,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
 
         <div
           className="fixed bottom-0 left-0 right-0 p-4 border-t-4 border-black"
-          style={{ backgroundColor: YELLOW }}
+          style={{ backgroundColor: baseColor }}
         >
           <div className="max-w-xl mx-auto">
             {timerActive && !isBoss && !iHavePlayed && (
@@ -942,6 +961,42 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                   </button>
                 </div>
               ))}
+            {partyMode && (
+              <div className="mb-2">
+                <div
+                  style={{ fontFamily: '"Space Mono", monospace' }}
+                  className="text-[10px] uppercase tracking-widest text-center mb-1.5 opacity-70"
+                >
+                  Ta mise 🍺 · si ta carte est choisie, tout le monde boit
+                </div>
+                <div className="flex justify-center gap-2">
+                  {[1, 2, 3, 4].map((n) => {
+                    const on = bet === n;
+                    return (
+                      <button
+                        key={n}
+                        onClick={() => setBet(n)}
+                        style={{
+                          backgroundColor: on ? PINK : '#FFF',
+                          color: on ? '#FFF' : '#000',
+                          boxShadow: on ? '4px 4px 0 #000' : '2px 2px 0 #000',
+                          transform: on ? 'translate(-1px,-1px)' : 'none',
+                          minWidth: 52,
+                        }}
+                        className="border-4 border-black py-2 active:translate-x-[2px] active:translate-y-[2px]"
+                      >
+                        <span
+                          style={{ fontFamily: '"Anton", sans-serif' }}
+                          className="text-2xl uppercase leading-none"
+                        >
+                          {n}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
             <button
               onClick={playCard}
               disabled={!selectedCard || busy}
@@ -954,9 +1009,11 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                   className="text-xl uppercase tracking-wide"
                 >
                   {selectedCard
-                    ? vatoutArmed
-                      ? 'Jouer en x2 🔥'
-                      : 'Jouer cette carte'
+                    ? partyMode
+                      ? `Jouer · mise ${bet} 🍺`
+                      : vatoutArmed
+                        ? 'Jouer en x2 🔥'
+                        : 'Jouer cette carte'
                     : 'Choisis une carte'}
                 </span>
                 {selectedCard && <ChevronRight size={24} />}
@@ -972,7 +1029,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   if (room.phase === 'reveal') {
     if (isBoss) {
       return (
-        <div style={baseWrap} className="text-black flex flex-col">
+        <div style={baseWrap} className={`text-black flex flex-col ${baseClass}`}>
           <TopBar right={`${playedEntries.length} CARTES`} />
           <Scoreboard />
           <div className="px-5 pt-3 pb-2 max-w-xl mx-auto w-full">
@@ -1047,7 +1104,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
 
           <div
             className="fixed bottom-0 left-0 right-0 p-4 border-t-4 border-black"
-            style={{ backgroundColor: YELLOW }}
+            style={{ backgroundColor: baseColor }}
           >
             <div className="max-w-xl mx-auto">
               <button
@@ -1246,12 +1303,14 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     const winnerP = playerById[room.winnerInfo.playerId];
     const winnerCard = pool[room.winnerInfo.cardId];
     const winnerGain = room.vatout?.[room.winnerInfo.playerId] ? 2 : 1;
+    // Mode Apero : la mise de la carte gagnante = ce que tout le monde boit.
+    const winnerBet = room.bets?.[room.winnerInfo.playerId] ?? 1;
     const winnerNewScore = (winnerP?.score || 0) + winnerGain;
     const willWinGame = winnerNewScore >= (room.settings?.winningScore ?? WINNING_SCORE);
     const iAmWinner = room.winnerInfo.playerId === playerId;
 
     return (
-      <div style={baseWrap} className="text-black flex flex-col">
+      <div style={baseWrap} className={`text-black flex flex-col ${baseClass}`}>
         <TopBar />
         <Scoreboard />
         <div className="flex-1 flex flex-col items-center justify-center px-6 text-center py-6 max-w-xl mx-auto w-full">
@@ -1308,37 +1367,83 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
           >
             {winnerP?.name || '?'} {iAmWinner && '🎉'}
           </div>
-          <div
-            style={{
-              fontFamily: '"Anton", sans-serif',
-              backgroundColor: '#000',
-              color: YELLOW,
-              boxShadow: '4px 4px 0 #000',
-              transform: 'rotate(3deg)',
-            }}
-            className="inline-block border-4 border-black px-3 py-2 text-2xl uppercase"
-          >
-            +{winnerGain} point{winnerGain > 1 ? 's' : ''}
-          </div>
-          {winnerGain > 1 && (
-            <div
-              style={{
-                fontFamily: '"Anton", sans-serif',
-                backgroundColor: DISLIKE_RED,
-                color: '#FFF',
-                boxShadow: '4px 4px 0 #000',
-                transform: 'rotate(-2deg)',
-              }}
-              className="inline-block border-4 border-black px-3 py-1 text-lg uppercase mt-3 ml-2"
-            >
-              🔥 x2 réussi
-            </div>
+          {partyMode ? (
+            <>
+              <div
+                style={{
+                  fontFamily: '"Anton", sans-serif',
+                  backgroundColor: PINK,
+                  color: '#FFF',
+                  boxShadow: '4px 4px 0 #000',
+                  transform: 'rotate(3deg)',
+                }}
+                className="inline-block border-4 border-black px-4 py-3 text-3xl uppercase leading-none"
+              >
+                🍺 Tout le monde boit {winnerBet}
+              </div>
+              <div
+                style={{ fontFamily: '"Space Mono", monospace' }}
+                className="text-[11px] uppercase tracking-widest mt-4 flex items-center justify-center gap-2 flex-wrap"
+              >
+                <span
+                  style={{
+                    fontFamily: '"Anton", sans-serif',
+                    fontSize: '1.6em',
+                    color: colorHex(winnerP?.color) || '#000',
+                    WebkitTextStroke: '3px #000',
+                    paintOrder: 'stroke fill',
+                    letterSpacing: '0.05em',
+                    lineHeight: 1,
+                  }}
+                >
+                  {winnerP?.name}
+                </span>
+                <span className="opacity-80">
+                  avait misé {winnerBet} gorgée{winnerBet > 1 ? 's' : ''}
+                </span>
+              </div>
+              <div
+                style={{ fontFamily: '"Space Mono", monospace' }}
+                className="text-[9px] uppercase tracking-widest mt-1 opacity-50"
+              >
+                Le·la gagnant·e ne boit pas · à consommer avec modération
+              </div>
+            </>
+          ) : (
+            <>
+              <div
+                style={{
+                  fontFamily: '"Anton", sans-serif',
+                  backgroundColor: '#000',
+                  color: YELLOW,
+                  boxShadow: '4px 4px 0 #000',
+                  transform: 'rotate(3deg)',
+                }}
+                className="inline-block border-4 border-black px-3 py-2 text-2xl uppercase"
+              >
+                +{winnerGain} point{winnerGain > 1 ? 's' : ''}
+              </div>
+              {winnerGain > 1 && (
+                <div
+                  style={{
+                    fontFamily: '"Anton", sans-serif',
+                    backgroundColor: DISLIKE_RED,
+                    color: '#FFF',
+                    boxShadow: '4px 4px 0 #000',
+                    transform: 'rotate(-2deg)',
+                  }}
+                  className="inline-block border-4 border-black px-3 py-1 text-lg uppercase mt-3 ml-2"
+                >
+                  🔥 x2 réussi
+                </div>
+              )}
+            </>
           )}
         </div>
 
         <div
           className="p-4 border-t-4 border-black"
-          style={{ backgroundColor: YELLOW }}
+          style={{ backgroundColor: baseColor }}
         >
           {isHost ? (
             <button
@@ -1377,7 +1482,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     const ranked = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
     const champ = ranked[0];
     return (
-      <div style={baseWrap} className="text-black flex flex-col">
+      <div style={baseWrap} className={`text-black flex flex-col ${baseClass}`}>
         <TopBar />
         <div className="flex-1 flex flex-col items-center justify-center px-6 text-center py-8 max-w-xl mx-auto w-full">
           <Trophy size={80} strokeWidth={2.5} />
@@ -1385,7 +1490,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
             style={{ fontFamily: '"Space Mono", monospace' }}
             className="text-[10px] uppercase tracking-widest opacity-60 mt-4 mb-2"
           >
-            Champion·ne du jour
+            {partyMode ? 'Roi·ne de la soirée 🍻' : 'Champion·ne du jour'}
           </div>
           <div
             style={{

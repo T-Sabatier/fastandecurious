@@ -53,6 +53,27 @@ export function setStoredName(name) {
   localStorage.setItem('fc_playerName', name);
 }
 
+// Preference locale "Mode Apero" (jeu a boire), choisie sur l'accueil. Sert a
+// pre-activer le mode a la CREATION d'une partie (settings.partyMode).
+export function getStoredParty() {
+  return localStorage.getItem('fc_party') === '1';
+}
+
+export function setStoredParty(on) {
+  localStorage.setItem('fc_party', on ? '1' : '0');
+}
+
+// Possession du Mode Apero (produit paye). TODO billing : remplacer par le vrai
+// droit (users/$uid/packs/mode_apero via entitlements). Pour l'instant : flag
+// local mis a true UNIQUEMENT par le bouton "activer pour tester" (dev).
+export function getStoredAperoUnlock() {
+  return localStorage.getItem('fc_apero_unlocked') === '1';
+}
+
+export function setStoredAperoUnlock(on) {
+  localStorage.setItem('fc_apero_unlocked', on ? '1' : '0');
+}
+
 export function getStoredRoom() {
   return localStorage.getItem('fc_currentRoom') || null;
 }
