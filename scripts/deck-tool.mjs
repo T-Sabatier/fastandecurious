@@ -10,6 +10,8 @@
 //   node scripts/deck-tool.mjs del <cardId>
 //   node scripts/deck-tool.mjs rename <cardId> "Nouveau texte"
 //   node scripts/deck-tool.mjs addcat <id> "Label" <emoji> [--spicy] [--pack <packId>]
+//   node scripts/deck-tool.mjs setpack <catId> <packId> → rattache à un pack (verrou)
+//   node scripts/deck-tool.mjs unsetpack <catId>        → détache (redevient gratuite)
 //   node scripts/deck-tool.mjs export <fichier.json>    → sauvegarde complète
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -183,6 +185,29 @@ switch (cmd) {
     if (!cardId || !text) throw new Error('Usage: rename <cardId> "Nouveau texte"');
     await update(ref(db, `cards/${cardId}`), { t: text });
     console.log(`✏️ Renommée : ${cardId} → "${text}"`);
+    break;
+  }
+
+  case 'setpack': {
+    // Rattache une categorie existante a un pack premium (verrouillage).
+    const [id, packId] = args;
+    if (!id || !packId)
+      throw new Error('Usage: setpack <catId> <packId>');
+    const snap = await get(ref(db, `categories/${id}`));
+    if (!snap.exists()) throw new Error(`Catégorie inconnue: ${id}`);
+    await update(ref(db, `categories/${id}`), { pack: packId });
+    console.log(`🔒 ${snap.val().emoji} ${snap.val().label} rattachée au pack "${packId}"`);
+    break;
+  }
+
+  case 'unsetpack': {
+    // Detache une categorie de son pack → elle redevient gratuite.
+    const [id] = args;
+    if (!id) throw new Error('Usage: unsetpack <catId>');
+    const snap = await get(ref(db, `categories/${id}`));
+    if (!snap.exists()) throw new Error(`Catégorie inconnue: ${id}`);
+    await update(ref(db, `categories/${id}`), { pack: null });
+    console.log(`🔓 ${snap.val().emoji} ${snap.val().label} redevenue gratuite`);
     break;
   }
 
