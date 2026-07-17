@@ -62,16 +62,16 @@ export default function Home({ playerId, onJoin, initialError }) {
     setShopError('');
     try {
       await purchase(productId);
-    } catch {
-      setShopError('Achat impossible pour le moment. Réessaie.');
+    } catch (e) {
+      setShopError('Erreur : ' + (e?.message || e?.code || String(e)));
     }
   }
   async function restorePurchases() {
     setShopError('');
     try {
       await restore();
-    } catch {
-      setShopError('Restauration impossible pour le moment.');
+    } catch (e) {
+      setShopError('Erreur : ' + (e?.message || e?.code || String(e)));
     }
   }
 
@@ -213,7 +213,7 @@ export default function Home({ playerId, onJoin, initialError }) {
               letterSpacing: '-0.02em',
               fontSize: 'clamp(2.75rem, 18vw, 7rem)',
             }}
-            className="uppercase whitespace-nowrap flex items-end gap-3"
+            className="uppercase whitespace-nowrap flex items-center gap-3"
           >
             <span>
               {partyActive ? (
@@ -696,7 +696,7 @@ export default function Home({ playerId, onJoin, initialError }) {
               })}
             </div>
             {shopError && (
-              <div className="mt-3 text-center text-xs text-red-600">{shopError}</div>
+              <div className="mt-3 text-center text-xs text-red-600 break-words">{shopError}</div>
             )}
             {billingAvailable ? (
               <button

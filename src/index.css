@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Design assume en clair : bloque l'inversion sombre auto (Chrome/WebView). */
+:root {
+  color-scheme: light;
+}
+
 html, body, #root {
   height: 100%;
 }

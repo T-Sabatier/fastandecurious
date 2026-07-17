@@ -40,7 +40,9 @@ let _configured = false;
 export async function initPurchases() {
   if (!BILLING_AVAILABLE || _configured) return;
   try {
-    await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
+    await Purchases.setLogLevel({
+      level: import.meta.env.DEV ? LOG_LEVEL.DEBUG : LOG_LEVEL.WARN,
+    });
     await Purchases.configure({ apiKey: RC_ANDROID_KEY });
     _configured = true;
   } catch (e) {
