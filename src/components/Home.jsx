@@ -213,7 +213,7 @@ export default function Home({ playerId, onJoin, initialError }) {
               letterSpacing: '-0.02em',
               fontSize: 'clamp(2.75rem, 18vw, 7rem)',
             }}
-            className="uppercase whitespace-nowrap flex items-center gap-3"
+            className="uppercase whitespace-nowrap flex items-center justify-center gap-3"
           >
             <span>
               {partyActive ? (
