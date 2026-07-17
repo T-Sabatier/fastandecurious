@@ -211,7 +211,7 @@ export default function Home({ playerId, onJoin, initialError }) {
               fontFamily: '"Anton", sans-serif',
               lineHeight: 0.82,
               letterSpacing: '-0.02em',
-              fontSize: 'clamp(2.75rem, 18vw, 7rem)',
+              fontSize: 'clamp(3.25rem, 22vw, 7rem)',
             }}
             className="uppercase whitespace-nowrap flex items-center justify-center gap-3"
           >
