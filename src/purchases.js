@@ -7,9 +7,12 @@
 // IMPORTANT : le plugin est NATIF. Sur le web (navigateur), Play Billing
 // n'existe pas → BILLING_AVAILABLE = false, et on retombe sur l'ancien systeme
 // (flag local apero pour le dev-unlock + Firebase pour ultra). Les achats ne se
-// font donc que dans l'app Android installee.
+// font donc que dans l'app Android installee. Import STATIQUE du plugin : son
+// implementation web est un simple stub (ne plante qu'a l'APPEL, jamais a
+// l'import), et on garde tous les appels derriere BILLING_AVAILABLE.
 import { useState, useEffect, useCallback } from 'react';
 import { Capacitor } from '@capacitor/core';
+import { Purchases, LOG_LEVEL } from '@revenuecat/purchases-capacitor';
 import { getStoredAperoUnlock } from './utils';
 import { subscribeMyPacks, ownsPack } from './entitlements';
 
@@ -23,19 +26,21 @@ export const PRODUCT_ULTRA = 'pack_ultra';
 
 export const BILLING_AVAILABLE = Capacitor.isNativePlatform();
 
-// Import paresseux du plugin : uniquement en natif, pour ne pas charger de code
-// natif cote web (ou il n'est pas implemente).
-let _pkg = null;
-async function rc() {
-  if (!_pkg) _pkg = await import('@revenuecat/purchases-capacitor');
-  return _pkg.Purchases;
+// Garde-fou : ne jamais laisser une promesse Play Billing bloquer l'UI a l'infini.
+function withTimeout(promise, ms, label) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Timeout ' + (label || '') + ' ' + ms + 'ms')), ms)
+    ),
+  ]);
 }
 
 let _configured = false;
 export async function initPurchases() {
   if (!BILLING_AVAILABLE || _configured) return;
   try {
-    const Purchases = await rc();
+    await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
     await Purchases.configure({ apiKey: RC_ANDROID_KEY });
     _configured = true;
   } catch (e) {
@@ -50,6 +55,17 @@ function entFromInfo(info) {
     apero: !!active[ENTITLEMENT_APERO],
     ultra: !!active[ENTITLEMENT_ULTRA],
   };
+}
+
+// Recupere les 2 produits Play (achats ponctuels). type NON_SUBSCRIPTION car
+// le SDK cherche des abonnements par defaut.
+async function fetchProducts(ids) {
+  const { products } = await withTimeout(
+    Purchases.getProducts({ productIdentifiers: ids, type: 'NON_SUBSCRIPTION' }),
+    15000,
+    'getProducts'
+  );
+  return products || [];
 }
 
 // Hook central : possession + prix localises + achat + restauration.
@@ -70,7 +86,6 @@ export function useBilling() {
       const unsub = subscribeMyPacks((packs) =>
         setEnt((e) => ({ ...e, ultra: ownsPack(packs, PRODUCT_ULTRA) }))
       );
-      // Le dev-unlock ecrit dans localStorage : on re-lit au focus.
       window.addEventListener('focus', applyApero);
       return () => {
         unsub && unsub();
@@ -82,28 +97,21 @@ export function useBilling() {
     let removeListener = null;
     (async () => {
       await initPurchases();
-      const Purchases = await rc();
       try {
         const { customerInfo } = await Purchases.getCustomerInfo();
         if (mounted) setEnt(entFromInfo(customerInfo));
       } catch (e) {
         console.warn('[purchases] getCustomerInfo', e);
       }
-      // Mises a jour temps reel (achat, restauration, notif serveur).
       try {
         const handle = await Purchases.addCustomerInfoUpdateListener((info) => {
           if (mounted) setEnt(entFromInfo(info));
         });
         removeListener = handle;
       } catch { /* ignore */ }
-      // Prix localises (obligatoire cote Play : afficher le prix du store).
       try {
-        const { products } = await Purchases.getProducts({
-          productIdentifiers: [PRODUCT_APERO, PRODUCT_ULTRA],
-          // Nos produits sont des achats ponctuels (defaut du SDK = SUBSCRIPTION).
-          type: 'NON_SUBSCRIPTION',
-        });
-        if (mounted && products) {
+        const products = await fetchProducts([PRODUCT_APERO, PRODUCT_ULTRA]);
+        if (mounted && products.length) {
           const map = {};
           for (const p of products) map[p.identifier] = p.priceString;
           setPrices(map);
@@ -121,21 +129,19 @@ export function useBilling() {
     };
   }, []);
 
-  // Achat d'un produit (mode_apero | pack_ultra). Retourne true si possede apres.
+  // Achat d'un produit (mode_apero | pack_ultra).
   const purchase = useCallback(async (productId) => {
     if (!BILLING_AVAILABLE) return false;
     setBusy(true);
     try {
-      const Purchases = await rc();
-      const { products } = await Purchases.getProducts({
-        productIdentifiers: [productId],
-        type: 'NON_SUBSCRIPTION',
-      });
-      const product = products && products[0];
+      await initPurchases();
+      const products = await fetchProducts([productId]);
+      const product = products[0];
       if (!product) throw new Error('Produit introuvable : ' + productId);
       const { customerInfo } = await Purchases.purchaseStoreProduct({ product });
-      setEnt(entFromInfo(customerInfo));
-      return entFromInfo(customerInfo);
+      const next = entFromInfo(customerInfo);
+      setEnt(next);
+      return next;
     } catch (e) {
       if (e?.code === 'PURCHASE_CANCELLED' || e?.userCancelled) return false;
       console.warn('[purchases] purchase', e);
@@ -150,8 +156,12 @@ export function useBilling() {
     if (!BILLING_AVAILABLE) return false;
     setBusy(true);
     try {
-      const Purchases = await rc();
-      const { customerInfo } = await Purchases.restorePurchases();
+      await initPurchases();
+      const { customerInfo } = await withTimeout(
+        Purchases.restorePurchases(),
+        30000,
+        'restore'
+      );
       const next = entFromInfo(customerInfo);
       setEnt(next);
       return next;
