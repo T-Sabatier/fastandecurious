@@ -188,6 +188,8 @@ export const CATEGORIES = [
 // 2e produit paye a part (deblocage de MODE, pas de categories) — post-lancement.
 export const PACKS = [
   { id: 'pack_ultra', label: 'Pack Ultra', emoji: '🔒' },
+  // Le Mode Apéro (produit payé) débloque aussi la catégorie Bourré·e.
+  { id: 'mode_apero', label: 'Mode Apéro', emoji: '🍻' },
 ];
 export const UNLOCK_ALL_ID = 'tout_debloquer';
 

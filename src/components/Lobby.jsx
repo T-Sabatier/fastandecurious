@@ -1,7 +1,7 @@
 import { ref, set, remove, update } from 'firebase/database';
 import { Capacitor } from '@capacitor/core';
 import { db } from '../firebase';
-import { shuffle, getStoredName, setStoredName, PUBLIC_URL, NAME_STYLE } from '../utils';
+import { shuffle, getStoredName, setStoredName, getStoredAperoUnlock, PUBLIC_URL, NAME_STYLE } from '../utils';
 import { HAND_SIZE, YELLOW, AMBER, PINK, PLAYER_COLORS, SORTS, PACKS, colorHex, colorFg } from '../cards';
 import { subscribeCards, seedDefaultsIfEmpty } from '../cardsStore';
 import { subscribeCategories, seedCategoriesIfEmpty } from '../categoriesStore';
@@ -13,6 +13,10 @@ import InstallButton from './InstallButton.jsx';
 
 export default function Lobby({ room, roomCode, playerId, onLeave }) {
   const isHost = room.host === playerId;
+  // Mode Apero (jeu a boire) : active a la creation via le switch d'accueil.
+  const partyMode = !!room.settings?.partyMode;
+  // Fond ambre "biere" quand le Mode Apero est actif (sinon jaune).
+  const baseColor = partyMode ? AMBER : YELLOW;
   const players = Object.entries(room.players || {}).map(([id, p]) => ({ id, ...p }));
   const [linkCopied, setLinkCopied] = useState(false);
   const me = room.players?.[playerId];
@@ -36,21 +40,28 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
   // Meta des packs premium (emoji + label) indexee par id, pour l'affichage.
   const packById = Object.fromEntries(PACKS.map((p) => [p.id, p]));
 
-  // Categorie premium verrouillee pour MOI (en tant qu'hote potentiel).
-  // Sans champ `pack`, une categorie est gratuite → jamais verrouillee.
-  const isLocked = (cat) => !!cat.pack && !ownsPack(myPacks, cat.pack);
+  // Possession du Mode Apero, qui débloque AUSSI la catégorie Bourré·e (pack
+  // "mode_apero"). Une fois débloquée, elle est dispo dans les DEUX modes.
+  // TODO billing : remplacer getStoredAperoUnlock() par ownsPack(myPacks, 'mode_apero').
+  const aperoOwned = getStoredAperoUnlock();
+
+  // Categorie premium verrouillee pour MOI. Sans champ `pack` → gratuite.
+  const isLocked = (cat) => {
+    if (!cat.pack) return false;
+    if (cat.pack === 'mode_apero') return !aperoOwned;
+    return !ownsPack(myPacks, cat.pack);
+  };
 
   const storedCats = room.settings?.cats || {};
   const cats = Object.fromEntries(
     allCategories.map((c) => [
       c.id,
-      // L'hote ne peut pas jouer une categorie qu'il ne possede pas, meme si
-      // les settings de la room disaient true (defaut ou ancien hote).
+      // L'hote ne peut pas jouer une categorie qu'il ne possede pas.
       isHost && isLocked(c) ? false : (storedCats[c.id] ?? true),
     ])
   );
 
-  // Affichage : categories gratuites d'abord, packs verrouilles regroupes a la fin.
+  // Affichage : categories gratuites d'abord, packs verrouilles a la fin.
   const sortedCategories = [...allCategories].sort(
     (a, b) => (isLocked(a) ? 1 : 0) - (isLocked(b) ? 1 : 0)
   );
@@ -102,13 +113,6 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
     if (!isHost) return;
     await set(ref(db, `rooms/${roomCode}/settings/turnTimer`), n);
   }
-
-  // Mode Apero (jeu a boire) : active a la CREATION de la partie via le switch
-  // de l'accueil (settings.partyMode). Ici on l'affiche seulement (encart de
-  // regles visible par tous quand le mode est actif).
-  const partyMode = !!room.settings?.partyMode;
-  // Fond ambre "biere" quand le Mode Apero est actif (sinon jaune).
-  const baseColor = partyMode ? AMBER : YELLOW;
 
   async function pickWinningScore(n) {
     if (!isHost) return;

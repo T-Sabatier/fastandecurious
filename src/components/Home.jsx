@@ -12,6 +12,7 @@ import {
   ROOM_TTL_MS,
 } from '../utils';
 import { CATEGORIES, YELLOW, AMBER, PINK, APERO_ACCENT, MAX_PLAYERS } from '../cards';
+import { subscribeMyPacks, ownsPack } from '../entitlements';
 import { ChevronRight, Lock, X } from 'lucide-react';
 import InstallButton from './InstallButton.jsx';
 
@@ -33,6 +34,9 @@ export default function Home({ playerId, onJoin, initialError }) {
   const [party, setParty] = useState(getStoredParty);
   const [aperoOwned, setAperoOwned] = useState(getStoredAperoUnlock);
   const [aperoTeaser, setAperoTeaser] = useState(false);
+  const [showShop, setShowShop] = useState(false);
+  // Packs achetes (Firebase users/$uid/packs) pour refleter la possession en boutique.
+  const [myPacks, setMyPacks] = useState({});
   // Mode apero reellement actif = voulu ET possede.
   const partyActive = party && aperoOwned;
   function toggleParty() {
@@ -61,6 +65,9 @@ export default function Home({ playerId, onJoin, initialError }) {
       })
       .catch(() => {});
   }, []);
+
+  // Suit les packs possedes (Pack Ultra, etc.) pour l'affichage boutique.
+  useEffect(() => subscribeMyPacks(setMyPacks), []);
 
   async function createRoom() {
     const n = name.trim();
@@ -186,7 +193,24 @@ export default function Home({ playerId, onJoin, initialError }) {
             }}
             className="uppercase whitespace-nowrap flex items-end gap-3"
           >
-            <span>Snap</span>
+            <span>
+              {partyActive ? (
+                <>
+                  Sn
+                  <span
+                    style={{
+                      color: '#FFF',
+                      WebkitTextStroke: `4px ${APERO_ACCENT}`,
+                      paintOrder: 'stroke fill',
+                    }}
+                  >
+                    ap
+                  </span>
+                </>
+              ) : (
+                'Snap'
+              )}
+            </span>
             <span
               className="inline-block px-5 py-2 -rotate-2 leading-none"
               style={{
@@ -406,6 +430,20 @@ export default function Home({ playerId, onJoin, initialError }) {
           </div>
         )}
 
+        <button
+          onClick={() => setShowShop(true)}
+          className="mt-6 w-full border-4 border-black py-3 active:translate-x-[2px] active:translate-y-[2px] flex items-center justify-center gap-2"
+          style={{ backgroundColor: PINK, color: '#FFF', boxShadow: '4px 4px 0 #000' }}
+        >
+          <span className="text-xl leading-none">🛒</span>
+          <span
+            style={{ fontFamily: '"Anton", sans-serif' }}
+            className="text-xl uppercase tracking-wide"
+          >
+            Boutique
+          </span>
+        </button>
+
         <div
           className="mt-10 border-4 border-black bg-white p-4"
           style={{ boxShadow: '6px 6px 0 #000' }}
@@ -514,6 +552,116 @@ export default function Home({ playerId, onJoin, initialError }) {
                 🔧 Activer pour tester (dev)
               </button>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Boutique : packs premium accessibles depuis l'accueil. */}
+      {showShop && (
+        <div
+          onClick={() => setShowShop(false)}
+          className="fixed inset-0 z-50 flex items-center justify-center p-6"
+          style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative border-4 border-black bg-white w-full max-w-sm p-6 max-h-[85vh] overflow-y-auto"
+            style={{ boxShadow: '8px 8px 0 #000' }}
+          >
+            <button
+              onClick={() => setShowShop(false)}
+              aria-label="Fermer"
+              className="absolute top-3 right-3 active:opacity-50"
+            >
+              <X size={24} strokeWidth={3} />
+            </button>
+            <div
+              style={{ fontFamily: '"Anton", sans-serif' }}
+              className="text-3xl uppercase leading-none mb-1 mt-1 text-center"
+            >
+              🛒 Boutique
+            </div>
+            <div
+              style={{ fontFamily: '"Space Mono", monospace' }}
+              className="text-[10px] uppercase tracking-widest opacity-60 mb-5 text-center"
+            >
+              Packs premium
+            </div>
+            <div className="space-y-4">
+              {[
+                {
+                  emoji: '🍻',
+                  name: 'Mode Apéro',
+                  desc: 'Le jeu à boire : mise des gorgées, fais boire toute la table. Inclut la catégorie « Bourré·e ».',
+                  price: '4,99 €',
+                  owned: aperoOwned,
+                },
+                {
+                  emoji: '🌶️',
+                  name: 'Pack Ultra',
+                  desc: '7 catégories premium : Coquin (+18), Jeux vidéo, Dessins animés, Tech, Culture FR, Mode, Politique.',
+                  price: '4,99 €',
+                  owned: ownsPack(myPacks, 'pack_ultra'),
+                },
+              ].map((p) => (
+                <div
+                  key={p.name}
+                  className="border-4 border-black p-4"
+                  style={{ boxShadow: '4px 4px 0 #000' }}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-2xl leading-none">{p.emoji}</span>
+                    <span
+                      style={{ fontFamily: '"Anton", sans-serif' }}
+                      className="text-2xl uppercase leading-none flex-1 min-w-0"
+                    >
+                      {p.name}
+                    </span>
+                    {!p.owned && (
+                      <span
+                        style={{ fontFamily: '"Anton", sans-serif' }}
+                        className="text-xl leading-none shrink-0"
+                      >
+                        {p.price}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm opacity-80 mb-3">{p.desc}</p>
+                  {p.owned ? (
+                    <div
+                      className="w-full border-2 border-black py-2 flex items-center justify-center gap-2"
+                      style={{ backgroundColor: '#22C55E', color: '#000' }}
+                    >
+                      <span className="text-sm leading-none">✓</span>
+                      <span
+                        style={{ fontFamily: '"Space Mono", monospace' }}
+                        className="text-[11px] uppercase tracking-widest"
+                      >
+                        Débloqué
+                      </span>
+                    </div>
+                  ) : (
+                    <button
+                      disabled
+                      className="w-full border-2 border-black bg-black text-white py-2 opacity-60"
+                    >
+                      <span
+                        style={{ fontFamily: '"Space Mono", monospace' }}
+                        className="text-[11px] uppercase tracking-widest"
+                      >
+                        Bientôt en boutique
+                      </span>
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            <div
+              style={{ fontFamily: '"Space Mono", monospace' }}
+              className="text-[9px] uppercase tracking-widest opacity-50 mt-4 text-center"
+            >
+              Achats intégrés · bientôt disponibles
+            </div>
           </div>
         </div>
       )}
