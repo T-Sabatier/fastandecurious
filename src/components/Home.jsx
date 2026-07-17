@@ -7,12 +7,11 @@ import {
   setStoredName,
   getStoredParty,
   setStoredParty,
-  getStoredAperoUnlock,
   setStoredAperoUnlock,
   ROOM_TTL_MS,
 } from '../utils';
 import { CATEGORIES, YELLOW, AMBER, PINK, APERO_ACCENT, MAX_PLAYERS } from '../cards';
-import { subscribeMyPacks, ownsPack } from '../entitlements';
+import { useBilling, PRODUCT_APERO, PRODUCT_ULTRA } from '../purchases';
 import { ChevronRight, Lock, X } from 'lucide-react';
 import InstallButton from './InstallButton.jsx';
 
@@ -32,11 +31,19 @@ export default function Home({ playerId, onJoin, initialError }) {
   // Le mode ne s'active que si l'utilisateur le POSSEDE (aperoOwned). Tant que
   // le billing n'est pas branche : verrouille, deblocable via bouton dev.
   const [party, setParty] = useState(getStoredParty);
-  const [aperoOwned, setAperoOwned] = useState(getStoredAperoUnlock);
   const [aperoTeaser, setAperoTeaser] = useState(false);
   const [showShop, setShowShop] = useState(false);
-  // Packs achetes (Firebase users/$uid/packs) pour refleter la possession en boutique.
-  const [myPacks, setMyPacks] = useState({});
+  const [shopError, setShopError] = useState('');
+  // Possession des packs : RevenueCat en natif, fallback web (flag/Firebase).
+  const {
+    apero: aperoOwned,
+    ultra: ultraOwned,
+    prices,
+    billingAvailable,
+    busy: shopBusy,
+    purchase,
+    restore,
+  } = useBilling();
   // Mode apero reellement actif = voulu ET possede.
   const partyActive = party && aperoOwned;
   function toggleParty() {
@@ -46,8 +53,26 @@ export default function Home({ playerId, onJoin, initialError }) {
   }
   function unlockAperoForTest() {
     setStoredAperoUnlock(true);
-    setAperoOwned(true);
     setAperoTeaser(false);
+    // Fallback web/dev : le hook re-lit le flag sur l'event focus.
+    window.dispatchEvent(new Event('focus'));
+  }
+  // Lance l'achat d'un pack (natif). Gere l'annulation et les erreurs.
+  async function buyPack(productId) {
+    setShopError('');
+    try {
+      await purchase(productId);
+    } catch {
+      setShopError('Achat impossible pour le moment. Réessaie.');
+    }
+  }
+  async function restorePurchases() {
+    setShopError('');
+    try {
+      await restore();
+    } catch {
+      setShopError('Restauration impossible pour le moment.');
+    }
   }
 
   useEffect(() => {
@@ -65,9 +90,6 @@ export default function Home({ playerId, onJoin, initialError }) {
       })
       .catch(() => {});
   }, []);
-
-  // Suit les packs possedes (Pack Ultra, etc.) pour l'affichage boutique.
-  useEffect(() => subscribeMyPacks(setMyPacks), []);
 
   async function createRoom() {
     const n = name.trim();
@@ -593,75 +615,110 @@ export default function Home({ playerId, onJoin, initialError }) {
                   emoji: '🍻',
                   name: 'Mode Apéro',
                   desc: 'Le jeu à boire : mise des gorgées, fais boire toute la table. Inclut la catégorie « Bourré·e ».',
-                  price: '4,99 €',
+                  productId: PRODUCT_APERO,
                   owned: aperoOwned,
                 },
                 {
                   emoji: '🌶️',
                   name: 'Pack Ultra',
                   desc: '7 catégories premium : Coquin (+18), Jeux vidéo, Dessins animés, Tech, Culture FR, Mode, Politique.',
-                  price: '4,99 €',
-                  owned: ownsPack(myPacks, 'pack_ultra'),
+                  productId: PRODUCT_ULTRA,
+                  owned: ultraOwned,
                 },
-              ].map((p) => (
-                <div
-                  key={p.name}
-                  className="border-4 border-black p-4"
-                  style={{ boxShadow: '4px 4px 0 #000' }}
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-2xl leading-none">{p.emoji}</span>
-                    <span
-                      style={{ fontFamily: '"Anton", sans-serif' }}
-                      className="text-2xl uppercase leading-none flex-1 min-w-0"
-                    >
-                      {p.name}
-                    </span>
-                    {!p.owned && (
+              ].map((p) => {
+                const price = prices[p.productId] || '4,99 €';
+                return (
+                  <div
+                    key={p.name}
+                    className="border-4 border-black p-4"
+                    style={{ boxShadow: '4px 4px 0 #000' }}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-2xl leading-none">{p.emoji}</span>
                       <span
                         style={{ fontFamily: '"Anton", sans-serif' }}
-                        className="text-xl leading-none shrink-0"
+                        className="text-2xl uppercase leading-none flex-1 min-w-0"
                       >
-                        {p.price}
+                        {p.name}
                       </span>
+                      {!p.owned && (
+                        <span
+                          style={{ fontFamily: '"Anton", sans-serif' }}
+                          className="text-xl leading-none shrink-0"
+                        >
+                          {price}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm opacity-80 mb-3">{p.desc}</p>
+                    {p.owned ? (
+                      <div
+                        className="w-full border-2 border-black py-2 flex items-center justify-center gap-2"
+                        style={{ backgroundColor: '#22C55E', color: '#000' }}
+                      >
+                        <span className="text-sm leading-none">✓</span>
+                        <span
+                          style={{ fontFamily: '"Space Mono", monospace' }}
+                          className="text-[11px] uppercase tracking-widest"
+                        >
+                          Débloqué
+                        </span>
+                      </div>
+                    ) : billingAvailable ? (
+                      <button
+                        onClick={() => buyPack(p.productId)}
+                        disabled={shopBusy}
+                        className="w-full border-2 border-black py-2 disabled:opacity-50 active:translate-x-[1px] active:translate-y-[1px]"
+                        style={{ backgroundColor: PINK, color: '#FFF', boxShadow: '3px 3px 0 #000' }}
+                      >
+                        <span
+                          style={{ fontFamily: '"Space Mono", monospace' }}
+                          className="text-[11px] uppercase tracking-widest"
+                        >
+                          {shopBusy ? '…' : `Acheter ${price}`}
+                        </span>
+                      </button>
+                    ) : (
+                      <button
+                        disabled
+                        className="w-full border-2 border-black bg-black text-white py-2 opacity-60"
+                      >
+                        <span
+                          style={{ fontFamily: '"Space Mono", monospace' }}
+                          className="text-[11px] uppercase tracking-widest"
+                        >
+                          Dispo dans l'app
+                        </span>
+                      </button>
                     )}
                   </div>
-                  <p className="text-sm opacity-80 mb-3">{p.desc}</p>
-                  {p.owned ? (
-                    <div
-                      className="w-full border-2 border-black py-2 flex items-center justify-center gap-2"
-                      style={{ backgroundColor: '#22C55E', color: '#000' }}
-                    >
-                      <span className="text-sm leading-none">✓</span>
-                      <span
-                        style={{ fontFamily: '"Space Mono", monospace' }}
-                        className="text-[11px] uppercase tracking-widest"
-                      >
-                        Débloqué
-                      </span>
-                    </div>
-                  ) : (
-                    <button
-                      disabled
-                      className="w-full border-2 border-black bg-black text-white py-2 opacity-60"
-                    >
-                      <span
-                        style={{ fontFamily: '"Space Mono", monospace' }}
-                        className="text-[11px] uppercase tracking-widest"
-                      >
-                        Bientôt en boutique
-                      </span>
-                    </button>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
-            <div
-              style={{ fontFamily: '"Space Mono", monospace' }}
-              className="text-[9px] uppercase tracking-widest opacity-50 mt-4 text-center"
-            >
-              Achats intégrés · bientôt disponibles
-            </div>
+            {shopError && (
+              <div className="mt-3 text-center text-xs text-red-600">{shopError}</div>
+            )}
+            {billingAvailable ? (
+              <button
+                onClick={restorePurchases}
+                disabled={shopBusy}
+                className="mt-4 w-full underline disabled:opacity-50"
+              >
+                <span
+                  style={{ fontFamily: '"Space Mono", monospace' }}
+                  className="text-[10px] uppercase tracking-widest opacity-70"
+                >
+                  Restaurer mes achats
+                </span>
+              </button>
+            ) : (
+              <div
+                style={{ fontFamily: '"Space Mono", monospace' }}
+                className="text-[9px] uppercase tracking-widest opacity-50 mt-4 text-center"
+              >
+                Achats disponibles dans l'application
+              </div>
+            )}
           </div>
         </div>
       )}

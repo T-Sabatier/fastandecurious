@@ -10,3 +10,8 @@ dev-dist
 
 # Identifiants admin locaux (outil d'edition du deck) — JAMAIS versionnes
 scripts/.admin-credentials.json
+
+# Backups d'env + cles de compte de service — JAMAIS versionnes
+.env.*.bak
+*-serviceaccount*.json
+*-sa.json

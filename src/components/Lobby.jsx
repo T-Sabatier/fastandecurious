@@ -1,11 +1,11 @@
 import { ref, set, remove, update } from 'firebase/database';
 import { Capacitor } from '@capacitor/core';
 import { db } from '../firebase';
-import { shuffle, getStoredName, setStoredName, getStoredAperoUnlock, PUBLIC_URL, NAME_STYLE } from '../utils';
+import { shuffle, getStoredName, setStoredName, PUBLIC_URL, NAME_STYLE } from '../utils';
 import { HAND_SIZE, YELLOW, AMBER, PINK, PLAYER_COLORS, SORTS, PACKS, colorHex, colorFg } from '../cards';
 import { subscribeCards, seedDefaultsIfEmpty } from '../cardsStore';
 import { subscribeCategories, seedCategoriesIfEmpty } from '../categoriesStore';
-import { subscribeMyPacks, ownsPack } from '../entitlements';
+import { useBilling } from '../purchases';
 import { ChevronRight, X, LogOut, Copy, Check, Lock } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useState, useEffect } from 'react';
@@ -33,23 +33,21 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
       : '';
   const [allCards, setAllCards] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
-  const [myPacks, setMyPacks] = useState({});
   // Pack dont on affiche le teaser (tap sur une categorie verrouillee).
   const [teaserPackId, setTeaserPackId] = useState(null);
 
   // Meta des packs premium (emoji + label) indexee par id, pour l'affichage.
   const packById = Object.fromEntries(PACKS.map((p) => [p.id, p]));
 
-  // Possession du Mode Apero, qui débloque AUSSI la catégorie Bourré·e (pack
-  // "mode_apero"). Une fois débloquée, elle est dispo dans les DEUX modes.
-  // TODO billing : remplacer getStoredAperoUnlock() par ownsPack(myPacks, 'mode_apero').
-  const aperoOwned = getStoredAperoUnlock();
+  // Possession des packs (RevenueCat en natif, fallback web). mode_apero
+  // debloque AUSSI la categorie Bourre-e, dispo ensuite dans les DEUX modes.
+  const { apero: aperoOwned, ultra: ultraOwned } = useBilling();
+  const packOwned = { mode_apero: aperoOwned, pack_ultra: ultraOwned };
 
   // Categorie premium verrouillee pour MOI. Sans champ `pack` → gratuite.
   const isLocked = (cat) => {
     if (!cat.pack) return false;
-    if (cat.pack === 'mode_apero') return !aperoOwned;
-    return !ownsPack(myPacks, cat.pack);
+    return !packOwned[cat.pack];
   };
 
   const storedCats = room.settings?.cats || {};
@@ -72,11 +70,9 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
     seedCategoriesIfEmpty().catch(() => {});
     const unsubCards = subscribeCards(setAllCards);
     const unsubCats = subscribeCategories(setAllCategories);
-    const unsubPacks = subscribeMyPacks(setMyPacks);
     return () => {
       unsubCards();
       unsubCats();
-      unsubPacks();
     };
   }, []);
 

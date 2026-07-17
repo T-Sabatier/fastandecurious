@@ -44,4 +44,6 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Achats intégrés (Play Billing) : requis par Play pour créer des produits in-app. -->
+    <uses-permission android:name="com.android.vending.BILLING" />
 </manifest>

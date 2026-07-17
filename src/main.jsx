@@ -4,12 +4,16 @@ import { Capacitor } from '@capacitor/core';
 import { App as CapacitorApp } from '@capacitor/app';
 import App from './App.jsx';
 import { authReady } from './firebase';
+import { initPurchases } from './purchases';
 import './index.css';
 
 // App native Android : le bouton retour systeme minimise l'app au lieu de la
 // tuer — on ne perd jamais une partie en cours (l'etat vit dans Firebase de
 // toute facon, mais ca evite le rechargement complet + la deconnexion visuelle).
 if (Capacitor.isNativePlatform()) {
+  // Configure RevenueCat au plus tot (achats integres).
+  initPurchases();
+
   CapacitorApp.addListener('backButton', () => {
     CapacitorApp.minimizeApp();
   });

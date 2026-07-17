@@ -1,0 +1,1421 @@
+{
+  "cards": {
+    "-Oxka1mOAMIB6nAg_UbQ": {
+      "cat": "bourre",
+      "spicy": false,
+      "t": "Vomir dans le Uber"
+    },
+    "-Oxka1xpBSsWb90k7YMK": {
+      "cat": "bourre",
+      "spicy": false,
+      "t": "Refaire le monde à 4h"
+    },
+    "-Oxka2983njCHpgbeXZY": {
+      "cat": "bourre",
+      "spicy": false,
+      "t": "Appeler ton ex"
+    },
+    "-Oxka2JrgyC2Vo93fV0q": {
+      "cat": "bourre",
+      "spicy": false,
+      "t": "Kebab à 3h du mat"
+    },
+    "-Oxka2fPFU2-5iy7e1sF": {
+      "cat": "bourre",
+      "spicy": false,
+      "t": "Boire des shots"
+    },
+    "-Oxka2qkxruWf0sIiQ5q": {
+      "cat": "bourre",
+      "spicy": false,
+      "t": "Câlins à tout le monde"
+    },
+    "-Oxka30vR6reG__a6XyH": {
+      "cat": "bourre",
+      "spicy": false,
+      "t": "Lancer un débat politique"
+    },
+    "-Oxka3MmWj2xPmuYAwe4": {
+      "cat": "bourre",
+      "spicy": false,
+      "t": "Raconter ta vie à un inconnu"
+    },
+    "-Oxka3XyMOXmez8S3HKo": {
+      "cat": "bourre",
+      "spicy": false,
+      "t": "Envoyer des messages gênants"
+    },
+    "-Oxka3vJfvUb8mZg5G8L": {
+      "cat": "bourre",
+      "spicy": false,
+      "t": "Draguer sans subtilité"
+    },
+    "-Oxka4IOyGg-2h7nhhZu": {
+      "cat": "bourre",
+      "spicy": false,
+      "t": "Perdre ton téléphone"
+    },
+    "-Oxka4Uw9FeyhCMrf3yA": {
+      "cat": "bourre",
+      "spicy": false,
+      "t": "Dire je t'aime à tes potes"
+    },
+    "-OxkjIC3_Uq1lBV4z2QX": {
+      "cat": "bourre",
+      "spicy": false,
+      "t": "T'endormir aux toilettes"
+    },
+    "-OxkkABQGCHLuMqrGrjT": {
+      "cat": "bourre",
+      "spicy": false,
+      "t": "Danser sur une table"
+    },
+    "def_absurde_dormir_18h": {
+      "cat": "absurde",
+      "spicy": false,
+      "t": "Dormir 18h"
+    },
+    "def_absurde_invisibilite": {
+      "cat": "absurde",
+      "spicy": false,
+      "t": "Invisibilité"
+    },
+    "def_absurde_jouer_de_tout_instrument": {
+      "cat": "absurde",
+      "spicy": false,
+      "t": "Jouer de tout instrument"
+    },
+    "def_absurde_lire_dans_les_pensees": {
+      "cat": "absurde",
+      "spicy": false,
+      "t": "Lire dans les pensées"
+    },
+    "def_absurde_manger_sans_grossir": {
+      "cat": "absurde",
+      "spicy": false,
+      "t": "Manger sans grossir"
+    },
+    "def_absurde_ne_plus_dormir": {
+      "cat": "absurde",
+      "spicy": false,
+      "t": "Ne plus dormir"
+    },
+    "def_absurde_parler_aux_animaux": {
+      "cat": "absurde",
+      "spicy": false,
+      "t": "Parler aux animaux"
+    },
+    "def_absurde_parler_toutes_les_langues": {
+      "cat": "absurde",
+      "spicy": false,
+      "t": "Parler toutes les langues"
+    },
+    "def_absurde_respirer_sous_l_eau": {
+      "cat": "absurde",
+      "spicy": false,
+      "t": "Respirer sous l'eau"
+    },
+    "def_absurde_teleportation": {
+      "cat": "absurde",
+      "spicy": false,
+      "t": "Téléportation"
+    },
+    "def_absurde_toujours_dire_vrai": {
+      "cat": "absurde",
+      "spicy": false,
+      "t": "Toujours dire vrai"
+    },
+    "def_absurde_toujours_mentir": {
+      "cat": "absurde",
+      "spicy": false,
+      "t": "Toujours mentir"
+    },
+    "def_absurde_voler_comme_un_oiseau": {
+      "cat": "absurde",
+      "spicy": false,
+      "t": "Voler comme un oiseau"
+    },
+    "def_absurde_voyage_temporel": {
+      "cat": "absurde",
+      "spicy": false,
+      "t": "Voyage temporel"
+    },
+    "def_boisson_biere_fraiche": {
+      "cat": "boisson",
+      "spicy": false,
+      "t": "Bière fraîche"
+    },
+    "def_boisson_bubble_tea": {
+      "cat": "boisson",
+      "spicy": false,
+      "t": "Bubble tea"
+    },
+    "def_boisson_cafe": {
+      "cat": "boisson",
+      "spicy": false,
+      "t": "Café"
+    },
+    "def_boisson_champagne": {
+      "cat": "boisson",
+      "spicy": false,
+      "t": "Champagne"
+    },
+    "def_boisson_chocolat_chaud": {
+      "cat": "boisson",
+      "spicy": false,
+      "t": "Chocolat chaud"
+    },
+    "def_boisson_coca": {
+      "cat": "boisson",
+      "spicy": false,
+      "t": "Coca"
+    },
+    "def_boisson_cocktail": {
+      "cat": "boisson",
+      "spicy": false,
+      "t": "Cocktail"
+    },
+    "def_boisson_mojito": {
+      "cat": "boisson",
+      "spicy": false,
+      "t": "Mojito"
+    },
+    "def_boisson_pastis": {
+      "cat": "boisson",
+      "spicy": false,
+      "t": "Pastis"
+    },
+    "def_boisson_red_bull": {
+      "cat": "boisson",
+      "spicy": false,
+      "t": "Red Bull"
+    },
+    "def_boisson_vin_blanc": {
+      "cat": "boisson",
+      "spicy": false,
+      "t": "Vin blanc"
+    },
+    "def_boisson_vin_rouge": {
+      "cat": "boisson",
+      "spicy": false,
+      "t": "Vin rouge"
+    },
+    "def_boisson_whisky": {
+      "cat": "boisson",
+      "spicy": false,
+      "t": "Whisky"
+    },
+    "def_bouffe_b_uf_bourguignon": {
+      "cat": "bouffe",
+      "spicy": false,
+      "t": "Bœuf bourguignon"
+    },
+    "def_bouffe_blanquette_de_veau": {
+      "cat": "bouffe",
+      "spicy": false,
+      "t": "Blanquette de veau"
+    },
+    "def_bouffe_camembert": {
+      "cat": "bouffe",
+      "spicy": false,
+      "t": "Camembert"
+    },
+    "def_bouffe_cheesecake": {
+      "cat": "bouffe",
+      "spicy": false,
+      "t": "Cheesecake"
+    },
+    "def_bouffe_couscous": {
+      "cat": "bouffe",
+      "spicy": false,
+      "t": "Couscous"
+    },
+    "def_bouffe_crepe_sucree": {
+      "cat": "bouffe",
+      "spicy": false,
+      "t": "Crêpe sucrée"
+    },
+    "def_bouffe_croissant": {
+      "cat": "bouffe",
+      "spicy": false,
+      "t": "Croissant"
+    },
+    "def_bouffe_glace_vanille": {
+      "cat": "bouffe",
+      "spicy": false,
+      "t": "Glace vanille"
+    },
+    "def_bouffe_gratin_dauphinois": {
+      "cat": "bouffe",
+      "spicy": false,
+      "t": "Gratin dauphinois"
+    },
+    "def_bouffe_nutella": {
+      "cat": "bouffe",
+      "spicy": false,
+      "t": "Nutella"
+    },
+    "def_bouffe_pates_carbo": {
+      "cat": "bouffe",
+      "spicy": false,
+      "t": "Pâtes carbo"
+    },
+    "def_bouffe_pizza": {
+      "cat": "bouffe",
+      "spicy": false,
+      "t": "Pizza"
+    },
+    "def_bouffe_poke_bowl": {
+      "cat": "bouffe",
+      "spicy": false,
+      "t": "Poke bowl"
+    },
+    "def_bouffe_raclette": {
+      "cat": "bouffe",
+      "spicy": false,
+      "t": "Raclette"
+    },
+    "def_bouffe_ramen": {
+      "cat": "bouffe",
+      "spicy": false,
+      "t": "Ramen"
+    },
+    "def_bouffe_sushis": {
+      "cat": "bouffe",
+      "spicy": false,
+      "t": "Sushis"
+    },
+    "def_bouffe_tacos": {
+      "cat": "bouffe",
+      "spicy": false,
+      "t": "Tacos"
+    },
+    "def_bouffe_tiramisu": {
+      "cat": "bouffe",
+      "spicy": false,
+      "t": "Tiramisu"
+    },
+    "def_cartoons_avatar_dernier_maitre": {
+      "cat": "cartoons",
+      "spicy": false,
+      "t": "Avatar (dernier maître)"
+    },
+    "def_cartoons_bob_l_eponge": {
+      "cat": "cartoons",
+      "spicy": false,
+      "t": "Bob l'éponge"
+    },
+    "def_cartoons_code_lyoko": {
+      "cat": "cartoons",
+      "spicy": false,
+      "t": "Code Lyoko"
+    },
+    "def_cartoons_dragon_ball_z": {
+      "cat": "cartoons",
+      "spicy": false,
+      "t": "Dragon Ball Z"
+    },
+    "def_cartoons_la_reine_des_neiges": {
+      "cat": "cartoons",
+      "spicy": false,
+      "t": "La Reine des Neiges"
+    },
+    "def_cartoons_le_roi_lion": {
+      "cat": "cartoons",
+      "spicy": false,
+      "t": "Le Roi Lion"
+    },
+    "def_cartoons_les_indestructibles": {
+      "cat": "cartoons",
+      "spicy": false,
+      "t": "Les Indestructibles"
+    },
+    "def_cartoons_les_simpson": {
+      "cat": "cartoons",
+      "spicy": false,
+      "t": "Les Simpson"
+    },
+    "def_cartoons_naruto": {
+      "cat": "cartoons",
+      "spicy": false,
+      "t": "Naruto"
+    },
+    "def_cartoons_one_piece": {
+      "cat": "cartoons",
+      "spicy": false,
+      "t": "One Piece"
+    },
+    "def_cartoons_scooby_doo": {
+      "cat": "cartoons",
+      "spicy": false,
+      "t": "Scooby-Doo"
+    },
+    "def_cartoons_shrek": {
+      "cat": "cartoons",
+      "spicy": false,
+      "t": "Shrek"
+    },
+    "def_cartoons_south_park": {
+      "cat": "cartoons",
+      "spicy": false,
+      "t": "South Park"
+    },
+    "def_cartoons_tom_et_jerry": {
+      "cat": "cartoons",
+      "spicy": false,
+      "t": "Tom et Jerry"
+    },
+    "def_cartoons_toy_story": {
+      "cat": "cartoons",
+      "spicy": false,
+      "t": "Toy Story"
+    },
+    "def_celebrite_al_pacino": {
+      "cat": "celebrite",
+      "spicy": false,
+      "t": "Al Pacino"
+    },
+    "def_celebrite_anya_taylor_joy": {
+      "cat": "celebrite",
+      "spicy": false,
+      "t": "Anya Taylor-Joy"
+    },
+    "def_celebrite_cillian_murphy": {
+      "cat": "celebrite",
+      "spicy": false,
+      "t": "Cillian Murphy"
+    },
+    "def_celebrite_clint_eastwood": {
+      "cat": "celebrite",
+      "spicy": false,
+      "t": "Clint Eastwood"
+    },
+    "def_celebrite_denzel_washington": {
+      "cat": "celebrite",
+      "spicy": false,
+      "t": "Denzel Washington"
+    },
+    "def_celebrite_emma_watson": {
+      "cat": "celebrite",
+      "spicy": false,
+      "t": "Emma Watson"
+    },
+    "def_celebrite_jenna_ortega": {
+      "cat": "celebrite",
+      "spicy": false,
+      "t": "Jenna Ortega"
+    },
+    "def_celebrite_margot_robbie": {
+      "cat": "celebrite",
+      "spicy": false,
+      "t": "Margot Robbie"
+    },
+    "def_celebrite_martin_scorsese": {
+      "cat": "celebrite",
+      "spicy": false,
+      "t": "Martin Scorsese"
+    },
+    "def_celebrite_pedro_pascal": {
+      "cat": "celebrite",
+      "spicy": false,
+      "t": "Pedro Pascal"
+    },
+    "def_celebrite_quentin_tarantino": {
+      "cat": "celebrite",
+      "spicy": false,
+      "t": "Quentin Tarantino"
+    },
+    "def_celebrite_ryan_gosling": {
+      "cat": "celebrite",
+      "spicy": false,
+      "t": "Ryan Gosling"
+    },
+    "def_celebrite_sigourney_weaver": {
+      "cat": "celebrite",
+      "spicy": false,
+      "t": "Sigourney Weaver"
+    },
+    "def_celebrite_steven_spielberg": {
+      "cat": "celebrite",
+      "spicy": false,
+      "t": "Steven Spielberg"
+    },
+    "def_celebrite_sydney_sweeney": {
+      "cat": "celebrite",
+      "spicy": false,
+      "t": "Sydney Sweeney"
+    },
+    "def_celebrite_sylvester_stallone": {
+      "cat": "celebrite",
+      "spicy": false,
+      "t": "Sylvester Stallone"
+    },
+    "def_celebrite_zendaya": {
+      "cat": "celebrite",
+      "spicy": false,
+      "t": "Zendaya"
+    },
+    "def_cine_breaking_bad": {
+      "cat": "cine",
+      "spicy": false,
+      "t": "Breaking Bad"
+    },
+    "def_cine_friends": {
+      "cat": "cine",
+      "spicy": false,
+      "t": "Friends"
+    },
+    "def_cine_game_of_thrones": {
+      "cat": "cine",
+      "spicy": false,
+      "t": "Game of Thrones"
+    },
+    "def_cine_harry_potter": {
+      "cat": "cine",
+      "spicy": false,
+      "t": "Harry Potter"
+    },
+    "def_cine_interstellar": {
+      "cat": "cine",
+      "spicy": false,
+      "t": "Interstellar"
+    },
+    "def_cine_les_tuche": {
+      "cat": "cine",
+      "spicy": false,
+      "t": "Les Tuche"
+    },
+    "def_cine_marvel": {
+      "cat": "cine",
+      "spicy": false,
+      "t": "Marvel"
+    },
+    "def_cine_oss_117": {
+      "cat": "cine",
+      "spicy": false,
+      "t": "OSS 117"
+    },
+    "def_cine_peaky_blinders": {
+      "cat": "cine",
+      "spicy": false,
+      "t": "Peaky Blinders"
+    },
+    "def_cine_pixar": {
+      "cat": "cine",
+      "spicy": false,
+      "t": "Pixar"
+    },
+    "def_cine_seigneur_des_anneaux": {
+      "cat": "cine",
+      "spicy": false,
+      "t": "Seigneur des Anneaux"
+    },
+    "def_cine_squid_game": {
+      "cat": "cine",
+      "spicy": false,
+      "t": "Squid Game"
+    },
+    "def_cine_star_wars": {
+      "cat": "cine",
+      "spicy": false,
+      "t": "Star Wars"
+    },
+    "def_cine_stranger_things": {
+      "cat": "cine",
+      "spicy": false,
+      "t": "Stranger Things"
+    },
+    "def_cine_studio_ghibli": {
+      "cat": "cine",
+      "spicy": false,
+      "t": "Studio Ghibli"
+    },
+    "def_coquin_confesser_un_fantasme": {
+      "cat": "coquin",
+      "spicy": true,
+      "t": "Confesser un fantasme"
+    },
+    "def_coquin_coup_du_matin": {
+      "cat": "coquin",
+      "spicy": true,
+      "t": "Coup du matin"
+    },
+    "def_coquin_lingerie_noire_fine": {
+      "cat": "coquin",
+      "spicy": true,
+      "t": "Lingerie noire fine"
+    },
+    "def_coquin_massage_sensuel": {
+      "cat": "coquin",
+      "spicy": true,
+      "t": "Massage sensuel"
+    },
+    "def_coquin_photo_coquine": {
+      "cat": "coquin",
+      "spicy": true,
+      "t": "Photo coquine"
+    },
+    "def_coquin_preliminaires_interminables": {
+      "cat": "coquin",
+      "spicy": true,
+      "t": "Préliminaires interminables"
+    },
+    "def_coquin_se_fixer_pendant_l_acte": {
+      "cat": "coquin",
+      "spicy": true,
+      "t": "Se fixer pendant l'acte"
+    },
+    "def_coquin_se_regarder_dans_le_miroir": {
+      "cat": "coquin",
+      "spicy": true,
+      "t": "Se regarder dans le miroir"
+    },
+    "def_coquin_sexe_lent_et_sensuel": {
+      "cat": "coquin",
+      "spicy": true,
+      "t": "Sexe lent et sensuel"
+    },
+    "def_coquin_sexe_sous_la_douche": {
+      "cat": "coquin",
+      "spicy": true,
+      "t": "Sexe sous la douche"
+    },
+    "def_coquin_sieste_coquine_a_deux": {
+      "cat": "coquin",
+      "spicy": true,
+      "t": "Sieste coquine à deux"
+    },
+    "def_coquin_strip_tease": {
+      "cat": "coquin",
+      "spicy": true,
+      "t": "Strip-tease"
+    },
+    "def_coquin_vocal_coquin_envoye": {
+      "cat": "coquin",
+      "spicy": true,
+      "t": "Vocal coquin envoyé"
+    },
+    "def_culture_brut": {
+      "cat": "culture",
+      "spicy": false,
+      "t": "Brut"
+    },
+    "def_culture_cyprien": {
+      "cat": "culture",
+      "spicy": false,
+      "t": "Cyprien"
+    },
+    "def_culture_hanouna": {
+      "cat": "culture",
+      "spicy": false,
+      "t": "Hanouna"
+    },
+    "def_culture_hugo_decrypte": {
+      "cat": "culture",
+      "spicy": false,
+      "t": "Hugo Décrypte"
+    },
+    "def_culture_inoxtag": {
+      "cat": "culture",
+      "spicy": false,
+      "t": "Inoxtag"
+    },
+    "def_culture_koh_lanta": {
+      "cat": "culture",
+      "spicy": false,
+      "t": "Koh-Lanta"
+    },
+    "def_culture_konbini": {
+      "cat": "culture",
+      "spicy": false,
+      "t": "Konbini"
+    },
+    "def_culture_les_ch_tis": {
+      "cat": "culture",
+      "spicy": false,
+      "t": "Les Ch'tis"
+    },
+    "def_culture_les_marseillais": {
+      "cat": "culture",
+      "spicy": false,
+      "t": "Les Marseillais"
+    },
+    "def_culture_mcfly_carlito": {
+      "cat": "culture",
+      "spicy": false,
+      "t": "McFly & Carlito"
+    },
+    "def_culture_mister_v": {
+      "cat": "culture",
+      "spicy": false,
+      "t": "Mister V"
+    },
+    "def_culture_norman": {
+      "cat": "culture",
+      "spicy": false,
+      "t": "Norman"
+    },
+    "def_culture_quotidien": {
+      "cat": "culture",
+      "spicy": false,
+      "t": "Quotidien"
+    },
+    "def_culture_squeezie": {
+      "cat": "culture",
+      "spicy": false,
+      "t": "Squeezie"
+    },
+    "def_culture_tibo_inshape": {
+      "cat": "culture",
+      "spicy": false,
+      "t": "Tibo InShape"
+    },
+    "def_culture_top_chef": {
+      "cat": "culture",
+      "spicy": false,
+      "t": "Top Chef"
+    },
+    "def_gaming_among_us": {
+      "cat": "gaming",
+      "spicy": false,
+      "t": "Among Us"
+    },
+    "def_gaming_animal_crossing": {
+      "cat": "gaming",
+      "spicy": false,
+      "t": "Animal Crossing"
+    },
+    "def_gaming_call_of_duty": {
+      "cat": "gaming",
+      "spicy": false,
+      "t": "Call of Duty"
+    },
+    "def_gaming_candy_crush": {
+      "cat": "gaming",
+      "spicy": false,
+      "t": "Candy Crush"
+    },
+    "def_gaming_elden_ring": {
+      "cat": "gaming",
+      "spicy": false,
+      "t": "Elden Ring"
+    },
+    "def_gaming_fifa": {
+      "cat": "gaming",
+      "spicy": false,
+      "t": "FIFA"
+    },
+    "def_gaming_fortnite": {
+      "cat": "gaming",
+      "spicy": false,
+      "t": "Fortnite"
+    },
+    "def_gaming_gta_v": {
+      "cat": "gaming",
+      "spicy": false,
+      "t": "GTA V"
+    },
+    "def_gaming_league_of_legends": {
+      "cat": "gaming",
+      "spicy": false,
+      "t": "League of Legends"
+    },
+    "def_gaming_mario_kart": {
+      "cat": "gaming",
+      "spicy": false,
+      "t": "Mario Kart"
+    },
+    "def_gaming_minecraft": {
+      "cat": "gaming",
+      "spicy": false,
+      "t": "Minecraft"
+    },
+    "def_gaming_pokemon": {
+      "cat": "gaming",
+      "spicy": false,
+      "t": "Pokémon"
+    },
+    "def_gaming_tetris": {
+      "cat": "gaming",
+      "spicy": false,
+      "t": "Tetris"
+    },
+    "def_gaming_the_sims": {
+      "cat": "gaming",
+      "spicy": false,
+      "t": "The Sims"
+    },
+    "def_gaming_zelda": {
+      "cat": "gaming",
+      "spicy": false,
+      "t": "Zelda"
+    },
+    "def_lifestyle_appart_en_ville": {
+      "cat": "lifestyle",
+      "spicy": false,
+      "t": "Appart en ville"
+    },
+    "def_lifestyle_bain_chaud": {
+      "cat": "lifestyle",
+      "spicy": false,
+      "t": "Bain chaud"
+    },
+    "def_lifestyle_chat": {
+      "cat": "lifestyle",
+      "spicy": false,
+      "t": "Chat"
+    },
+    "def_lifestyle_chien": {
+      "cat": "lifestyle",
+      "spicy": false,
+      "t": "Chien"
+    },
+    "def_lifestyle_couche_tard": {
+      "cat": "lifestyle",
+      "spicy": false,
+      "t": "Couche-tard"
+    },
+    "def_lifestyle_lecture": {
+      "cat": "lifestyle",
+      "spicy": false,
+      "t": "Lecture"
+    },
+    "def_lifestyle_maison_a_la_campagne": {
+      "cat": "lifestyle",
+      "spicy": false,
+      "t": "Maison à la campagne"
+    },
+    "def_lifestyle_matinal": {
+      "cat": "lifestyle",
+      "spicy": false,
+      "t": "Matinal"
+    },
+    "def_lifestyle_meditation": {
+      "cat": "lifestyle",
+      "spicy": false,
+      "t": "Méditation"
+    },
+    "def_lifestyle_piercing": {
+      "cat": "lifestyle",
+      "spicy": false,
+      "t": "Piercing"
+    },
+    "def_lifestyle_podcast": {
+      "cat": "lifestyle",
+      "spicy": false,
+      "t": "Podcast"
+    },
+    "def_lifestyle_sieste": {
+      "cat": "lifestyle",
+      "spicy": false,
+      "t": "Sieste"
+    },
+    "def_lifestyle_sport": {
+      "cat": "lifestyle",
+      "spicy": false,
+      "t": "Sport"
+    },
+    "def_lifestyle_tatouage": {
+      "cat": "lifestyle",
+      "spicy": false,
+      "t": "Tatouage"
+    },
+    "def_mode_air_force_1": {
+      "cat": "mode",
+      "spicy": false,
+      "t": "Air Force 1"
+    },
+    "def_mode_chaussettes_claquettes": {
+      "cat": "mode",
+      "spicy": false,
+      "t": "Chaussettes-claquettes"
+    },
+    "def_mode_chemise_hawaienne": {
+      "cat": "mode",
+      "spicy": false,
+      "t": "Chemise hawaïenne"
+    },
+    "def_mode_costume_cintre": {
+      "cat": "mode",
+      "spicy": false,
+      "t": "Costume cintré"
+    },
+    "def_mode_crocs": {
+      "cat": "mode",
+      "spicy": false,
+      "t": "Crocs"
+    },
+    "def_mode_look_gothique": {
+      "cat": "mode",
+      "spicy": false,
+      "t": "Look gothique"
+    },
+    "def_mode_mocassins_sans_chaussettes": {
+      "cat": "mode",
+      "spicy": false,
+      "t": "Mocassins sans chaussettes"
+    },
+    "def_mode_sac_vuitton": {
+      "cat": "mode",
+      "spicy": false,
+      "t": "Sac Vuitton"
+    },
+    "def_mode_streetwear": {
+      "cat": "mode",
+      "spicy": false,
+      "t": "Streetwear"
+    },
+    "def_mode_survet_assorti": {
+      "cat": "mode",
+      "spicy": false,
+      "t": "Survêt assorti"
+    },
+    "def_musique_abba": {
+      "cat": "musique",
+      "spicy": false,
+      "t": "ABBA"
+    },
+    "def_musique_ac_dc": {
+      "cat": "musique",
+      "spicy": false,
+      "t": "AC/DC"
+    },
+    "def_musique_adele": {
+      "cat": "musique",
+      "spicy": false,
+      "t": "Adele"
+    },
+    "def_musique_beyonce": {
+      "cat": "musique",
+      "spicy": false,
+      "t": "Beyoncé"
+    },
+    "def_musique_bruno_mars": {
+      "cat": "musique",
+      "spicy": false,
+      "t": "Bruno Mars"
+    },
+    "def_musique_coldplay": {
+      "cat": "musique",
+      "spicy": false,
+      "t": "Coldplay"
+    },
+    "def_musique_daft_punk": {
+      "cat": "musique",
+      "spicy": false,
+      "t": "Daft Punk"
+    },
+    "def_musique_dua_lipa": {
+      "cat": "musique",
+      "spicy": false,
+      "t": "Dua Lipa"
+    },
+    "def_musique_ed_sheeran": {
+      "cat": "musique",
+      "spicy": false,
+      "t": "Ed Sheeran"
+    },
+    "def_musique_elvis_presley": {
+      "cat": "musique",
+      "spicy": false,
+      "t": "Elvis Presley"
+    },
+    "def_musique_lady_gaga": {
+      "cat": "musique",
+      "spicy": false,
+      "t": "Lady Gaga"
+    },
+    "def_musique_michael_jackson": {
+      "cat": "musique",
+      "spicy": false,
+      "t": "Michael Jackson"
+    },
+    "def_musique_nirvana": {
+      "cat": "musique",
+      "spicy": false,
+      "t": "Nirvana"
+    },
+    "def_musique_pink_floyd": {
+      "cat": "musique",
+      "spicy": false,
+      "t": "Pink Floyd"
+    },
+    "def_musique_queen": {
+      "cat": "musique",
+      "spicy": false,
+      "t": "Queen"
+    },
+    "def_musique_taylor_swift": {
+      "cat": "musique",
+      "spicy": false,
+      "t": "Taylor Swift"
+    },
+    "def_nature_arc_en_ciel": {
+      "cat": "nature",
+      "spicy": false,
+      "t": "Arc-en-ciel"
+    },
+    "def_nature_aurores_boreales": {
+      "cat": "nature",
+      "spicy": false,
+      "t": "Aurores boréales"
+    },
+    "def_nature_brouillard_epais": {
+      "cat": "nature",
+      "spicy": false,
+      "t": "Brouillard épais"
+    },
+    "def_nature_cascade": {
+      "cat": "nature",
+      "spicy": false,
+      "t": "Cascade"
+    },
+    "def_nature_champ_de_lavande": {
+      "cat": "nature",
+      "spicy": false,
+      "t": "Champ de lavande"
+    },
+    "def_nature_ciel_etoile": {
+      "cat": "nature",
+      "spicy": false,
+      "t": "Ciel étoilé"
+    },
+    "def_nature_coucher_de_soleil": {
+      "cat": "nature",
+      "spicy": false,
+      "t": "Coucher de soleil"
+    },
+    "def_nature_desert_de_sable": {
+      "cat": "nature",
+      "spicy": false,
+      "t": "Désert de sable"
+    },
+    "def_nature_foret_en_automne": {
+      "cat": "nature",
+      "spicy": false,
+      "t": "Forêt en automne"
+    },
+    "def_nature_foret_tropicale": {
+      "cat": "nature",
+      "spicy": false,
+      "t": "Forêt tropicale"
+    },
+    "def_nature_lac_de_montagne": {
+      "cat": "nature",
+      "spicy": false,
+      "t": "Lac de montagne"
+    },
+    "def_nature_neige_fraiche": {
+      "cat": "nature",
+      "spicy": false,
+      "t": "Neige fraîche"
+    },
+    "def_nature_pluie_d_orage": {
+      "cat": "nature",
+      "spicy": false,
+      "t": "Pluie d'orage"
+    },
+    "def_nature_vagues_qui_claquent": {
+      "cat": "nature",
+      "spicy": false,
+      "t": "Vagues qui claquent"
+    },
+    "def_nature_vent_dans_les_feuilles": {
+      "cat": "nature",
+      "spicy": false,
+      "t": "Vent dans les feuilles"
+    },
+    "def_politique_barack_obama": {
+      "cat": "politique",
+      "spicy": false,
+      "t": "Barack Obama"
+    },
+    "def_politique_donald_trump": {
+      "cat": "politique",
+      "spicy": false,
+      "t": "Donald Trump"
+    },
+    "def_politique_emmanuel_macron": {
+      "cat": "politique",
+      "spicy": false,
+      "t": "Emmanuel Macron"
+    },
+    "def_politique_eric_zemmour": {
+      "cat": "politique",
+      "spicy": false,
+      "t": "Éric Zemmour"
+    },
+    "def_politique_jean_luc_melenchon": {
+      "cat": "politique",
+      "spicy": false,
+      "t": "Jean-Luc Mélenchon"
+    },
+    "def_politique_marine_le_pen": {
+      "cat": "politique",
+      "spicy": false,
+      "t": "Marine Le Pen"
+    },
+    "def_relations_amour_passion": {
+      "cat": "relations",
+      "spicy": false,
+      "t": "Amour passion"
+    },
+    "def_relations_amour_stable": {
+      "cat": "relations",
+      "spicy": false,
+      "t": "Amour stable"
+    },
+    "def_relations_cadeau_surprise": {
+      "cat": "relations",
+      "spicy": false,
+      "t": "Cadeau surprise"
+    },
+    "def_relations_coup_de_foudre": {
+      "cat": "relations",
+      "spicy": false,
+      "t": "Coup de foudre"
+    },
+    "def_relations_couple_aventurier": {
+      "cat": "relations",
+      "spicy": false,
+      "t": "Couple aventurier"
+    },
+    "def_relations_couple_cocon": {
+      "cat": "relations",
+      "spicy": false,
+      "t": "Couple cocon"
+    },
+    "def_relations_diner_aux_chandelles": {
+      "cat": "relations",
+      "spicy": false,
+      "t": "Dîner aux chandelles"
+    },
+    "def_relations_lettre_d_amour": {
+      "cat": "relations",
+      "spicy": false,
+      "t": "Lettre d'amour"
+    },
+    "def_relations_mariage": {
+      "cat": "relations",
+      "spicy": false,
+      "t": "Mariage"
+    },
+    "def_relations_match_sur_appli": {
+      "cat": "relations",
+      "spicy": false,
+      "t": "Match sur appli"
+    },
+    "def_relations_memes_mignons": {
+      "cat": "relations",
+      "spicy": false,
+      "t": "Memes mignons"
+    },
+    "def_relations_pacs": {
+      "cat": "relations",
+      "spicy": false,
+      "t": "PACS"
+    },
+    "def_relations_pizza_netflix": {
+      "cat": "relations",
+      "spicy": false,
+      "t": "Pizza-Netflix"
+    },
+    "def_relations_rencontre_irl": {
+      "cat": "relations",
+      "spicy": false,
+      "t": "Rencontre IRL"
+    },
+    "def_relations_saint_valentin": {
+      "cat": "relations",
+      "spicy": false,
+      "t": "Saint-Valentin"
+    },
+    "def_relations_slow_burn": {
+      "cat": "relations",
+      "spicy": false,
+      "t": "Slow burn"
+    },
+    "def_sport_basket": {
+      "cat": "sport",
+      "spicy": false,
+      "t": "Basket"
+    },
+    "def_sport_boxe": {
+      "cat": "sport",
+      "spicy": false,
+      "t": "Boxe"
+    },
+    "def_sport_course_a_pied": {
+      "cat": "sport",
+      "spicy": false,
+      "t": "Course à pied"
+    },
+    "def_sport_crossfit": {
+      "cat": "sport",
+      "spicy": false,
+      "t": "CrossFit"
+    },
+    "def_sport_f1": {
+      "cat": "sport",
+      "spicy": false,
+      "t": "F1"
+    },
+    "def_sport_foot": {
+      "cat": "sport",
+      "spicy": false,
+      "t": "Foot"
+    },
+    "def_sport_mma": {
+      "cat": "sport",
+      "spicy": false,
+      "t": "MMA"
+    },
+    "def_sport_padel": {
+      "cat": "sport",
+      "spicy": false,
+      "t": "Padel"
+    },
+    "def_sport_rugby": {
+      "cat": "sport",
+      "spicy": false,
+      "t": "Rugby"
+    },
+    "def_sport_tennis": {
+      "cat": "sport",
+      "spicy": false,
+      "t": "Tennis"
+    },
+    "def_tech_android": {
+      "cat": "tech",
+      "spicy": false,
+      "t": "Android"
+    },
+    "def_tech_chatgpt": {
+      "cat": "tech",
+      "spicy": false,
+      "t": "ChatGPT"
+    },
+    "def_tech_instagram": {
+      "cat": "tech",
+      "spicy": false,
+      "t": "Instagram"
+    },
+    "def_tech_iphone": {
+      "cat": "tech",
+      "spicy": false,
+      "t": "iPhone"
+    },
+    "def_tech_netflix": {
+      "cat": "tech",
+      "spicy": false,
+      "t": "Netflix"
+    },
+    "def_tech_playstation": {
+      "cat": "tech",
+      "spicy": false,
+      "t": "PlayStation"
+    },
+    "def_tech_snapchat": {
+      "cat": "tech",
+      "spicy": false,
+      "t": "Snapchat"
+    },
+    "def_tech_switch": {
+      "cat": "tech",
+      "spicy": false,
+      "t": "Switch"
+    },
+    "def_tech_tiktok": {
+      "cat": "tech",
+      "spicy": false,
+      "t": "TikTok"
+    },
+    "def_tech_tinder": {
+      "cat": "tech",
+      "spicy": false,
+      "t": "Tinder"
+    },
+    "def_tech_twitter_x": {
+      "cat": "tech",
+      "spicy": false,
+      "t": "Twitter/X"
+    },
+    "def_tech_ubereats": {
+      "cat": "tech",
+      "spicy": false,
+      "t": "UberEats"
+    },
+    "def_tech_vinted": {
+      "cat": "tech",
+      "spicy": false,
+      "t": "Vinted"
+    },
+    "def_tech_xbox": {
+      "cat": "tech",
+      "spicy": false,
+      "t": "Xbox"
+    },
+    "def_tech_youtube": {
+      "cat": "tech",
+      "spicy": false,
+      "t": "YouTube"
+    },
+    "def_voyages_airbnb": {
+      "cat": "voyages",
+      "spicy": false,
+      "t": "Airbnb"
+    },
+    "def_voyages_bali": {
+      "cat": "voyages",
+      "spicy": false,
+      "t": "Bali"
+    },
+    "def_voyages_camping_sauvage": {
+      "cat": "voyages",
+      "spicy": false,
+      "t": "Camping sauvage"
+    },
+    "def_voyages_londres": {
+      "cat": "voyages",
+      "spicy": false,
+      "t": "Londres"
+    },
+    "def_voyages_montagne_enneigee": {
+      "cat": "voyages",
+      "spicy": false,
+      "t": "Montagne enneigée"
+    },
+    "def_voyages_new_york": {
+      "cat": "voyages",
+      "spicy": false,
+      "t": "New York"
+    },
+    "def_voyages_palace_5_etoiles": {
+      "cat": "voyages",
+      "spicy": false,
+      "t": "Palace 5 étoiles"
+    },
+    "def_voyages_paris": {
+      "cat": "voyages",
+      "spicy": false,
+      "t": "Paris"
+    },
+    "def_voyages_plage_deserte": {
+      "cat": "voyages",
+      "spicy": false,
+      "t": "Plage déserte"
+    },
+    "def_voyages_road_trip_usa": {
+      "cat": "voyages",
+      "spicy": false,
+      "t": "Road trip USA"
+    },
+    "def_voyages_rome": {
+      "cat": "voyages",
+      "spicy": false,
+      "t": "Rome"
+    },
+    "def_voyages_seoul": {
+      "cat": "voyages",
+      "spicy": false,
+      "t": "Séoul"
+    },
+    "def_voyages_tokyo": {
+      "cat": "voyages",
+      "spicy": false,
+      "t": "Tokyo"
+    },
+    "def_voyages_train_de_nuit": {
+      "cat": "voyages",
+      "spicy": false,
+      "t": "Train de nuit"
+    }
+  },
+  "categories": {
+    "absurde": {
+      "emoji": "🤪",
+      "label": "Absurde"
+    },
+    "boisson": {
+      "emoji": "🥤",
+      "label": "Boisson"
+    },
+    "bouffe": {
+      "emoji": "🍕",
+      "label": "Bouffe"
+    },
+    "bourre": {
+      "emoji": "🍻",
+      "label": "Bourré·e",
+      "pack": "mode_apero"
+    },
+    "cartoons": {
+      "emoji": "🧸",
+      "label": "Dessins animés",
+      "pack": "pack_ultra"
+    },
+    "celebrite": {
+      "emoji": "⭐",
+      "label": "Célébrité"
+    },
+    "cine": {
+      "emoji": "🎬",
+      "label": "Ciné & Séries"
+    },
+    "coquin": {
+      "emoji": "🌶️",
+      "label": "Coquin",
+      "pack": "pack_ultra",
+      "spicy": true
+    },
+    "culture": {
+      "emoji": "🇫🇷",
+      "label": "Culture FR",
+      "pack": "pack_ultra"
+    },
+    "gaming": {
+      "emoji": "🎮",
+      "label": "Jeux vidéo",
+      "pack": "pack_ultra"
+    },
+    "lifestyle": {
+      "emoji": "☕",
+      "label": "Lifestyle"
+    },
+    "mode": {
+      "emoji": "👕",
+      "label": "Mode",
+      "pack": "pack_ultra"
+    },
+    "musique": {
+      "emoji": "🎵",
+      "label": "Musique"
+    },
+    "nature": {
+      "emoji": "🌿",
+      "label": "Nature"
+    },
+    "politique": {
+      "emoji": "🏛️",
+      "label": "Politique",
+      "pack": "pack_ultra"
+    },
+    "relations": {
+      "emoji": "❤️",
+      "label": "Relations"
+    },
+    "sport": {
+      "emoji": "⚽",
+      "label": "Sport"
+    },
+    "tech": {
+      "emoji": "📱",
+      "label": "Tech & Apps",
+      "pack": "pack_ultra"
+    },
+    "voyages": {
+      "emoji": "✈️",
+      "label": "Voyages"
+    }
+  }
+}
