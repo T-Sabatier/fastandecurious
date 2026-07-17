@@ -11,7 +11,7 @@ import {
   setStoredAperoUnlock,
   ROOM_TTL_MS,
 } from '../utils';
-import { CATEGORIES, YELLOW, AMBER, PINK, MAX_PLAYERS } from '../cards';
+import { CATEGORIES, YELLOW, AMBER, PINK, APERO_ACCENT, MAX_PLAYERS } from '../cards';
 import { ChevronRight, Lock, X } from 'lucide-react';
 import InstallButton from './InstallButton.jsx';
 
@@ -190,13 +190,13 @@ export default function Home({ playerId, onJoin, initialError }) {
             <span
               className="inline-block px-5 py-2 -rotate-2 leading-none"
               style={{
-                backgroundColor: PINK,
+                backgroundColor: partyActive ? APERO_ACCENT : PINK,
                 color: '#fff',
                 border: '4px solid #000',
                 boxShadow: '6px 6px 0 #000',
               }}
             >
-              Tap
+              {partyActive ? 'Éro' : 'Tap'}
             </span>
           </h1>
           <div className="mt-4 flex items-center gap-2">
@@ -205,7 +205,7 @@ export default function Home({ playerId, onJoin, initialError }) {
               style={{ fontFamily: '"Space Mono", monospace' }}
               className="text-[10px] uppercase tracking-widest whitespace-nowrap text-black"
             >
-              {partyActive ? 'Mode apéro : on joue à boire' : "Devine ce qu'ils aiment ou pas…"}
+              {partyActive ? 'Mode apéro : on mise des gorgées' : "Devine ce qu'ils aiment ou pas…"}
             </div>
           </div>
         </div>
@@ -218,7 +218,7 @@ export default function Home({ playerId, onJoin, initialError }) {
             onClick={toggleParty}
             className="w-full border-4 border-black p-4 mb-8 flex items-center justify-between active:translate-x-[2px] active:translate-y-[2px]"
             style={{
-              backgroundColor: party ? PINK : '#FFF',
+              backgroundColor: party ? APERO_ACCENT : '#FFF',
               color: party ? '#FFF' : '#000',
               boxShadow: party ? '6px 6px 0 #000' : '4px 4px 0 #000',
               transition: 'all 120ms',
@@ -235,7 +235,7 @@ export default function Home({ playerId, onJoin, initialError }) {
                 style={{ fontFamily: '"Space Mono", monospace' }}
                 className="text-[10px] uppercase tracking-widest mt-1 opacity-80"
               >
-                {party ? 'Activé · on joue à boire !' : 'Jeu à boire · active-le'}
+                {party ? 'Activé · on mise des gorgées !' : 'Jeu à boire · active-le'}
               </div>
             </div>
             <div

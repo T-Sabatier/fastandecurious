@@ -815,7 +815,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
           </div>
         </div>
 
-        <div className="flex-1 px-4 pb-32 overflow-y-auto">
+        <div className={`flex-1 px-4 overflow-y-auto ${partyMode ? 'pb-48' : 'pb-32'}`}>
           <div className="grid grid-cols-2 gap-3 max-w-xl mx-auto">
             {myHandCardIds.map((cid) => {
               const card = pool[cid];
@@ -963,12 +963,6 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               ))}
             {partyMode && (
               <div className="mb-2">
-                <div
-                  style={{ fontFamily: '"Space Mono", monospace' }}
-                  className="text-[10px] uppercase tracking-widest text-center mb-1.5 opacity-70"
-                >
-                  Ta mise 🍺 · si ta carte est choisie, tout le monde boit
-                </div>
                 <div className="flex justify-center gap-2">
                   {[1, 2, 3, 4].map((n) => {
                     const on = bet === n;
@@ -1349,21 +1343,21 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
 
           <div
             style={{ fontFamily: '"Space Mono", monospace' }}
-            className="text-[10px] uppercase tracking-widest opacity-60 mb-1"
+            className="text-[10px] uppercase tracking-widest opacity-60 mb-3"
           >
             Posée par
           </div>
           <div
             style={{
               fontFamily: '"Anton", sans-serif',
-              lineHeight: 0.9,
+              lineHeight: 1.05,
               fontSize: fitBig(winnerP?.name || ''),
               color: colorHex(winnerP?.color) || '#000',
               WebkitTextStroke: '5px #000',
               paintOrder: 'stroke fill',
               letterSpacing: '0.08em',
             }}
-            className="uppercase mb-2 break-words"
+            className="uppercase mb-6 break-words"
           >
             {winnerP?.name || '?'} {iAmWinner && '🎉'}
           </div>
@@ -1377,13 +1371,13 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                   boxShadow: '4px 4px 0 #000',
                   transform: 'rotate(3deg)',
                 }}
-                className="inline-block border-4 border-black px-4 py-3 text-3xl uppercase leading-none"
+                className="inline-block border-4 border-black px-4 py-3 text-3xl uppercase leading-none whitespace-nowrap"
               >
-                🍺 Tout le monde boit {winnerBet}
+                Tout le monde boit {winnerBet}
               </div>
               <div
                 style={{ fontFamily: '"Space Mono", monospace' }}
-                className="text-[11px] uppercase tracking-widest mt-4 flex items-center justify-center gap-2 flex-wrap"
+                className="text-[11px] uppercase tracking-widest mt-8 flex items-center justify-center gap-x-2 gap-y-1 flex-wrap"
               >
                 <span
                   style={{
@@ -1393,7 +1387,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                     WebkitTextStroke: '3px #000',
                     paintOrder: 'stroke fill',
                     letterSpacing: '0.05em',
-                    lineHeight: 1,
+                    lineHeight: 1.2,
                   }}
                 >
                   {winnerP?.name}

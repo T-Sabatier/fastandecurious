@@ -202,8 +202,10 @@ export const HAND_SIZE = 7;
 export const WINNING_SCORE = 5;
 export const YELLOW = '#FFE600';
 // Couleur de fond du Mode Apero (jeu a boire) : ambre "biere/golden", en
-// gardant les contours noirs + l'accent rose. Remplace le jaune sur les fonds.
-export const AMBER = '#FFA000';
+// gardant les contours noirs. Remplace le jaune sur les fonds.
+export const AMBER = '#FBB417';
+// Accent du Mode Apero : a tester (remplace le rose sur fond biere).
+export const APERO_ACCENT = '#FF2D6F';
 export const PINK = '#FF2D6F';
 export const LIKE_GREEN = '#00C853';
 export const DISLIKE_RED = '#FF1744';

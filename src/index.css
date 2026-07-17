@@ -47,7 +47,7 @@ input {
    contenu ; sur mobile ou fixed est ignore, il defile simplement (ok). La
    couleur de fond inline (ambre) reste en secours si l'image ne charge pas. */
 .apero-bg {
-  background-image: url('/apero-bg.webp');
+  background-image: url('/apero-bg.webp?v=4');
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -55,6 +55,6 @@ input {
 }
 @media (min-width: 768px) {
   .apero-bg {
-    background-image: url('/apero-bg-wide.webp');
+    background-image: url('/apero-bg-wide.webp?v=4');
   }
 }

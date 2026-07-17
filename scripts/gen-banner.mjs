@@ -1,6 +1,6 @@
 // Genere la banniere Play Store (feature graphic 1024x500) dans
 // store-assets/banner-1024x500.png. Meme langage visuel que le jeu :
-// logo SNAP/TAP + pastilles J'AIME / J'AIME PAS. Lancer :
+// logo SNAP/TAP CENTRE, epure (sans pastilles). Lancer :
 //   node scripts/gen-banner.mjs
 import sharp from 'sharp';
 import opentype from 'opentype.js';
@@ -67,18 +67,16 @@ const logo = `<path d="${snap.d}" transform="translate(${snap.dx.toFixed(2)},${s
     <path d="${tap.d}" transform="translate(${tap.dx.toFixed(2)},${tap.dy.toFixed(2)})" fill="${WHITE}"/>
   </g>`;
 
-// --- Composition 1024x500 ---
-const k = 0.82; // echelle du logo (512 -> ~420)
-const logoX = 30;
-const logoY = (500 - S * k) / 2;
+// --- Composition 1024x500 : logo SNAP/TAP centre, epure ---
+const k = 0.86; // echelle du logo (512 -> ~440)
+const logoX = (1024 - S * k) / 2; // centre horizontalement
+const logoY = (500 - S * k) / 2; // centre verticalement
 
 const svg = `<svg width="1024" height="500" viewBox="0 0 1024 500" xmlns="http://www.w3.org/2000/svg">
   <rect width="1024" height="500" fill="${YELLOW}"/>
   <g transform="translate(${logoX} ${logoY}) scale(${k})">
 ${logo}
   </g>
-  ${chip("J'AIME", 220, 720, 165, GREEN, -3)}
-  ${chip("J'AIME PAS", 330, 745, 340, RED, 2)}
 </svg>`;
 
 await sharp(Buffer.from(svg), { density: 300 })
