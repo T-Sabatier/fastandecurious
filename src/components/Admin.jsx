@@ -19,6 +19,11 @@ import { Lock, Plus, Pencil, Trash2, Check, X, ArrowLeft, Eye, EyeOff } from 'lu
 import { auth, db } from '../firebase';
 import { ref, onValue } from 'firebase/database';
 import {
+  subscribeAnnouncement,
+  publishAnnouncement,
+  clearAnnouncement,
+} from '../announcement';
+import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
@@ -200,6 +205,9 @@ function Dashboard({ onLogout }) {
   const [newCatSpicy, setNewCatSpicy] = useState(false);
   const [catsExpanded, setCatsExpanded] = useState(false);
   const [stats, setStats] = useState(null);
+  const [currentAnn, setCurrentAnn] = useState(null);
+  const [annTitle, setAnnTitle] = useState('');
+  const [annBody, setAnnBody] = useState('');
 
   useEffect(() => {
     // Seeds de bootstrap uniquement (base vide) — sinon aucun effet.
@@ -209,12 +217,36 @@ function Dashboard({ onLogout }) {
     const unsubCats = subscribeCategories(setCategories);
     // Stats anonymes (lecture réservée admin par les règles).
     const unsubStats = onValue(ref(db, 'stats'), (snap) => setStats(snap.val() || {}));
+    const unsubAnn = subscribeAnnouncement(setCurrentAnn);
     return () => {
       unsubCards();
       unsubCats();
       unsubStats();
+      unsubAnn();
     };
   }, []);
+
+  async function handlePublishAnn() {
+    if (busy || (!annTitle.trim() && !annBody.trim())) return;
+    setBusy(true);
+    try {
+      await publishAnnouncement({ title: annTitle.trim(), body: annBody.trim() });
+      setAnnTitle('');
+      setAnnBody('');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleClearAnn() {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await clearAnnouncement();
+    } finally {
+      setBusy(false);
+    }
+  }
 
   useEffect(() => {
     if (!newCat && categories.length > 0) {
@@ -475,6 +507,98 @@ function Dashboard({ onLogout }) {
               </div>
             </>
           )}
+        </div>
+
+        {/* Annonce poussée en direct aux joueurs (pop-up), éditable ici. */}
+        <div
+          className="border-4 border-black bg-white p-4 mb-6"
+          style={{ boxShadow: '6px 6px 0 #000' }}
+        >
+          <div
+            style={{ fontFamily: '"Anton", sans-serif' }}
+            className="text-xl uppercase mb-3"
+          >
+            📣 Annonce joueurs
+          </div>
+          {currentAnn?.id ? (
+            <div
+              className="border-2 border-black p-3 mb-3"
+              style={{ backgroundColor: '#FFF3B0', boxShadow: '3px 3px 0 #000' }}
+            >
+              <div
+                style={{ fontFamily: '"Space Mono", monospace' }}
+                className="text-[9px] uppercase tracking-widest opacity-60 mb-1"
+              >
+                Annonce active
+              </div>
+              {currentAnn.title && (
+                <div
+                  style={{ fontFamily: '"Anton", sans-serif' }}
+                  className="uppercase leading-none mb-1"
+                >
+                  {currentAnn.title}
+                </div>
+              )}
+              {currentAnn.body && (
+                <div className="text-sm whitespace-pre-line">{currentAnn.body}</div>
+              )}
+              <button
+                onClick={handleClearAnn}
+                disabled={busy}
+                className="mt-2 border-2 border-black bg-black text-white px-2 py-1 active:opacity-60"
+              >
+                <span
+                  style={{ fontFamily: '"Space Mono", monospace' }}
+                  className="text-[10px] uppercase tracking-widest"
+                >
+                  Retirer
+                </span>
+              </button>
+            </div>
+          ) : (
+            <div
+              style={{ fontFamily: '"Space Mono", monospace' }}
+              className="text-[11px] uppercase tracking-widest opacity-50 mb-3"
+            >
+              Aucune annonce active
+            </div>
+          )}
+          <input
+            value={annTitle}
+            onChange={(e) => setAnnTitle(e.target.value)}
+            placeholder="Titre (ex. Nouvelles cartes de Noël 🎄)"
+            maxLength={60}
+            className="w-full border-4 border-black bg-white px-3 py-2 outline-none mb-2"
+            style={{ boxShadow: '3px 3px 0 #000' }}
+          />
+          <textarea
+            value={annBody}
+            onChange={(e) => setAnnBody(e.target.value)}
+            placeholder="Message…"
+            maxLength={300}
+            rows={3}
+            className="w-full border-4 border-black bg-white px-3 py-2 outline-none mb-2 resize-none"
+            style={{ boxShadow: '3px 3px 0 #000' }}
+          />
+          <button
+            onClick={handlePublishAnn}
+            disabled={busy || (!annTitle.trim() && !annBody.trim())}
+            className="w-full border-4 border-black py-2 disabled:opacity-40 active:translate-x-[2px] active:translate-y-[2px]"
+            style={{ backgroundColor: PINK, color: '#FFF', boxShadow: '4px 4px 0 #000' }}
+          >
+            <span
+              style={{ fontFamily: '"Anton", sans-serif' }}
+              className="text-lg uppercase"
+            >
+              Publier l'annonce
+            </span>
+          </button>
+          <div
+            style={{ fontFamily: '"Space Mono", monospace' }}
+            className="text-[9px] uppercase tracking-widest opacity-50 mt-2 text-center"
+          >
+            S'affiche 1× chez chaque joueur (web + app)
+          </div>
         </div>
 
         <div

@@ -11,6 +11,7 @@ import {
 import Home from './components/Home.jsx';
 import Lobby from './components/Lobby.jsx';
 import Game from './components/Game.jsx';
+import Announcement from './components/Announcement.jsx';
 import Admin from './components/Admin.jsx';
 import Debug from './components/Debug.jsx';
 
@@ -158,52 +159,50 @@ export default function App() {
     clearRoomUrl();
   }
 
+  // Écran courant selon l'état (un seul rendu → le pop-up d'annonce est global).
+  let screen;
   if (autoJoining) {
-    return (
+    screen = (
       <div className="min-h-screen flex items-center justify-center text-black">
         <div style={{ fontFamily: '"Anton", sans-serif' }} className="text-2xl uppercase">
           Connexion à la room…
         </div>
       </div>
     );
-  }
-
-  if (!roomCode) {
-    return <Home playerId={playerId} onJoin={joinRoom} initialError={joinError} />;
-  }
-
-  if (loading || !room) {
-    return (
+  } else if (!roomCode) {
+    screen = <Home playerId={playerId} onJoin={joinRoom} initialError={joinError} />;
+  } else if (loading || !room) {
+    screen = (
       <div className="min-h-screen flex items-center justify-center text-black">
         <div style={{ fontFamily: '"Anton", sans-serif' }} className="text-2xl uppercase">
           Connexion…
         </div>
       </div>
     );
-  }
-
-  // Player not in the room (kicked or stale code)
-  if (!room.players || !room.players[playerId]) {
-    return <Home playerId={playerId} onJoin={joinRoom} initialError="Tu n'es plus dans cette room" onLeftover={leaveRoom} />;
-  }
-
-  if (room.phase === 'lobby') {
-    return (
-      <Lobby
-        room={room}
-        roomCode={roomCode}
+  } else if (!room.players || !room.players[playerId]) {
+    // Player not in the room (kicked or stale code)
+    screen = (
+      <Home
         playerId={playerId}
-        onLeave={leaveRoom}
+        onJoin={joinRoom}
+        initialError="Tu n'es plus dans cette room"
+        onLeftover={leaveRoom}
       />
+    );
+  } else if (room.phase === 'lobby') {
+    screen = (
+      <Lobby room={room} roomCode={roomCode} playerId={playerId} onLeave={leaveRoom} />
+    );
+  } else {
+    screen = (
+      <Game room={room} roomCode={roomCode} playerId={playerId} onLeave={leaveRoom} />
     );
   }
 
   return (
-    <Game
-      room={room}
-      roomCode={roomCode}
-      playerId={playerId}
-      onLeave={leaveRoom}
-    />
+    <>
+      {screen}
+      <Announcement />
+    </>
   );
 }

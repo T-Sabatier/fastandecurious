@@ -63,6 +63,11 @@
       }
     },
 
+    "announcement": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('admin').child(auth.uid).exists()"
+    },
+
     "admin": {
       ".read": false,
       ".write": false
