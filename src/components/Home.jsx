@@ -9,6 +9,7 @@ import {
   setStoredParty,
   setStoredAperoUnlock,
   ROOM_TTL_MS,
+  openExternal,
 } from '../utils';
 import { CATEGORIES, YELLOW, AMBER, PINK, APERO_ACCENT, MAX_PLAYERS } from '../cards';
 import { useBilling, PRODUCT_APERO, PRODUCT_ULTRA } from '../purchases';
@@ -516,8 +517,10 @@ export default function Home({ playerId, onJoin, initialError }) {
           >
             <a
               href="https://www.snaptapparty.com/privacy"
-              target="_blank"
-              rel="noopener noreferrer"
+              onClick={(e) => {
+                e.preventDefault();
+                openExternal('https://www.snaptapparty.com/privacy');
+              }}
               className="underline"
             >
               Confidentialité
@@ -525,8 +528,10 @@ export default function Home({ playerId, onJoin, initialError }) {
             <span aria-hidden>·</span>
             <a
               href="https://www.snaptapparty.com/conditions"
-              target="_blank"
-              rel="noopener noreferrer"
+              onClick={(e) => {
+                e.preventDefault();
+                openExternal('https://www.snaptapparty.com/conditions');
+              }}
               className="underline"
             >
               Conditions
@@ -534,8 +539,10 @@ export default function Home({ playerId, onJoin, initialError }) {
             <span aria-hidden>·</span>
             <a
               href="https://www.snaptapparty.com/mentions-legales"
-              target="_blank"
-              rel="noopener noreferrer"
+              onClick={(e) => {
+                e.preventDefault();
+                openExternal('https://www.snaptapparty.com/mentions-legales');
+              }}
               className="underline"
             >
               Mentions légales

@@ -9,6 +9,22 @@ export const PUBLIC_URL = 'https://www.snaptapparty.com';
 export const PLAY_STORE_URL =
   'https://play.google.com/store/apps/details?id=com.snaptap.game';
 
+// Ouvre une URL externe : sur l'app native via le navigateur système
+// (@capacitor/browser) car les liens target="_blank" ne s'ouvrent pas dans la
+// webview ; sur le web via un nouvel onglet.
+export async function openExternal(url) {
+  if (Capacitor.isNativePlatform()) {
+    try {
+      const { Browser } = await import('@capacitor/browser');
+      await Browser.open({ url });
+      return;
+    } catch {
+      /* fallback ci-dessous */
+    }
+  }
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
 // Plateforme d'exécution : 'native' (app) | 'android' | 'ios' | 'desktop' (web).
 export function webPlatform() {
   if (Capacitor.isNativePlatform()) return 'native';
