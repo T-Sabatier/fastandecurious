@@ -706,6 +706,20 @@ export default function Home({ playerId, onJoin, initialError }) {
             >
               Packs premium
             </div>
+            {!billingAvailable && (
+              <div
+                className="border-2 border-black px-3 py-2 mb-4 flex items-center justify-center gap-2 text-center"
+                style={{ backgroundColor: PINK, color: '#FFF', boxShadow: '3px 3px 0 #000' }}
+              >
+                <span className="text-base leading-none">📱</span>
+                <span
+                  style={{ fontFamily: '"Space Mono", monospace' }}
+                  className="text-[11px] uppercase tracking-wide leading-tight"
+                >
+                  Achats disponibles uniquement sur l'app mobile
+                </span>
+              </div>
+            )}
             <div className="space-y-4">
               {[
                 {
