@@ -28,6 +28,9 @@ export default function Home({ playerId, onJoin, initialError }) {
   const [error, setError] = useState(initialError || '');
   const [busy, setBusy] = useState(false);
   const [invitedCode] = useState(getCodeFromUrl);
+  // Arrivée via QR / lien avec un code → modal de join dédiée (prénom + Rejoindre)
+  // pour éviter que le joueur clique par réflexe sur "Créer une partie".
+  const [showJoinModal, setShowJoinModal] = useState(!!invitedCode);
   // Preference "Mode Apero" (jeu a boire) + possession du mode (produit paye).
   // Le mode ne s'active que si l'utilisateur le POSSEDE (aperoOwned). Tant que
   // le billing n'est pas branche : verrouille, deblocable via bouton dev.
@@ -510,6 +513,83 @@ export default function Home({ playerId, onJoin, initialError }) {
         >
           🐛 Debug
         </a>
+      )}
+
+      {/* Modal de join : ouverte auto quand on arrive avec un code (QR / lien).
+          Prénom + gros bouton Rejoindre → évite le clic réflexe sur "Créer". */}
+      {showJoinModal && invitedCode && (
+        <div
+          onClick={() => setShowJoinModal(false)}
+          className="fixed inset-0 z-50 flex items-center justify-center p-6"
+          style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative border-4 border-black bg-white w-full max-w-sm p-6"
+            style={{ boxShadow: '8px 8px 0 #000' }}
+          >
+            <button
+              onClick={() => setShowJoinModal(false)}
+              aria-label="Fermer"
+              className="absolute top-3 right-3 active:opacity-50"
+            >
+              <X size={24} strokeWidth={3} />
+            </button>
+            <div
+              style={{ fontFamily: '"Space Mono", monospace' }}
+              className="text-[10px] uppercase tracking-widest opacity-60 text-center mb-1 mt-1"
+            >
+              Tu rejoins la partie
+            </div>
+            <div
+              style={{ fontFamily: '"Anton", sans-serif', letterSpacing: '0.15em' }}
+              className="text-5xl uppercase text-center mb-5"
+            >
+              {invitedCode}
+            </div>
+            <div
+              style={{ fontFamily: '"Space Mono", monospace' }}
+              className="text-sm uppercase tracking-widest mb-2 opacity-80"
+            >
+              Ton prénom
+            </div>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && joinRoom()}
+              placeholder="Prénom…"
+              maxLength={20}
+              autoFocus
+              className="w-full border-4 border-black bg-white px-3 py-3 outline-none placeholder-black/30 text-lg mb-4"
+              style={{ boxShadow: '4px 4px 0 #000' }}
+            />
+            {error && <div className="mb-4 text-sm text-red-600">⚠️ {error}</div>}
+            <button
+              onClick={joinRoom}
+              disabled={busy || !name.trim()}
+              className="w-full border-4 border-black py-3 active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-40"
+              style={{ backgroundColor: PINK, color: '#FFF', boxShadow: '4px 4px 0 #000' }}
+            >
+              <span
+                style={{ fontFamily: '"Anton", sans-serif' }}
+                className="text-2xl uppercase"
+              >
+                Rejoindre
+              </span>
+            </button>
+            <button
+              onClick={() => setShowJoinModal(false)}
+              className="mt-3 w-full text-center"
+            >
+              <span
+                style={{ fontFamily: '"Space Mono", monospace' }}
+                className="text-[10px] uppercase tracking-widest opacity-50"
+              >
+                Ou créer une partie à la place
+              </span>
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Teaser Mode Apero (produit paye). En natif : achat reel (RevenueCat) ;
