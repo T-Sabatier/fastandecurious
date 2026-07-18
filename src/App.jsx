@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { ref, onValue, remove, get, set } from 'firebase/database';
+import { ref, onValue, remove, get } from 'firebase/database';
 import { db } from './firebase';
 import { MAX_PLAYERS } from './cards';
 import {
   getOrCreatePlayerId,
   getStoredRoom,
   setStoredRoom,
-  getStoredName,
   ROOM_TTL_MS,
 } from './utils';
 import Home from './components/Home.jsx';
@@ -100,26 +99,27 @@ export default function App() {
         }
         const r = snap.val();
         const alreadyIn = r.players && r.players[playerId];
-        if (!alreadyIn && r.phase !== 'lobby') {
+        // Deja dans la room (reconnexion / lien rouvert) → on rebascule direct.
+        if (alreadyIn) {
+          setStoredRoom(code);
+          setRoomCode(code);
+          setAutoJoining(false);
+          return;
+        }
+        // Nouveau joueur : on NE rejoint PAS automatiquement (sinon il arrive
+        // sans prenom). On valide la room, puis l'accueil affiche la modal de
+        // join (prenom + Rejoindre) qui l'ajoutera au bon moment.
+        if (r.phase !== 'lobby') {
           setJoinError('Partie déjà en cours dans cette room');
           setAutoJoining(false);
           return;
         }
-        if (!alreadyIn && Object.keys(r.players || {}).length >= MAX_PLAYERS) {
+        if (Object.keys(r.players || {}).length >= MAX_PLAYERS) {
           setJoinError(`Room complète (${MAX_PLAYERS} joueurs max)`);
           setAutoJoining(false);
           return;
         }
-        if (!alreadyIn) {
-          await set(ref(db, `rooms/${code}/players/${playerId}`), {
-            name: getStoredName() || '',
-            score: 0,
-            joinedAt: Date.now(),
-          });
-        }
         if (cancelled) return;
-        setStoredRoom(code);
-        setRoomCode(code);
         setAutoJoining(false);
       } catch (e) {
         if (!cancelled) {
