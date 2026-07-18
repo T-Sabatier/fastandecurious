@@ -30,7 +30,8 @@ export default function Home({ playerId, onJoin, initialError }) {
   const [invitedCode] = useState(getCodeFromUrl);
   // Arrivée via QR / lien avec un code → modal de join dédiée (prénom + Rejoindre)
   // pour éviter que le joueur clique par réflexe sur "Créer une partie".
-  const [showJoinModal, setShowJoinModal] = useState(!!invitedCode);
+  // Pas de modal si une erreur est déjà présente (room introuvable, kické…).
+  const [showJoinModal, setShowJoinModal] = useState(!!invitedCode && !initialError);
   // Preference "Mode Apero" (jeu a boire) + possession du mode (produit paye).
   // Le mode ne s'active que si l'utilisateur le POSSEDE (aperoOwned). Tant que
   // le billing n'est pas branche : verrouille, deblocable via bouton dev.

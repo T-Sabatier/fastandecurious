@@ -94,6 +94,7 @@ export default function App() {
         if (cancelled) return;
         if (!snap.exists()) {
           setJoinError('Room introuvable');
+          clearRoomUrl();
           setAutoJoining(false);
           return;
         }
@@ -111,11 +112,13 @@ export default function App() {
         // join (prenom + Rejoindre) qui l'ajoutera au bon moment.
         if (r.phase !== 'lobby') {
           setJoinError('Partie déjà en cours dans cette room');
+          clearRoomUrl();
           setAutoJoining(false);
           return;
         }
         if (Object.keys(r.players || {}).length >= MAX_PLAYERS) {
           setJoinError(`Room complète (${MAX_PLAYERS} joueurs max)`);
+          clearRoomUrl();
           setAutoJoining(false);
           return;
         }
@@ -134,15 +137,25 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Retire ?room=CODE de l'URL : évite que la modal de join se re-déclenche
+  // après avoir rejoint, quitté, ou si la room n'existe plus.
+  function clearRoomUrl() {
+    if (typeof window !== 'undefined' && window.location.search) {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }
+
   function joinRoom(code) {
     setStoredRoom(code);
     setRoomCode(code);
+    clearRoomUrl();
   }
 
   function leaveRoom() {
     setStoredRoom(null);
     setRoomCode(null);
     setRoom(null);
+    clearRoomUrl();
   }
 
   if (autoJoining) {
