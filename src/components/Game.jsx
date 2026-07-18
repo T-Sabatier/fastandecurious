@@ -1400,7 +1400,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 style={{ fontFamily: '"Space Mono", monospace' }}
                 className="text-[9px] uppercase tracking-widest mt-1 opacity-50"
               >
-                Le·la gagnant·e ne boit pas · à consommer avec modération
+                Le·la gagnant·e ne boit pas
               </div>
             </>
           ) : (

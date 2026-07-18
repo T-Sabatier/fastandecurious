@@ -14,6 +14,7 @@ import { CATEGORIES, YELLOW, AMBER, PINK, APERO_ACCENT, MAX_PLAYERS } from '../c
 import { useBilling, PRODUCT_APERO, PRODUCT_ULTRA } from '../purchases';
 import { ChevronRight, Lock, X } from 'lucide-react';
 import InstallButton from './InstallButton.jsx';
+import InstallCta from './InstallCta.jsx';
 
 function getCodeFromUrl() {
   if (typeof window === 'undefined') return '';
@@ -477,23 +478,14 @@ export default function Home({ playerId, onJoin, initialError }) {
             {partyActive ? '🍻 Règles apéro' : 'Règles'}
           </div>
           {partyActive ? (
-            <>
-              <ul className="text-sm leading-relaxed space-y-1">
-                <li>• 3 joueurs minimum, chacun sur son appareil</li>
-                <li>• Main de <b>7 cartes</b> chacun</li>
-                <li>• Un joueur tiré au sort annonce <b>J'AIME</b> ou <b>J'AIME PAS</b></li>
-                <li>• Chacun pose une carte et <b>mise 1 à 4 gorgées</b> dessus</li>
-                <li>• Ta carte choisie → tu marques et <b>tout le monde boit ta mise</b></li>
-                <li>• Sinon → tu bois la <b>mise de la carte gagnante</b></li>
-                <li>• Premier à <b>5 manches</b> = <b>Roi·ne de la soirée</b></li>
-              </ul>
-              <div
-                style={{ fontFamily: '"Space Mono", monospace' }}
-                className="text-[9px] uppercase tracking-widest mt-3 opacity-50"
-              >
-                À consommer avec modération
-              </div>
-            </>
+            <ul className="text-sm leading-relaxed space-y-1">
+              <li>• 3 joueurs minimum, chacun sur son appareil</li>
+              <li>• Main de <b>7 cartes</b> chacun</li>
+              <li>• Un joueur tiré au sort annonce <b>J'AIME</b> ou <b>J'AIME PAS</b></li>
+              <li>• Chacun pose une carte et <b>mise 1 à 4 gorgées</b> dessus</li>
+              <li>• Ta carte choisie → tu marques et <b>tout le monde boit ta mise</b></li>
+              <li>• Sinon → tu bois la <b>mise de la carte gagnante</b></li>
+            </ul>
           ) : (
             <ul className="text-sm leading-relaxed space-y-1">
               <li>• 3 joueurs minimum, chacun sur son appareil</li>
@@ -552,15 +544,9 @@ export default function Home({ playerId, onJoin, initialError }) {
             >
               Premium · jeu à boire
             </div>
-            <p className="text-sm mb-2">
+            <p className="text-sm mb-4">
               Transforme Snap Tap en <b>jeu à boire</b> : tu mises des gorgées
               sur tes cartes, et la carte choisie fait boire tout le salon.
-            </p>
-            <p
-              style={{ fontFamily: '"Space Mono", monospace' }}
-              className="text-[9px] uppercase tracking-widest opacity-50 mb-4"
-            >
-              À consommer avec modération
             </p>
             <div className="border-t-2 border-black/10 pt-4 flex items-end justify-between gap-3">
               <p className="text-sm opacity-80 flex-1">
@@ -591,18 +577,9 @@ export default function Home({ playerId, onJoin, initialError }) {
                 </span>
               </button>
             ) : (
-              <button
-                onClick={() => setAperoTeaser(false)}
-                className="mt-5 w-full border-4 border-black bg-black text-white py-3 active:translate-x-[2px] active:translate-y-[2px]"
-                style={{ boxShadow: '4px 4px 0 #000' }}
-              >
-                <span
-                  style={{ fontFamily: '"Anton", sans-serif' }}
-                  className="text-xl uppercase"
-                >
-                  Dispo dans l'app
-                </span>
-              </button>
+              <div className="mt-5">
+                <InstallCta onNavigate={() => setAperoTeaser(false)} />
+              </div>
             )}
             {import.meta.env.DEV && (
               <button
@@ -717,19 +694,7 @@ export default function Home({ playerId, onJoin, initialError }) {
                           {shopBusy ? '…' : `Acheter ${price}`}
                         </span>
                       </button>
-                    ) : (
-                      <button
-                        disabled
-                        className="w-full border-2 border-black bg-black text-white py-2 opacity-60"
-                      >
-                        <span
-                          style={{ fontFamily: '"Space Mono", monospace' }}
-                          className="text-[11px] uppercase tracking-widest"
-                        >
-                          Dispo dans l'app
-                        </span>
-                      </button>
-                    )}
+                    ) : null}
                   </div>
                 );
               })}
@@ -751,11 +716,14 @@ export default function Home({ playerId, onJoin, initialError }) {
                 </span>
               </button>
             ) : (
-              <div
-                style={{ fontFamily: '"Space Mono", monospace' }}
-                className="text-[9px] uppercase tracking-widest opacity-50 mt-4 text-center"
-              >
-                Achats disponibles dans l'application
+              <div className="mt-5">
+                <div
+                  style={{ fontFamily: '"Space Mono", monospace' }}
+                  className="text-[10px] uppercase tracking-widest opacity-60 mb-3 text-center"
+                >
+                  Ces packs s'achètent dans l'app mobile
+                </div>
+                <InstallCta onNavigate={() => setShowShop(false)} />
               </div>
             )}
           </div>

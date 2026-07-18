@@ -1,6 +1,36 @@
+import { Capacitor } from '@capacitor/core';
+
 // URL publique du jeu (QR codes, liens de partage depuis l'app native).
 // www est le domaine de production Vercel (l'apex snaptapparty.com redirige).
 export const PUBLIC_URL = 'https://www.snaptapparty.com';
+
+// Fiche Play Store de l'app native (pour inciter au download depuis le web).
+// Ne fonctionne publiquement qu'une fois l'app en PRODUCTION.
+export const PLAY_STORE_URL =
+  'https://play.google.com/store/apps/details?id=com.snaptap.game';
+
+// Plateforme d'exécution : 'native' (app) | 'android' | 'ios' | 'desktop' (web).
+export function webPlatform() {
+  if (Capacitor.isNativePlatform()) return 'native';
+  if (typeof navigator === 'undefined') return 'desktop';
+  const ua = navigator.userAgent;
+  if (/android/i.test(ua)) return 'android';
+  if (/iphone|ipad|ipod/i.test(ua)) return 'ios';
+  return 'desktop';
+}
+
+// Vrai seulement sur un navigateur Android (pas l'app native, pas iOS) : cible
+// de l'incitation "installer l'app" (le Play Store n'a de sens que la).
+export function isAndroidWeb() {
+  return webPlatform() === 'android';
+}
+
+// Web où proposer l'install de l'app : Android (bouton Play) ou desktop (QR).
+// Pas iOS (pas d'app iOS), pas natif (déjà dedans).
+export function isInstallableWeb() {
+  const p = webPlatform();
+  return p === 'android' || p === 'desktop';
+}
 
 // Style "sticker" des pseudos : blanc + contour noir, IDENTIQUE pour tous
 // les joueurs et lisible sur n'importe quelle couleur de fond.

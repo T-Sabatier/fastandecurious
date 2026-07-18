@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Download, Share, X } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { YELLOW } from '../cards';
+import { isAndroidWeb, PLAY_STORE_URL } from '../utils';
 
 function isStandalone() {
   if (typeof window === 'undefined') return false;
@@ -59,6 +60,12 @@ export default function InstallButton({ align = 'right', variant = 'compact' }) 
   const ios = isIOS();
 
   async function handleClick() {
+    // Navigateur Android : on envoie vers le Play Store (l'app native avec les
+    // achats integres), pas la PWA. iOS/desktop : on garde l'install PWA.
+    if (isAndroidWeb()) {
+      window.open(PLAY_STORE_URL, '_blank', 'noopener');
+      return;
+    }
     // Prompt natif dispo (Android/Chrome/Edge) → on le declenche
     if (deferred) {
       deferred.prompt();

@@ -10,6 +10,8 @@ import { ChevronRight, X, LogOut, Copy, Check, Lock } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useState, useEffect } from 'react';
 import InstallButton from './InstallButton.jsx';
+import InstallNudge from './InstallNudge.jsx';
+import InstallCta from './InstallCta.jsx';
 
 export default function Lobby({ room, roomCode, playerId, onLeave }) {
   const isHost = room.host === playerId;
@@ -234,6 +236,8 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
 
   return (
     <div style={{ backgroundColor: baseColor, minHeight: '100vh' }} className={`text-black${partyMode ? ' apero-bg' : ''}`}>
+      {/* Incitation a installer l'app (navigateur Android, 1x/session). */}
+      <InstallNudge />
       <div className="max-w-md mx-auto px-5 py-6 pb-32">
         <div className="flex items-center justify-between mb-6">
           <button onClick={leaveLobby} className="flex items-center gap-1.5">
@@ -321,14 +325,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
             <li>• En jouant, tu <b>mises 1 à 4 gorgées</b> sur ta carte</li>
             <li>• Ta carte choisie → tu ne bois pas, tu marques, et <b>tout le monde boit ta mise</b></li>
             <li>• Sinon → tu bois la <b>mise de la carte gagnante</b></li>
-            <li>• Premier à <b>{winningScore} manches</b> = Roi·ne de la soirée</li>
           </ul>
-          <div
-            style={{ fontFamily: '"Space Mono", monospace' }}
-            className="text-[9px] uppercase tracking-widest mt-3 opacity-80"
-          >
-            À consommer avec modération
-          </div>
         </div>
         )}
 
@@ -912,18 +909,9 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
                   </span>
                 </button>
               ) : (
-                <button
-                  onClick={() => setTeaserPackId(null)}
-                  className="mt-5 w-full border-4 border-black bg-black text-white py-3 active:translate-x-[2px] active:translate-y-[2px]"
-                  style={{ boxShadow: '4px 4px 0 #000' }}
-                >
-                  <span
-                    style={{ fontFamily: '"Anton", sans-serif' }}
-                    className="text-xl uppercase"
-                  >
-                    Dispo dans l'app
-                  </span>
-                </button>
+                <div className="mt-5">
+                  <InstallCta onNavigate={() => setTeaserPackId(null)} />
+                </div>
               )}
             </div>
           </div>
