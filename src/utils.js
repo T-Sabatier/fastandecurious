@@ -56,6 +56,30 @@ export function shuffle(arr) {
   return a;
 }
 
+// Melange DETERMINISTE : meme graine (seedStr) → MEME ordre pour tous les
+// joueurs. Fisher-Yates avec un PRNG mulberry32 seede par un hash FNV-1a de la
+// graine. Sert a afficher les cartes dans le meme ordre aleatoire sur tous les
+// ecrans (graine = les cartes posees, partagees par tout le monde).
+export function seededShuffle(arr, seedStr) {
+  let seed = 0x811c9dc5;
+  for (let i = 0; i < seedStr.length; i++) {
+    seed ^= seedStr.charCodeAt(i);
+    seed = Math.imul(seed, 0x01000193);
+  }
+  const rand = () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 // Avoid confusing characters (I, O, 0, 1)
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export function makeRoomCode() {

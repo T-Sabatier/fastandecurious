@@ -3,6 +3,7 @@ import { ref, update, runTransaction, remove, set } from 'firebase/database';
 import { db } from '../firebase';
 import {
   shuffle,
+  seededShuffle,
   toArray,
   fitCard,
   fitBig,
@@ -79,19 +80,19 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   const myUsed = room.players?.[playerId]?.sortsUsed || {};
 
   const playedObj = room.played || {};
-  // Ordre d'affichage ALÉATOIRE : sinon les cartes restent dans l'ordre des
-  // joueurs → on devine qui a joué quoi selon la position. On tire l'ordre au
-  // hasard UNE fois (Fisher-Yates), figé via useMemo tant que le même ensemble
-  // de cartes est posé → les cartes ne sautent pas au re-render, et un nouvel
-  // ordre est tiré à chaque manche (les cartes posées changent).
+  // Ordre d'affichage ALÉATOIRE mais IDENTIQUE POUR TOUS : sinon la position
+  // trahit qui a joué quoi. Mélange DÉTERMINISTE (seededShuffle) seedé par les
+  // cartes posées (partagées) → même ordre aléatoire sur tous les écrans, stable
+  // au re-render, réordonné à chaque manche. Entrée triée par cardId d'abord
+  // pour que le résultat soit identique quel que soit l'ordre de lecture Firebase.
   const playedKey = Object.values(playedObj).slice().sort().join(',');
   const playedEntries = useMemo(
     () =>
-      shuffle(
-        Object.entries(playedObj).map(([pid, cid]) => ({
-          playerId: pid,
-          cardId: cid,
-        }))
+      seededShuffle(
+        Object.entries(playedObj)
+          .map(([pid, cid]) => ({ playerId: pid, cardId: cid }))
+          .sort((a, b) => (a.cardId < b.cardId ? -1 : a.cardId > b.cardId ? 1 : 0)),
+        playedKey
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [playedKey]
