@@ -505,6 +505,41 @@ export default function Home({ playerId, onJoin, initialError }) {
         <div className="mt-10">
           <InstallButton variant="block" />
         </div>
+
+        {/* Footer légal. */}
+        <div className="mt-8 pt-6 border-t-2 border-black/10 text-center">
+          <div
+            style={{ fontFamily: '"Space Mono", monospace' }}
+            className="text-[10px] uppercase tracking-widest opacity-50 flex flex-wrap items-center justify-center gap-x-3 gap-y-1"
+          >
+            <a
+              href="https://www.snaptapparty.com/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+            >
+              Confidentialité
+            </a>
+            <span aria-hidden>·</span>
+            <a
+              href="https://www.snaptapparty.com/conditions"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+            >
+              Conditions
+            </a>
+            <span aria-hidden>·</span>
+            <a
+              href="https://www.snaptapparty.com/mentions-legales"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+            >
+              Mentions légales
+            </a>
+          </div>
+        </div>
       </div>
       {import.meta.env.DEV && (
         <a
