@@ -69,9 +69,12 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
     return !packOwned[cat.pack];
   };
 
+  // Catégories désactivées en admin (hidden) : invisibles pour les joueurs.
+  const visibleCategories = allCategories.filter((c) => !c.hidden);
+
   const storedCats = room.settings?.cats || {};
   const cats = Object.fromEntries(
-    allCategories.map((c) => [
+    visibleCategories.map((c) => [
       c.id,
       // L'hote ne peut pas jouer une categorie qu'il ne possede pas.
       isHost && isLocked(c) ? false : (storedCats[c.id] ?? true),
@@ -79,10 +82,10 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
   );
 
   // Affichage : categories gratuites d'abord, packs verrouilles a la fin.
-  const sortedCategories = [...allCategories].sort(
+  const sortedCategories = [...visibleCategories].sort(
     (a, b) => (isLocked(a) ? 1 : 0) - (isLocked(b) ? 1 : 0)
   );
-  const lockedCount = allCategories.filter(isLocked).length;
+  const lockedCount = visibleCategories.filter(isLocked).length;
 
   useEffect(() => {
     seedDefaultsIfEmpty().catch(() => {});

@@ -55,6 +55,12 @@ export async function setCategoryPack(id, pack) {
   await update(ref(db, `${CATEGORIES_PATH}/${id}`), { pack: pack || null });
 }
 
+// Active/desactive une categorie. hidden=true → invisible pour les joueurs
+// (lobby + jeu) mais conservee dans l'admin avec ses cartes. Pour du saisonnier.
+export async function setCategoryHidden(id, hidden) {
+  await update(ref(db, `${CATEGORIES_PATH}/${id}`), { hidden: hidden || null });
+}
+
 // Suppression definitive : le seed ne tournant que sur base vide, une
 // categorie supprimee ne revient jamais.
 export async function deleteCategory(id) {

@@ -13,8 +13,9 @@ import {
   addCategory,
   deleteCategory,
   setCategoryPack,
+  setCategoryHidden,
 } from '../categoriesStore';
-import { Lock, Plus, Pencil, Trash2, Check, X, ArrowLeft } from 'lucide-react';
+import { Lock, Plus, Pencil, Trash2, Check, X, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { auth, db } from '../firebase';
 import { ref, onValue } from 'firebase/database';
 import {
@@ -506,7 +507,7 @@ function Dashboard({ onLogout }) {
                     <div
                       key={c.id}
                       className="border-2 border-black bg-white px-3 py-2 flex items-center gap-2"
-                      style={{ boxShadow: '3px 3px 0 #000' }}
+                      style={{ boxShadow: '3px 3px 0 #000', opacity: c.hidden ? 0.55 : 1 }}
                     >
                       <span className="text-xl">{c.emoji}</span>
                       <span
@@ -540,6 +541,16 @@ function Dashboard({ onLogout }) {
                           </option>
                         ))}
                       </select>
+                      <button
+                        onClick={() => setCategoryHidden(c.id, !c.hidden)}
+                        disabled={busy}
+                        title={c.hidden ? 'Activer (visible en jeu)' : 'Désactiver (masquer du jeu)'}
+                        className="border-2 border-black p-1.5 active:opacity-60"
+                        style={{ backgroundColor: c.hidden ? '#FFF' : '#22C55E' }}
+                        aria-label={c.hidden ? 'Activer' : 'Désactiver'}
+                      >
+                        {c.hidden ? <EyeOff size={14} /> : <Eye size={14} color="#000" />}
+                      </button>
                       <button
                         onClick={() => handleDeleteCat(c)}
                         disabled={busy}
