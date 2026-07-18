@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ref, update, runTransaction, remove, set } from 'firebase/database';
 import { db } from '../firebase';
 import {
@@ -79,22 +79,23 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   const myUsed = room.players?.[playerId]?.sortsUsed || {};
 
   const playedObj = room.played || {};
-  // Ordre d'affichage MÉLANGÉ (sinon les cartes restent dans l'ordre des
-  // joueurs → on devine qui a joué quoi selon la position). Mélange
-  // DÉTERMINISTE via un hash de (cardId + manche) : même ordre pour tous les
-  // joueurs, aucun saut au re-render, réordonné à chaque manche.
-  const shuffleKey = (s) => {
-    let h = 0;
-    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
-    return h;
-  };
-  const playedEntries = Object.entries(playedObj)
-    .map(([pid, cid]) => ({ playerId: pid, cardId: cid }))
-    .sort(
-      (a, b) =>
-        shuffleKey(a.cardId + '_' + (room.round || 0)) -
-        shuffleKey(b.cardId + '_' + (room.round || 0))
-    );
+  // Ordre d'affichage ALÉATOIRE : sinon les cartes restent dans l'ordre des
+  // joueurs → on devine qui a joué quoi selon la position. On tire l'ordre au
+  // hasard UNE fois (Fisher-Yates), figé via useMemo tant que le même ensemble
+  // de cartes est posé → les cartes ne sautent pas au re-render, et un nouvel
+  // ordre est tiré à chaque manche (les cartes posées changent).
+  const playedKey = Object.values(playedObj).slice().sort().join(',');
+  const playedEntries = useMemo(
+    () =>
+      shuffle(
+        Object.entries(playedObj).map(([pid, cid]) => ({
+          playerId: pid,
+          cardId: cid,
+        }))
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [playedKey]
+  );
   const iHavePlayed = !!playedObj[playerId];
   const nonBossCount = players.length - 1;
   const playedCount = playedEntries.length;
