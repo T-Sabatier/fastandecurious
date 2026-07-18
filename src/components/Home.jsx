@@ -12,6 +12,7 @@ import {
 } from '../utils';
 import { CATEGORIES, YELLOW, AMBER, PINK, APERO_ACCENT, MAX_PLAYERS } from '../cards';
 import { useBilling, PRODUCT_APERO, PRODUCT_ULTRA } from '../purchases';
+import { bumpStats } from '../stats';
 import { ChevronRight, Lock, X } from 'lucide-react';
 import InstallButton from './InstallButton.jsx';
 import InstallCta from './InstallCta.jsx';
@@ -145,6 +146,7 @@ export default function Home({ playerId, onJoin, initialError }) {
 
     try {
       await set(ref(db, `rooms/${code}`), room);
+      bumpStats({ gamesCreated: 1, ...(partyActive ? { partyCreated: 1 } : {}) });
       onJoin(code);
     } catch (e) {
       setError('Erreur Firebase : vérifie tes règles (mode test)');

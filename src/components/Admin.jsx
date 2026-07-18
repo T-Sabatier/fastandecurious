@@ -15,7 +15,8 @@ import {
   setCategoryPack,
 } from '../categoriesStore';
 import { Lock, Plus, Pencil, Trash2, Check, X, ArrowLeft } from 'lucide-react';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
+import { ref, onValue } from 'firebase/database';
 import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
@@ -197,6 +198,7 @@ function Dashboard({ onLogout }) {
   const [newCatEmoji, setNewCatEmoji] = useState('');
   const [newCatSpicy, setNewCatSpicy] = useState(false);
   const [catsExpanded, setCatsExpanded] = useState(false);
+  const [stats, setStats] = useState(null);
 
   useEffect(() => {
     // Seeds de bootstrap uniquement (base vide) — sinon aucun effet.
@@ -204,9 +206,12 @@ function Dashboard({ onLogout }) {
     seedCategoriesIfEmpty().catch(() => {});
     const unsubCards = subscribeCards(setCards);
     const unsubCats = subscribeCategories(setCategories);
+    // Stats anonymes (lecture réservée admin par les règles).
+    const unsubStats = onValue(ref(db, 'stats'), (snap) => setStats(snap.val() || {}));
     return () => {
       unsubCards();
       unsubCats();
+      unsubStats();
     };
   }, []);
 
@@ -231,6 +236,29 @@ function Dashboard({ onLogout }) {
     });
     return m;
   }, [cards]);
+
+  // Stats agrégées anonymes (compteurs /stats) pour piloter le jeu.
+  const statsView = useMemo(() => {
+    const s = stats || {};
+    const gamesStarted = s.gamesStarted || 0;
+    const labelOf = (id) => {
+      const c = categories.find((x) => x.id === id);
+      return c ? `${c.emoji || ''} ${c.label || id}`.trim() : id;
+    };
+    const cats = Object.entries(s)
+      .filter(([k]) => k.startsWith('cat_'))
+      .map(([k, v]) => ({ id: k.slice(4), count: v || 0, label: labelOf(k.slice(4)) }))
+      .sort((a, b) => b.count - a.count);
+    return {
+      gamesCreated: s.gamesCreated || 0,
+      gamesStarted,
+      aperoPct: gamesStarted ? Math.round(((s.partyStarted || 0) / gamesStarted) * 100) : 0,
+      avgPlayers: gamesStarted ? ((s.playersTotal || 0) / gamesStarted).toFixed(1) : '—',
+      cats,
+      maxCat: cats.length ? cats[0].count : 0,
+      hasData: gamesStarted > 0 || (s.gamesCreated || 0) > 0,
+    };
+  }, [stats, categories]);
 
   async function handleAdd() {
     const t = newText.trim();
@@ -366,6 +394,86 @@ function Dashboard({ onLogout }) {
             </button>
           </div>
           <div className="w-14" />
+        </div>
+
+        {/* Stats anonymes agrégées pour piloter le jeu. */}
+        <div
+          className="border-4 border-black bg-white p-4 mb-6"
+          style={{ boxShadow: '6px 6px 0 #000' }}
+        >
+          <div
+            style={{ fontFamily: '"Anton", sans-serif' }}
+            className="text-xl uppercase mb-3"
+          >
+            📊 Stats du jeu
+          </div>
+          {!statsView.hasData ? (
+            <div
+              style={{ fontFamily: '"Space Mono", monospace' }}
+              className="text-[11px] uppercase tracking-widest opacity-50"
+            >
+              Aucune donnée pour l'instant
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+                {[
+                  { label: 'Parties créées', value: statsView.gamesCreated },
+                  { label: 'Parties lancées', value: statsView.gamesStarted },
+                  { label: 'Apéro', value: statsView.aperoPct + '%' },
+                  { label: 'Joueurs / partie', value: statsView.avgPlayers },
+                ].map((k) => (
+                  <div
+                    key={k.label}
+                    className="border-2 border-black p-2 text-center"
+                    style={{ boxShadow: '2px 2px 0 #000' }}
+                  >
+                    <div
+                      style={{ fontFamily: '"Anton", sans-serif' }}
+                      className="text-2xl leading-none"
+                    >
+                      {k.value}
+                    </div>
+                    <div
+                      style={{ fontFamily: '"Space Mono", monospace' }}
+                      className="text-[8px] uppercase tracking-widest opacity-60 mt-1"
+                    >
+                      {k.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div
+                style={{ fontFamily: '"Space Mono", monospace' }}
+                className="text-[10px] uppercase tracking-widest opacity-60 mb-2"
+              >
+                Catégories les plus jouées
+              </div>
+              <div className="space-y-1.5">
+                {statsView.cats.slice(0, 12).map((c) => (
+                  <div key={c.id} className="flex items-center gap-2">
+                    <div className="text-xs w-36 shrink-0 truncate">{c.label}</div>
+                    <div className="flex-1 h-3 border border-black bg-white overflow-hidden">
+                      <div
+                        style={{
+                          width:
+                            (statsView.maxCat ? (c.count / statsView.maxCat) * 100 : 0) + '%',
+                          backgroundColor: PINK,
+                          height: '100%',
+                        }}
+                      />
+                    </div>
+                    <div
+                      style={{ fontFamily: '"Space Mono", monospace' }}
+                      className="text-[10px] w-8 text-right"
+                    >
+                      {c.count}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
         <div

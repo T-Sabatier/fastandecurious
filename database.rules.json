@@ -55,6 +55,14 @@
       }
     },
 
+    "stats": {
+      ".read": "auth != null && root.child('admin').child(auth.uid).exists()",
+      "$stat": {
+        ".write": "auth != null",
+        ".validate": "newData.isNumber() && (!data.exists() || newData.val() >= data.val())"
+      }
+    },
+
     "admin": {
       ".read": false,
       ".write": false

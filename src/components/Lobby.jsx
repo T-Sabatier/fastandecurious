@@ -6,6 +6,7 @@ import { HAND_SIZE, YELLOW, AMBER, PINK, PLAYER_COLORS, SORTS, PACKS, colorHex, 
 import { subscribeCards, seedDefaultsIfEmpty } from '../cardsStore';
 import { subscribeCategories, seedCategoriesIfEmpty } from '../categoriesStore';
 import { useBilling } from '../purchases';
+import { bumpStats } from '../stats';
 import { ChevronRight, X, LogOut, Copy, Check, Lock } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useState, useEffect } from 'react';
@@ -198,6 +199,19 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
     };
 
     await update(ref(db, `rooms/${roomCode}`), updates);
+
+    // Stats anonymes agrégées (aucune donnée perso) : catégories jouées,
+    // adoption apéro, taille de partie. Vu dans /admin.
+    const catBumps = {};
+    Object.keys(cats).forEach((id) => {
+      if (cats[id]) catBumps['cat_' + id] = 1;
+    });
+    bumpStats({
+      gamesStarted: 1,
+      playersTotal: players.length,
+      ...(partyMode ? { partyStarted: 1 } : {}),
+      ...catBumps,
+    });
   }
 
   async function leaveLobby() {
