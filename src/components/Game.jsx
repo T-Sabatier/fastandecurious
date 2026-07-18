@@ -79,10 +79,22 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   const myUsed = room.players?.[playerId]?.sortsUsed || {};
 
   const playedObj = room.played || {};
-  const playedEntries = Object.entries(playedObj).map(([pid, cid]) => ({
-    playerId: pid,
-    cardId: cid,
-  }));
+  // Ordre d'affichage MÉLANGÉ (sinon les cartes restent dans l'ordre des
+  // joueurs → on devine qui a joué quoi selon la position). Mélange
+  // DÉTERMINISTE via un hash de (cardId + manche) : même ordre pour tous les
+  // joueurs, aucun saut au re-render, réordonné à chaque manche.
+  const shuffleKey = (s) => {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+    return h;
+  };
+  const playedEntries = Object.entries(playedObj)
+    .map(([pid, cid]) => ({ playerId: pid, cardId: cid }))
+    .sort(
+      (a, b) =>
+        shuffleKey(a.cardId + '_' + (room.round || 0)) -
+        shuffleKey(b.cardId + '_' + (room.round || 0))
+    );
   const iHavePlayed = !!playedObj[playerId];
   const nonBossCount = players.length - 1;
   const playedCount = playedEntries.length;
@@ -1052,7 +1064,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 const rot = i % 2 === 0 ? '-1.5deg' : '1.5deg';
                 return (
                   <button
-                    key={i}
+                    key={entry.cardId}
                     onClick={() => {
                       set(
                         ref(db, `rooms/${roomCode}/bossPick`),
