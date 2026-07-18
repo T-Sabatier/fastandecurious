@@ -474,16 +474,36 @@ export default function Home({ playerId, onJoin, initialError }) {
             style={{ fontFamily: '"Anton", sans-serif' }}
             className="text-xl uppercase mb-2"
           >
-            Règles
+            {partyActive ? '🍻 Règles apéro' : 'Règles'}
           </div>
-          <ul className="text-sm leading-relaxed space-y-1">
-            <li>• 3 joueurs minimum, chacun sur son appareil</li>
-            <li>• Main de <b>7 cartes</b> chacun</li>
-            <li>• Un joueur tiré au sort annonce <b>J'AIME</b> ou <b>J'AIME PAS</b></li>
-            <li>• Les autres posent une carte face cachée</li>
-            <li>• Il choisit sa carte préférée → <b>+1 point</b></li>
-            <li>• Premier à <b>5 points</b> gagne</li>
-          </ul>
+          {partyActive ? (
+            <>
+              <ul className="text-sm leading-relaxed space-y-1">
+                <li>• 3 joueurs minimum, chacun sur son appareil</li>
+                <li>• Main de <b>7 cartes</b> chacun</li>
+                <li>• Un joueur tiré au sort annonce <b>J'AIME</b> ou <b>J'AIME PAS</b></li>
+                <li>• Chacun pose une carte et <b>mise 1 à 4 gorgées</b> dessus</li>
+                <li>• Ta carte choisie → tu marques et <b>tout le monde boit ta mise</b></li>
+                <li>• Sinon → tu bois la <b>mise de la carte gagnante</b></li>
+                <li>• Premier à <b>5 manches</b> = <b>Roi·ne de la soirée</b></li>
+              </ul>
+              <div
+                style={{ fontFamily: '"Space Mono", monospace' }}
+                className="text-[9px] uppercase tracking-widest mt-3 opacity-50"
+              >
+                À consommer avec modération
+              </div>
+            </>
+          ) : (
+            <ul className="text-sm leading-relaxed space-y-1">
+              <li>• 3 joueurs minimum, chacun sur son appareil</li>
+              <li>• Main de <b>7 cartes</b> chacun</li>
+              <li>• Un joueur tiré au sort annonce <b>J'AIME</b> ou <b>J'AIME PAS</b></li>
+              <li>• Les autres posent une carte face cachée</li>
+              <li>• Il choisit sa carte préférée → <b>+1 point</b></li>
+              <li>• Premier à <b>5 points</b> gagne</li>
+            </ul>
+          )}
         </div>
 
         <div className="mt-10">
@@ -500,8 +520,8 @@ export default function Home({ playerId, onJoin, initialError }) {
         </a>
       )}
 
-      {/* Teaser Mode Apero (produit paye). Le paiement n'est pas branche :
-          CTA "bientot", + bouton dev pour debloquer et tester. */}
+      {/* Teaser Mode Apero (produit paye). En natif : achat reel (RevenueCat) ;
+          sur web : "Dispo dans l'app". + bouton dev pour debloquer et tester. */}
       {aperoTeaser && (
         <div
           onClick={() => setAperoTeaser(false)}
@@ -550,21 +570,40 @@ export default function Home({ playerId, onJoin, initialError }) {
                 style={{ fontFamily: '"Anton", sans-serif' }}
                 className="text-3xl leading-none shrink-0"
               >
-                4,99&nbsp;€
+                {prices[PRODUCT_APERO] || '4,99 €'}
               </div>
             </div>
-            <button
-              onClick={() => setAperoTeaser(false)}
-              className="mt-5 w-full border-4 border-black bg-black text-white py-3 active:translate-x-[2px] active:translate-y-[2px]"
-              style={{ boxShadow: '4px 4px 0 #000' }}
-            >
-              <span
-                style={{ fontFamily: '"Anton", sans-serif' }}
-                className="text-xl uppercase"
+            {billingAvailable ? (
+              <button
+                onClick={async () => {
+                  await buyPack(PRODUCT_APERO);
+                  setAperoTeaser(false);
+                }}
+                disabled={shopBusy}
+                className="mt-5 w-full border-4 border-black bg-black text-white py-3 active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50"
+                style={{ boxShadow: '4px 4px 0 #000' }}
               >
-                Bientôt en boutique
-              </span>
-            </button>
+                <span
+                  style={{ fontFamily: '"Anton", sans-serif' }}
+                  className="text-xl uppercase"
+                >
+                  {shopBusy ? '…' : `Acheter ${prices[PRODUCT_APERO] || '4,99 €'}`}
+                </span>
+              </button>
+            ) : (
+              <button
+                onClick={() => setAperoTeaser(false)}
+                className="mt-5 w-full border-4 border-black bg-black text-white py-3 active:translate-x-[2px] active:translate-y-[2px]"
+                style={{ boxShadow: '4px 4px 0 #000' }}
+              >
+                <span
+                  style={{ fontFamily: '"Anton", sans-serif' }}
+                  className="text-xl uppercase"
+                >
+                  Dispo dans l'app
+                </span>
+              </button>
+            )}
             {import.meta.env.DEV && (
               <button
                 onClick={unlockAperoForTest}

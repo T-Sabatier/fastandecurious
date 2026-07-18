@@ -41,8 +41,24 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
 
   // Possession des packs (RevenueCat en natif, fallback web). mode_apero
   // debloque AUSSI la categorie Bourre-e, dispo ensuite dans les DEUX modes.
-  const { apero: aperoOwned, ultra: ultraOwned } = useBilling();
+  const {
+    apero: aperoOwned,
+    ultra: ultraOwned,
+    prices,
+    billingAvailable,
+    busy: shopBusy,
+    purchase,
+  } = useBilling();
   const packOwned = { mode_apero: aperoOwned, pack_ultra: ultraOwned };
+  // Achat d'un pack depuis le teaser (teaserPackId = l'ID du produit Play).
+  async function buyPackFromTeaser(productId) {
+    try {
+      await purchase(productId);
+    } catch {
+      /* annulation / erreur : on referme, le joueur peut reessayer */
+    }
+    setTeaserPackId(null);
+  }
 
   // Categorie premium verrouillee pour MOI. Sans champ `pack` → gratuite.
   const isLocked = (cat) => {
@@ -795,8 +811,8 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
         </div>
       </div>
 
-      {/* Teaser pack premium (tap sur une categorie verrouillee). Le paiement
-          n'est pas encore branche : on annonce "bientot". */}
+      {/* Teaser pack premium (tap sur une categorie verrouillee). En natif :
+          achat reel (RevenueCat) ; sur web : "Dispo dans l'app". */}
       {teaserPackId && (() => {
         const pack = packById[teaserPackId];
         const packCats = allCategories.filter((c) => c.pack === teaserPackId);
@@ -878,21 +894,37 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
                   style={{ fontFamily: '"Anton", sans-serif' }}
                   className="text-3xl leading-none shrink-0"
                 >
-                  4,99&nbsp;€
+                  {prices[teaserPackId] || '4,99 €'}
                 </div>
               </div>
-              <button
-                onClick={() => setTeaserPackId(null)}
-                className="mt-5 w-full border-4 border-black bg-black text-white py-3 active:translate-x-[2px] active:translate-y-[2px]"
-                style={{ boxShadow: '4px 4px 0 #000' }}
-              >
-                <span
-                  style={{ fontFamily: '"Anton", sans-serif' }}
-                  className="text-xl uppercase"
+              {billingAvailable ? (
+                <button
+                  onClick={() => buyPackFromTeaser(teaserPackId)}
+                  disabled={shopBusy}
+                  className="mt-5 w-full border-4 border-black bg-black text-white py-3 active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50"
+                  style={{ boxShadow: '4px 4px 0 #000' }}
                 >
-                  Bientôt en boutique
-                </span>
-              </button>
+                  <span
+                    style={{ fontFamily: '"Anton", sans-serif' }}
+                    className="text-xl uppercase"
+                  >
+                    {shopBusy ? '…' : `Acheter ${prices[teaserPackId] || '4,99 €'}`}
+                  </span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => setTeaserPackId(null)}
+                  className="mt-5 w-full border-4 border-black bg-black text-white py-3 active:translate-x-[2px] active:translate-y-[2px]"
+                  style={{ boxShadow: '4px 4px 0 #000' }}
+                >
+                  <span
+                    style={{ fontFamily: '"Anton", sans-serif' }}
+                    className="text-xl uppercase"
+                  >
+                    Dispo dans l'app
+                  </span>
+                </button>
+              )}
             </div>
           </div>
         );
