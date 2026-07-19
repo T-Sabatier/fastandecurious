@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ref, set, get, remove, query, orderByChild, endAt } from 'firebase/database';
+import { ref, set, get } from 'firebase/database';
 import { db } from '../firebase';
 import {
   makeRoomCode,
@@ -82,21 +82,10 @@ export default function Home({ playerId, onJoin, initialError }) {
     }
   }
 
-  useEffect(() => {
-    // Sweep au chargement : on ne recupere QUE les rooms trop vieilles (> TTL)
-    // via une requete indexee sur createdAt → leger meme avec beaucoup de rooms.
-    // (necessite "rooms": { ".indexOn": ["createdAt"] } dans les regles Firebase)
-    const cutoff = Date.now() - ROOM_TTL_MS;
-    const oldRooms = query(ref(db, 'rooms'), orderByChild('createdAt'), endAt(cutoff));
-    get(oldRooms)
-      .then((snap) => {
-        if (!snap.exists()) return;
-        Object.keys(snap.val()).forEach((code) => {
-          remove(ref(db, `rooms/${code}`)).catch(() => {});
-        });
-      })
-      .catch(() => {});
-  }, []);
+  // NB : le sweep des rooms expirées ne se fait plus ici. Les règles Firebase
+  // n'autorisent plus la LISTE de /rooms aux joueurs (anti-énumération des
+  // codes) : le nettoyage tourne à l'ouverture du dashboard /admin, et
+  // createRoom réutilise les codes des rooms expirées (ci-dessous).
 
   async function createRoom() {
     const n = name.trim();
@@ -114,7 +103,11 @@ export default function Home({ playerId, onJoin, initialError }) {
     while (exists && tries < 10) {
       code = makeRoomCode();
       const snap = await get(ref(db, `rooms/${code}`));
-      exists = snap.exists();
+      // Une room expirée (> TTL) compte comme libre : son code est réutilisé
+      // (le set() ci-dessous l'écrase), ce qui recycle les rooms abandonnées.
+      const v = snap.val();
+      const expired = v?.createdAt && v.createdAt < Date.now() - ROOM_TTL_MS;
+      exists = snap.exists() && !expired;
       tries++;
     }
     if (exists) {
@@ -164,6 +157,12 @@ export default function Home({ playerId, onJoin, initialError }) {
     }
     if (code.length !== 4) {
       setError('Le code fait 4 lettres');
+      return;
+    }
+    // Charset strict (celui de makeRoomCode) : pas de caractères exotiques
+    // dans le chemin Firebase (les règles refuseraient de toute façon).
+    if (!/^[A-HJ-NP-Z2-9]{4}$/.test(code)) {
+      setError('Code invalide');
       return;
     }
     setBusy(true);

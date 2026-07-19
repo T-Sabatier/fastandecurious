@@ -133,34 +133,44 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     : null;
 
   // Expiration (moi) : je n'ai pas joue → une carte part toute seule.
+  // TRANSACTION (pas un simple update) : si mon jeu manuel ou l'enforcement du
+  // host est passe entre-temps, on ne joue PAS par-dessus (sinon la carte deja
+  // posee etait ecrasee et sortait du jeu sans passer par la defausse).
   useEffect(() => {
     if (!timerActive || isBoss || iHavePlayed || timerRemaining > 0) return;
-    const first = [...myHandCardIds].sort()[0];
-    if (!first) return;
-    update(ref(db, `rooms/${roomCode}`), {
-      [`hands/${playerId}/${first}`]: null,
-      [`played/${playerId}`]: first,
+    runTransaction(ref(db, `rooms/${roomCode}`), (cur) => {
+      if (!cur || cur.phase !== 'play') return undefined;
+      if (cur.played?.[playerId]) return undefined; // deja joue entre-temps
+      const hand = Object.keys(cur.hands?.[playerId] || {}).sort();
+      if (hand.length === 0) return undefined;
+      const first = hand[0];
+      delete cur.hands[playerId][first];
+      cur.played = { ...(cur.played || {}), [playerId]: first };
+      return cur;
     }).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timerActive, timerRemaining, isBoss, iHavePlayed]);
 
   // Filet de securite (host, +4s de grace) : joue pour les joueurs absents
-  // (tel verrouille, app fermee) pour ne jamais bloquer la manche. Meme
-  // carte deterministe que l'auto-play local → pas de double jeu.
+  // (tel verrouille, app fermee) pour ne jamais bloquer la manche. Transaction :
+  // ne touche que les joueurs qui n'ont VRAIMENT pas joue au moment du commit.
   useEffect(() => {
     if (!timerActive || !isHost) return;
     if (room.playStartedAt + (turnTimer + 4) * 1000 > nowTs) return;
-    const updates = {};
-    players.forEach((p) => {
-      if (p.id === room.bossId || playedObj[p.id]) return;
-      const hand = Object.keys(room.hands?.[p.id] || {}).sort();
-      if (hand.length === 0) return;
-      updates[`hands/${p.id}/${hand[0]}`] = null;
-      updates[`played/${p.id}`] = hand[0];
-    });
-    if (Object.keys(updates).length > 0) {
-      update(ref(db, `rooms/${roomCode}`), updates).catch(() => {});
-    }
+    runTransaction(ref(db, `rooms/${roomCode}`), (cur) => {
+      if (!cur || cur.phase !== 'play') return undefined;
+      let changed = false;
+      Object.keys(cur.players || {}).forEach((pid) => {
+        if (pid === cur.bossId || cur.played?.[pid]) return;
+        const hand = Object.keys(cur.hands?.[pid] || {}).sort();
+        if (hand.length === 0) return;
+        const first = hand[0];
+        delete cur.hands[pid][first];
+        cur.played = { ...(cur.played || {}), [pid]: first };
+        changed = true;
+      });
+      return changed ? cur : undefined;
+    }).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timerActive, isHost, nowTs]);
   // -------------------------------------------------------------------------

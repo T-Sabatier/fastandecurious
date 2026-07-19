@@ -4,10 +4,11 @@
     ".write": false,
 
     "rooms": {
-      ".read": "auth != null",
+      ".read": "auth != null && root.child('admin').child(auth.uid).exists()",
       ".indexOn": ["createdAt"],
 
       "$code": {
+        ".read": "auth != null",
         ".write": "auth != null && $code.matches(/^[A-HJ-NP-Z2-9]{4}$/)",
         ".validate": "newData.hasChildren(['createdAt', 'host', 'players', 'phase'])",
 
@@ -59,7 +60,7 @@
       ".read": "auth != null && root.child('admin').child(auth.uid).exists()",
       "$stat": {
         ".write": "auth != null",
-        ".validate": "newData.isNumber() && (!data.exists() || newData.val() >= data.val())"
+        ".validate": "newData.isNumber() && (data.exists() ? (newData.val() >= data.val() && newData.val() <= data.val() + 1000) : (newData.val() >= 0 && newData.val() <= 1000))"
       }
     },
 

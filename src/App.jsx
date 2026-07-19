@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ref, onValue, remove, get } from 'firebase/database';
+import { Capacitor } from '@capacitor/core';
 import { db } from './firebase';
 import { MAX_PLAYERS } from './cards';
 import {
@@ -15,22 +16,20 @@ import Announcement from './components/Announcement.jsx';
 import Admin from './components/Admin.jsx';
 import Debug from './components/Debug.jsx';
 
+// Routeur SANS hooks : les early-returns avant les hooks de jeu violaient les
+// Rules of Hooks (ça marchait car les flags sont constants, mais c'est fragile).
+// L'admin est web only : dans l'app native, /admin retombe sur le jeu.
 export default function App() {
   const isAdminRoute =
-    typeof window !== 'undefined' && window.location.pathname === '/admin';
+    typeof window !== 'undefined' &&
+    window.location.pathname === '/admin' &&
+    !Capacitor.isNativePlatform();
 
   // Mode debug (dev uniquement) : ?debug dans l'URL → galerie d'ecrans
   const isDebugRoute =
     import.meta.env.DEV &&
     typeof window !== 'undefined' &&
     new URLSearchParams(window.location.search).has('debug');
-
-  const [playerId] = useState(getOrCreatePlayerId);
-  const [roomCode, setRoomCode] = useState(getStoredRoom);
-  const [room, setRoom] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [autoJoining, setAutoJoining] = useState(false);
-  const [joinError, setJoinError] = useState('');
 
   if (isAdminRoute) {
     return <Admin />;
@@ -39,6 +38,17 @@ export default function App() {
   if (isDebugRoute) {
     return <Debug />;
   }
+
+  return <GameApp />;
+}
+
+function GameApp() {
+  const [playerId] = useState(getOrCreatePlayerId);
+  const [roomCode, setRoomCode] = useState(getStoredRoom);
+  const [room, setRoom] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [autoJoining, setAutoJoining] = useState(false);
+  const [joinError, setJoinError] = useState('');
 
   useEffect(() => {
     if (!roomCode) {
@@ -82,7 +92,9 @@ export default function App() {
       .trim()
       .toUpperCase()
       .slice(0, 4);
-    if (!code || code.length !== 4) return;
+    // Charset strict (celui de makeRoomCode) : évite d'envoyer des chemins
+    // exotiques à Firebase si l'URL est bricolée (ex. ?room=AB/C).
+    if (!/^[A-HJ-NP-Z2-9]{4}$/.test(code)) return;
     // Deja dans cette room : rien a faire. Mais si une AUTRE room traine en
     // memoire (session precedente), le QR scanne GAGNE : on bascule dessus —
     // sinon le scan etait ignore et on atterrissait sur l'accueil.

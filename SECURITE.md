@@ -51,12 +51,19 @@ Ou en CLI : `npx firebase-tools deploy --only database` (le projet contient
 
 | Chemin | Lecture | Écriture |
 |---|---|---|
-| `rooms/*` | joueurs connectés (anonymes inclus) | joueurs connectés, code room 4 chars valide |
+| `rooms` (liste) | **admin uniquement** (anti-énumération des codes) | — |
+| `rooms/$code` | joueurs connectés **qui connaissent le code** | joueurs connectés, code room 4 chars valide |
 | `cards`, `categories` | joueurs connectés | **admin uniquement** |
 | `deletedDefaults`, `deletedCategories` | joueurs connectés | **admin uniquement** |
 | `users/$uid` | le joueur lui-même | **personne côté client** (serveur uniquement) |
+| `stats/*` | admin | joueurs connectés, increment-only, borné (+1000 max par écriture) |
 | `admin` | personne | personne (console uniquement) |
 | tout le reste | refusé | refusé |
+
+Nettoyage des rooms expirées (> 4h) : comme les joueurs ne peuvent plus lister
+`/rooms`, le sweep tourne à l'**ouverture du dashboard `/admin`**, et
+`createRoom` **réutilise** les codes des rooms expirées. Une room expirée est
+aussi supprimée quand un de ses joueurs se reconnecte dessus (App.jsx).
 
 Conséquence : le seed automatique des cartes par défaut (au premier lancement
 d'un lobby) ne peut plus être fait par un joueur — c'est voulu. Pour seeder une
@@ -67,9 +74,18 @@ dashboard, avec les droits admin).
 
 - Un joueur connecté peut écrire dans **n'importe quelle room dont il connaît
   le code** (pas de notion de « membre » vérifiée serveur). Risque : trolling
-  d'une partie si le code fuit. Acceptable à ce stade ; durcissable plus tard.
+  d'une partie si le code fuit. Depuis le durcissement des règles, il ne peut
+  plus **énumérer** les codes (la liste `/rooms` est admin-only) — il faut
+  connaître le code exact.
+- **Triche possible en devtools (web)** : un joueur techie peut lire les mains
+  des autres et le mapping `played/{playerId}` (qui a posé quoi), et les sorts
+  (espion, reroll, va-tout) ne sont vérifiés que côté client. Assumé : jeu
+  d'apéro entre amis, pas de compétition.
 - L'auth anonyme n'empêche pas un script d'obtenir un jeton anonyme. La vraie
   parade est **App Check** (voir ci-dessous).
+- Le contenu des rooms au-delà des champs de base (`settings`, `pool`,
+  `hands`…) n'est pas validé par les règles : un client auth peut y écrire des
+  données arbitraires. Mitigé par App Check ; durcissable avec des `.validate`.
 
 ## Monétisation : attribution des packs (CRITIQUE avant le 1er pack payant)
 
@@ -102,7 +118,15 @@ vérification du reçu d'achat :
 - [ ] **Plan Blaze** + alertes budget : le plan gratuit est limité à
       **100 connexions simultanées** (~15-25 parties en même temps). À activer
       avant toute promo, sinon l'app cesse de répondre aux nouveaux joueurs.
-- [ ] Exclure la route `/admin` du build natif Android (admin = web only).
+- [x] Exclure la route `/admin` du build natif Android (admin = web only) —
+      fait dans App.jsx : `/admin` retombe sur le jeu en natif.
+- [x] Mode Apéro web : le flag localStorage `fc_apero_unlocked` ne compte plus
+      qu'en DEV. En prod web, seul `users/$uid/packs` (écrit serveur) fait foi —
+      avant, une ligne en console débloquait le mode gratuitement.
+- [x] Headers de sécurité Vercel (nosniff, X-Frame-Options, Referrer-Policy,
+      Permissions-Policy, HSTS) dans vercel.json. Une CSP reste à écrire et
+      tester (endpoints Firebase/fonts) — ne pas la poser à l'aveugle.
+- [x] `android:allowBackup="false"` (hygiène : pas de backup adb du localStorage).
 - [ ] (Hygiène) Passer Firebase du SDK v10 à v11. Les 12 vulns `npm audit`
       viennent de `undici` via `firestore`/`functions`/`storage`, modules NON
       importés → tree-shakés hors du bundle, risque réel faible. À faire à froid

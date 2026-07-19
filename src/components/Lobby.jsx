@@ -3,8 +3,8 @@ import { Capacitor } from '@capacitor/core';
 import { db } from '../firebase';
 import { shuffle, getStoredName, setStoredName, PUBLIC_URL, NAME_STYLE } from '../utils';
 import { HAND_SIZE, YELLOW, AMBER, PINK, PLAYER_COLORS, SORTS, PACKS, colorHex, colorFg } from '../cards';
-import { subscribeCards, seedDefaultsIfEmpty } from '../cardsStore';
-import { subscribeCategories, seedCategoriesIfEmpty } from '../categoriesStore';
+import { subscribeCards } from '../cardsStore';
+import { subscribeCategories } from '../categoriesStore';
 import { useBilling } from '../purchases';
 import { bumpStats } from '../stats';
 import { ChevronRight, X, LogOut, Copy, Check, Lock } from 'lucide-react';
@@ -88,8 +88,8 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
   const lockedCount = visibleCategories.filter(isLocked).length;
 
   useEffect(() => {
-    seedDefaultsIfEmpty().catch(() => {});
-    seedCategoriesIfEmpty().catch(() => {});
+    // Pas de seed ici : réservé à l'admin par les règles (il échouait toujours
+    // pour un joueur) — le bootstrap d'une base vide se fait depuis /admin.
     const unsubCards = subscribeCards(setAllCards);
     const unsubCats = subscribeCategories(setAllCategories);
     return () => {

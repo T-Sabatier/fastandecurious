@@ -81,17 +81,30 @@ export function useBilling() {
     let mounted = true;
 
     if (!BILLING_AVAILABLE) {
-      // --- Fallback web/dev : flag local apero + Firebase pour ultra ---
-      const applyApero = () =>
-        setEnt((e) => ({ ...e, apero: getStoredAperoUnlock() }));
-      applyApero();
-      const unsub = subscribeMyPacks((packs) =>
-        setEnt((e) => ({ ...e, ultra: ownsPack(packs, PRODUCT_ULTRA) }))
-      );
-      window.addEventListener('focus', applyApero);
+      // --- Fallback web : droits lus depuis Firebase (users/$uid/packs, ecrits
+      // cote serveur uniquement). Le flag localStorage apero ne compte QU'EN DEV
+      // (bouton "activer pour tester") : en prod web, un simple
+      // localStorage.fc_apero_unlocked='1' en console debloquait le mode. ---
+      let devUnlock = import.meta.env.DEV && getStoredAperoUnlock();
+      let packs = {};
+      const apply = () =>
+        setEnt({
+          apero: devUnlock || ownsPack(packs, PRODUCT_APERO),
+          ultra: ownsPack(packs, PRODUCT_ULTRA),
+        });
+      apply();
+      const unsub = subscribeMyPacks((p) => {
+        packs = p || {};
+        apply();
+      });
+      const onFocus = () => {
+        devUnlock = import.meta.env.DEV && getStoredAperoUnlock();
+        apply();
+      };
+      window.addEventListener('focus', onFocus);
       return () => {
         unsub && unsub();
-        window.removeEventListener('focus', applyApero);
+        window.removeEventListener('focus', onFocus);
       };
     }
 

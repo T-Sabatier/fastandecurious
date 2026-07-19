@@ -17,7 +17,8 @@ import {
 } from '../categoriesStore';
 import { Lock, Plus, Pencil, Trash2, Check, X, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { auth, db } from '../firebase';
-import { ref, onValue } from 'firebase/database';
+import { ref, onValue, get, remove, query, orderByChild, endAt } from 'firebase/database';
+import { ROOM_TTL_MS } from '../utils';
 import {
   subscribeAnnouncement,
   publishAnnouncement,
@@ -213,6 +214,18 @@ function Dashboard({ onLogout }) {
     // Seeds de bootstrap uniquement (base vide) — sinon aucun effet.
     seedDefaultsIfEmpty().catch(() => {});
     seedCategoriesIfEmpty().catch(() => {});
+    // Sweep des rooms expirées (> TTL). Fait ICI car les règles ne permettent
+    // plus qu'à l'admin de lister /rooms (anti-énumération des codes) — les
+    // joueurs ne lisent que la room dont ils connaissent le code.
+    const cutoff = Date.now() - ROOM_TTL_MS;
+    get(query(ref(db, 'rooms'), orderByChild('createdAt'), endAt(cutoff)))
+      .then((snap) => {
+        if (!snap.exists()) return;
+        Object.keys(snap.val()).forEach((code) => {
+          remove(ref(db, `rooms/${code}`)).catch(() => {});
+        });
+      })
+      .catch(() => {});
     const unsubCards = subscribeCards(setCards);
     const unsubCats = subscribeCategories(setCategories);
     // Stats anonymes (lecture réservée admin par les règles).
