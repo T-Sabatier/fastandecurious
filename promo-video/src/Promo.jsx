@@ -335,12 +335,12 @@ const SmallCard = ({ text, emoji, selected }) => (
 // LA MAIN DE 7 CARTES (comme en vrai) — la vitrine du jeu. PUB = LECTURE
 // ECLAIR : cartes de 1-2 mots, sauf 2 exceptions (les heroines de l'histoire).
 const HAND = [
-  { t: 'ANANAS SUR LA PIZZA', e: '🍕' },
+  { t: 'PIZZA ANANAS', e: '🍕' },
   { t: 'TÉLÉPORTATION', e: '🤪' },
   { t: 'APPELER TON EX', e: '🍻' },
   { t: 'RACLETTE', e: '🍕' },
   { t: 'MOJITO', e: '🥤' },
-  { t: 'CHAUSSETTES-CLAQUETTES', e: '👕' },
+  { t: 'HARRY POTTER', e: '🎬' },
   { t: 'TATOUAGE', e: '☕' },
 ];
 
@@ -691,7 +691,7 @@ const SceneAperoResult = () => (
           }}
         >
           <CardBadge emoji="🍕" />
-          ANANAS SUR LA PIZZA
+          PIZZA ANANAS
         </div>
       </Stamp>
       <div style={{ height: 45 }} />
