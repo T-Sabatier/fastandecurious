@@ -1,5 +1,35 @@
 # Sécurité Firebase — checklist de mise en service
 
+## 🚨 PLAN D'URGENCE — couper le jeu en 30 secondes
+
+Tout le jeu (web ET app) dépend de Firebase : il existe donc UN disjoncteur
+central. En cas de gros problème (abus, bug grave, facture qui s'emballe) :
+
+**COUPER :** Console Firebase → snaptap-party → Realtime Database → Règles →
+remplacer TOUT par :
+
+```json
+{ "rules": { ".read": false, ".write": false } }
+```
+
+→ Publier. Effet immédiat partout, personne ne peut plus rien lire/écrire,
+l'app encaisse sans crasher (écrans « Connexion… » / messages d'erreur).
+
+**RALLUMER :** recoller le contenu de `database.rules.json` (la copie de
+référence, dans ce repo) dans Console → Règles → Publier. Ou :
+`npx firebase-tools deploy --only database`. Puis publier une annonce depuis
+`/admin` pour prévenir les joueurs.
+
+**Autres boutons selon le problème :**
+- Facture qui s'emballe → console.cloud.google.com → Facturation →
+  DÉSACTIVER la facturation du projet (retour instantané aux quotas gratuits,
+  la carte est hors d'atteinte ; le jeu tourne en mode Spark).
+- Stopper les nouvelles installations → Play Console → Présence sur le
+  Play Store → retirer l'app de la vente (les installs existantes restent).
+- Compte Google compromis → myaccount.google.com/security → changer le mot
+  de passe + déconnecter toutes les sessions (ce compte contrôle TOUT :
+  Firebase, Play, facturation → 2FA fortement recommandée).
+
 Le code applique désormais : auth anonyme pour les joueurs, compte email/mot de
 passe pour l'admin, règles de sécurité dans `database.rules.json`. Pour que tout
 fonctionne, il faut activer ces éléments **dans la console Firebase** (5-10 min).
