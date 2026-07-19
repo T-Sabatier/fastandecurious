@@ -6,7 +6,7 @@ export const RemotionRoot = () => (
   <Composition
     id="SnapTapPromo"
     component={Promo}
-    durationInFrames={835}
+    durationInFrames={1000}
     fps={30}
     width={1080}
     height={1920}
