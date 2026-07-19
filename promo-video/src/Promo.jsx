@@ -419,7 +419,7 @@ const SceneLogo = () => (
 
 const TAP_AT = 70;
 const PRESS_AT = 115;
-const SELECTED = 2; // APPELER TON EX
+const SELECTED = 3; // RACLETTE — logique en mode J'AIME
 
 const ScenePlay = () => {
   const frame = useCurrentFrame();
@@ -449,11 +449,28 @@ const ScenePlay = () => {
 const PICK_AT = 55;
 const PLAYED = [
   { t: 'SIESTE', e: '☕' },
-  { t: 'APPELER TON EX', e: '🍻' },
+  { t: 'RACLETTE', e: '🍕' },
   { t: 'MARIAGE', e: '❤️' },
   { t: 'PASTIS', e: '🥤' },
 ];
 const PICKED = 1;
+
+// Oeil filaire du jeu (icone lucide Eye), dans la couleur du mode.
+const EyeIcon = ({ color, size = 64 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+);
 
 const SceneReveal = () => {
   const frame = useCurrentFrame();
@@ -463,7 +480,9 @@ const SceneReveal = () => {
       <Center style={{ paddingTop: 190 }}>
         <Appear delay={0}>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 54, lineHeight: 1, marginBottom: 8 }}>👀</div>
+            <div style={{ marginBottom: 18 }}>
+              <EyeIcon color={LIKE_GREEN} />
+            </div>
             <div
               style={{
                 ...anton,
@@ -564,8 +583,8 @@ const SceneResult = () => (
             textAlign: 'center',
           }}
         >
-          <CardBadge emoji="🍻" />
-          APPELER TON EX
+          <CardBadge emoji="🍕" />
+          RACLETTE
         </div>
       </Stamp>
       <div style={{ height: 50 }} />
