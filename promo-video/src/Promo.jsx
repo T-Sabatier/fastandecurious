@@ -1,12 +1,13 @@
-// Video de presentation Snap Tap (28 s, 1080x1920) — montre le VRAI gameplay :
-// annonce du VIP → main du joueur → selection → choix du VIP → transition →
-// Mode Apero (mise de gorgees) → pitch → QR. Identite du jeu (Anton,
-// jaune/rose/noir, mode projecteur sombre pour le reveal).
+// Video de presentation Snap Tap (~32 s, 1080x1920) — le parcours complet :
+// logo → LOBBY (code + QR + les potes qui rejoignent) → une manche (main,
+// selection, choix du VIP en mode projecteur) → Mode Apero (mise de gorgees)
+// → pitch → QR final. Identite du jeu : Anton, jaune/rose/noir, brutaliste,
+// vraies couleurs joueurs, badges categorie sur les cartes.
 // Pas de son integre : musique ajoutee dans TikTok/IG au moment de poster.
 //
 // REGLE EDITORIALE : aucune vraie personne ni marque dans les visuels
-// marketing — cartes generiques du deck uniquement. (Les prenoms de joueurs
-// fictifs comme LEA sont OK.)
+// marketing — cartes generiques du deck uniquement (prenoms fictifs OK).
+// LES CARTES MONTREES SONT LA VITRINE DU JEU : choisir les plus droles.
 import {
   AbsoluteFill,
   Sequence,
@@ -23,13 +24,20 @@ loadFont({ family: 'Anton', url: staticFile('Anton-Regular.ttf') });
 
 const YELLOW = '#FFE600';
 const PINK = '#FF2D6F';
-const GREEN = '#00C853';
 const RED = '#FF1744';
 
 const anton = {
   fontFamily: 'Anton, sans-serif',
   textTransform: 'uppercase',
   color: '#000',
+};
+
+// Style "sticker" des pseudos (identique au jeu : blanc + contour noir).
+const nameStyle = {
+  color: '#fff',
+  WebkitTextStroke: '0.12em #000',
+  paintOrder: 'stroke fill',
+  letterSpacing: '0.07em',
 };
 
 // ---------- Briques visuelles ----------
@@ -172,15 +180,139 @@ const SceneLogo = () => (
   </Center>
 );
 
-// ---------- 2. Annonce du VIP + ta main + selection (75 → 255) ----------
+// ---------- 2. Lobby : code + QR + les potes rejoignent (75 → 195) ----------
 
-const HAND = ['GARDER LES CHAUSSETTES', 'RACLETTE', 'CAMPING SAUVAGE', 'APPELER TON EX'];
-const SELECTED = 3; // index de la carte tapee (APPELER TON EX)
-const TAP_AT = 95; // frame locale du tap
-const BTN_AT = 112; // le bouton "jouer" apparait
-const PRESS_AT = 150; // ... et se fait presser
+// Vraies couleurs joueurs du jeu (PLAYER_COLORS de cards.js).
+const LOBBY_PLAYERS = [
+  { n: 'LÉA', c: '#FF0040', host: true },
+  { n: 'MAX', c: '#00B0FF' },
+  { n: 'SARAH', c: '#00E676' },
+  { n: 'TOM', c: '#FF6D00' },
+  { n: 'JUJU', c: '#D500F9' },
+];
 
-const HandCard = ({ text, selected, popDelay }) => (
+const NameChip = ({ name, color, host }) => (
+  <div
+    style={{
+      backgroundColor: color,
+      border: '6px solid #000',
+      boxShadow: '8px 8px 0 #000',
+      padding: '16px 32px 24px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: 20,
+    }}
+  >
+    <span style={{ ...anton, ...nameStyle, fontSize: 58, lineHeight: 1 }}>{name}</span>
+    {host && (
+      <span
+        style={{
+          ...anton,
+          fontSize: 26,
+          lineHeight: 1,
+          backgroundColor: YELLOW,
+          padding: '6px 12px 10px',
+        }}
+      >
+        HOST
+      </span>
+    )}
+  </div>
+);
+
+const SceneLobby = () => (
+  <Center>
+    <Stamp delay={0}>
+      <div style={{ ...anton, fontSize: 76 }}>CRÉE TON SALON</div>
+    </Stamp>
+    <div style={{ height: 55 }} />
+    <SlideUp delay={10} dist={400}>
+      <div
+        style={{
+          backgroundColor: '#000',
+          boxShadow: '14px 14px 0 rgba(0,0,0,0.35)',
+          padding: '45px 60px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 60,
+        }}
+      >
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ ...anton, fontSize: 30, color: '#fff', opacity: 0.6 }}>
+            CODE DE LA ROOM
+          </div>
+          <div
+            style={{
+              ...anton,
+              fontSize: 150,
+              color: YELLOW,
+              letterSpacing: '0.12em',
+              lineHeight: 1.05,
+            }}
+          >
+            KZ4P
+          </div>
+        </div>
+        <div style={{ backgroundColor: '#fff', padding: 14 }}>
+          <Img src={staticFile('qr.png')} style={{ width: 240, height: 240, display: 'block' }} />
+        </div>
+      </div>
+    </SlideUp>
+    <div style={{ height: 65 }} />
+    <Stamp delay={38} from={1.6}>
+      <div style={{ ...anton, fontSize: 54, opacity: 0.75 }}>LES POTES SCANNENT 👇</div>
+    </Stamp>
+    <div style={{ height: 55 }} />
+    <div
+      style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: 32,
+        justifyContent: 'center',
+        maxWidth: 920,
+      }}
+    >
+      {LOBBY_PLAYERS.map((p, i) => (
+        <Stamp key={p.n} delay={52 + i * 12} from={2.2}>
+          <NameChip name={p.n} color={p.c} host={p.host} />
+        </Stamp>
+      ))}
+    </div>
+  </Center>
+);
+
+// ---------- 3. Ta main + selection (195 → 375) ----------
+
+// LA VITRINE : cartes choisies pour faire rire/intriguer en 2 secondes.
+// e = emoji de la categorie (badge en haut a droite, comme dans le jeu).
+const HAND = [
+  { t: 'ANANAS SUR LA PIZZA', e: '🍕' },
+  { t: 'GARDER LES CHAUSSETTES', e: '🌶️' },
+  { t: 'APPELER TON EX', e: '🍻' },
+  { t: 'KEBAB À 3H DU MAT', e: '🍻' },
+];
+const SELECTED = 1; // GARDER LES CHAUSSETTES — le pick le plus drole
+const TAP_AT = 95;
+const BTN_AT = 112;
+const PRESS_AT = 150;
+
+const CardBadge = ({ emoji, dim }) => (
+  <span
+    style={{
+      position: 'absolute',
+      top: 12,
+      right: 18,
+      fontSize: 42,
+      lineHeight: 1,
+      opacity: dim ? 0.55 : 0.8,
+      filter: dim ? 'grayscale(0.6)' : 'none',
+    }}
+  >
+    {emoji}
+  </span>
+);
+
+const HandCard = ({ text, emoji, selected, popDelay }) => (
   <Stamp delay={popDelay} from={1.5}>
     <div
       style={{
@@ -199,9 +331,10 @@ const HandCard = ({ text, selected, popDelay }) => (
         textAlign: 'center',
         fontSize: 54,
         lineHeight: 0.95,
-        padding: 30,
+        padding: '40px 30px 30px',
       }}
     >
+      <CardBadge emoji={emoji} />
       {text}
     </div>
   </Stamp>
@@ -220,17 +353,12 @@ const SceneHand = () => {
         <div style={{ ...anton, fontSize: 52, opacity: 0.75 }}>TA MAIN — POSE TA CARTE</div>
       </Stamp>
       <div style={{ height: 55 }} />
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '440px 440px',
-          gap: 45,
-        }}
-      >
-        {HAND.map((t, i) => (
-          <div key={t} style={{ position: 'relative' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '440px 440px', gap: 45 }}>
+        {HAND.map((c, i) => (
+          <div key={c.t} style={{ position: 'relative' }}>
             <HandCard
-              text={t}
+              text={c.t}
+              emoji={c.e}
               selected={i === SELECTED && frame >= TAP_AT + 4}
               popDelay={22 + i * 9}
             />
@@ -260,11 +388,16 @@ const SceneHand = () => {
   );
 };
 
-// ---------- 3. Le VIP choisit (mode projecteur sombre) (255 → 380) ----------
+// ---------- 4. Le VIP choisit (mode projecteur sombre) (375 → 500) ----------
 
-const PICK_AT = 58; // frame locale du choix
-const PLAYED = ['RACLETTE', 'APPELER TON EX', 'DORMIR 18H', 'MOUSTIQUES EN ÉTÉ'];
-const PICKED = 1;
+const PICK_AT = 58;
+const PLAYED = [
+  { t: 'MOUSTIQUES EN ÉTÉ', e: '🌿' },
+  { t: 'GARDER LES CHAUSSETTES', e: '🌶️' },
+  { t: 'SALLE DE SPORT À 18H', e: '☕' },
+  { t: 'CAMPING SAUVAGE', e: '✈️' },
+];
+const PICKED = 1; // ta carte — Lea deteste, TU MARQUES
 
 const SceneReveal = () => {
   const frame = useCurrentFrame();
@@ -272,20 +405,19 @@ const SceneReveal = () => {
     <AbsoluteFill style={{ backgroundColor: '#0a0a0a' }}>
       <Center>
         <Stamp delay={0}>
-          <div style={{ ...anton, fontSize: 68, color: '#fff' }}>
-            👀 LÉA CHOISIT…
-          </div>
+          <div style={{ ...anton, fontSize: 68, color: '#fff' }}>👀 LÉA CHOISIT…</div>
         </Stamp>
         <div style={{ height: 70 }} />
         <div style={{ display: 'grid', gridTemplateColumns: '440px 440px', gap: 45 }}>
-          {PLAYED.map((t, i) => {
+          {PLAYED.map((c, i) => {
             const picked = i === PICKED && frame >= PICK_AT;
             return (
-              <div key={t} style={{ position: 'relative' }}>
+              <div key={c.t} style={{ position: 'relative' }}>
                 <Stamp delay={10 + i * 8} from={1.3}>
                   <div
                     style={{
                       ...anton,
+                      position: 'relative',
                       width: 440,
                       height: 280,
                       backgroundColor: picked ? '#fff' : '#33333a',
@@ -299,10 +431,11 @@ const SceneReveal = () => {
                       textAlign: 'center',
                       fontSize: 54,
                       lineHeight: 0.95,
-                      padding: 30,
+                      padding: '40px 30px 30px',
                     }}
                   >
-                    {t}
+                    <CardBadge emoji={c.e} dim={!picked} />
+                    {c.t}
                   </div>
                 </Stamp>
                 {i === PICKED && <TapRing delay={PICK_AT - 4} />}
@@ -312,20 +445,28 @@ const SceneReveal = () => {
         </div>
         <div style={{ height: 90 }} />
         <Stamp delay={PICK_AT + 22} from={3}>
-          <Chip text="+1 POINT 🎉" bg="#000" color={YELLOW} tilt={-3} fontSize={84} />
+          <Chip text="C'ÉTAIT TA CARTE : +1 POINT 🎉" bg="#000" color={YELLOW} tilt={-3} fontSize={58} />
         </Stamp>
       </Center>
     </AbsoluteFill>
   );
 };
 
-// ---------- 4. Transition (380 → 440) ----------
+// ---------- 5. Transition (500 → 560) ----------
 
 const SceneTransition = () => (
   <AbsoluteFill style={{ backgroundColor: '#000' }}>
     <Center>
       <Stamp from={2.8}>
-        <div style={{ ...anton, fontSize: 96, color: '#fff', textAlign: 'center', lineHeight: 1.05 }}>
+        <div
+          style={{
+            ...anton,
+            fontSize: 96,
+            color: '#fff',
+            textAlign: 'center',
+            lineHeight: 1.05,
+          }}
+        >
           ET EN
           <br />
           <span style={{ color: YELLOW }}>MODE APÉRO</span> ?
@@ -339,10 +480,10 @@ const SceneTransition = () => (
   </AbsoluteFill>
 );
 
-// ---------- 5. Mode Apero : la mise de gorgees (440 → 610) ----------
+// ---------- 6. Mode Apero : la mise de gorgees (560 → 730) ----------
 
-const BET_TAP_AT = 78; // frame locale : tap sur la mise "3"
-const BET = 2; // index (0-based) → bouton "3"
+const BET_TAP_AT = 78;
+const BET = 2; // bouton "3"
 
 const SceneApero = () => {
   const frame = useCurrentFrame();
@@ -416,7 +557,7 @@ const SceneApero = () => {
   );
 };
 
-// ---------- 6. Pitch (610 → 715) ----------
+// ---------- 7. Pitch (730 → 820) ----------
 
 const ScenePitch = () => (
   <Center>
@@ -424,17 +565,17 @@ const ScenePitch = () => (
       <Chip text="3 À 16 JOUEURS" bg="#000" color={YELLOW} tilt={-2} fontSize={78} />
     </Stamp>
     <div style={{ height: 70 }} />
-    <Stamp delay={24}>
+    <Stamp delay={22}>
       <Chip text="CHACUN SUR SON TEL" bg="#fff" color="#000" tilt={2} fontSize={78} />
     </Stamp>
     <div style={{ height: 70 }} />
-    <Stamp delay={48} from={3.4}>
+    <Stamp delay={44} from={3.4}>
       <Chip text="GRATUIT" bg={PINK} tilt={-3} fontSize={120} />
     </Stamp>
   </Center>
 );
 
-// ---------- 7. Fin : logo + QR + url (715 → 850) ----------
+// ---------- 8. Fin : logo + QR + url (820 → 955) ----------
 
 const SceneEnd = () => (
   <Center>
@@ -473,22 +614,25 @@ export const Promo = () => (
     <Sequence from={0} durationInFrames={75}>
       <SceneLogo />
     </Sequence>
-    <Sequence from={75} durationInFrames={180}>
+    <Sequence from={75} durationInFrames={120}>
+      <SceneLobby />
+    </Sequence>
+    <Sequence from={195} durationInFrames={180}>
       <SceneHand />
     </Sequence>
-    <Sequence from={255} durationInFrames={125}>
+    <Sequence from={375} durationInFrames={125}>
       <SceneReveal />
     </Sequence>
-    <Sequence from={380} durationInFrames={60}>
+    <Sequence from={500} durationInFrames={60}>
       <SceneTransition />
     </Sequence>
-    <Sequence from={440} durationInFrames={170}>
+    <Sequence from={560} durationInFrames={170}>
       <SceneApero />
     </Sequence>
-    <Sequence from={610} durationInFrames={105}>
+    <Sequence from={730} durationInFrames={90}>
       <ScenePitch />
     </Sequence>
-    <Sequence from={715} durationInFrames={135}>
+    <Sequence from={820} durationInFrames={135}>
       <SceneEnd />
     </Sequence>
   </AbsoluteFill>
