@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1051073741853",
+    "firebase_url": "https://snaptap-party-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "snaptap-party",
+    "storage_bucket": "snaptap-party.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1051073741853:android:af2a394a87fc1bd36c32f4",
+        "android_client_info": {
+          "package_name": "com.snaptap.game"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIaiNhox7Ee0UQYRrGqWTNbsywlTySVu0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
