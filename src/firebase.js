@@ -1,7 +1,14 @@
 import { initializeApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
 import { getAuth, onAuthStateChanged, signInAnonymously } from 'firebase/auth';
-import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
+import {
+  initializeAppCheck,
+  ReCaptchaV3Provider,
+  CustomProvider,
+} from 'firebase/app-check';
+// Import STATIQUE obligatoire (meme piege que RevenueCat : l'import dynamique
+// echoue dans la webview release). Le stub web du plugin ne plante qu'a l'appel.
+import { FirebaseAppCheck } from '@capacitor-firebase/app-check';
 import { Capacitor } from '@capacitor/core';
 
 const firebaseConfig = {
@@ -16,27 +23,58 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// --- App Check (anti-abus) : atteste que les requetes viennent du VRAI site.
-// WEB UNIQUEMENT (reCAPTCHA v3, invisible). Dans l'app native, reCAPTCHA ne
-// marche pas (origine capacitor://localhost) : le natif aura Play Integrity
-// via un plugin dedie (phase 2). Ne s'active que si la cle publique est
-// fournie (VITE_RECAPTCHA_V3_SITE_KEY) → aucun effet tant qu'elle est absente,
-// et AUCUN blocage tant que l'enforcement n'est pas active dans la console.
-const recaptchaKey = import.meta.env.VITE_RECAPTCHA_V3_SITE_KEY;
-if (recaptchaKey && !Capacitor.isNativePlatform()) {
-  if (import.meta.env.DEV) {
-    // En dev (localhost), reCAPTCHA ne peut pas attester : le SDK genere un
-    // "debug token" affiche en console, a enregistrer une fois dans
-    // Firebase Console → App Check → Applications → menu ⋮ → Jetons de debug.
-    self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
-  }
+// --- App Check (anti-abus) : atteste que les requetes viennent du VRAI
+// site / de la VRAIE app. Deux fournisseurs selon la plateforme :
+//   WEB   → reCAPTCHA v3 (invisible), cle publique VITE_RECAPTCHA_V3_SITE_KEY.
+//   NATIF → Play Integrity via le plugin @capacitor-firebase/app-check
+//           (reCAPTCHA impossible en webview : origine capacitor://localhost).
+//           Necessite android/app/google-services.json (app Android declaree
+//           dans le projet Firebase). Si absent, l'init echoue proprement :
+//           requetes non attestees, aucun blocage tant que l'enforcement
+//           n'est pas active dans la console.
+if (Capacitor.isNativePlatform()) {
+  // 1) SDK natif : Play Integrity (automatique sur Android).
+  const nativeInit = FirebaseAppCheck.initialize({
+    isTokenAutoRefreshEnabled: true,
+  }).catch((e) => {
+    console.warn('[appcheck] Init native impossible :', e.message || e);
+    throw e;
+  });
+  // 2) Pont vers le SDK JS : les requetes RTDB/Auth du bundle web recuperent
+  // le jeton du natif via un CustomProvider (pattern officiel capawesome).
   try {
     initializeAppCheck(app, {
-      provider: new ReCaptchaV3Provider(recaptchaKey),
+      provider: new CustomProvider({
+        getToken: async () => {
+          await nativeInit;
+          const { token, expireTimeMillis } = await FirebaseAppCheck.getToken({
+            forceRefresh: false,
+          });
+          return { token, expireTimeMillis };
+        },
+      }),
       isTokenAutoRefreshEnabled: true,
     });
   } catch (e) {
-    console.warn('[appcheck] Initialisation impossible :', e.message);
+    console.warn('[appcheck] Pont natif impossible :', e.message);
+  }
+} else {
+  const recaptchaKey = import.meta.env.VITE_RECAPTCHA_V3_SITE_KEY;
+  if (recaptchaKey) {
+    if (import.meta.env.DEV) {
+      // En dev (localhost), reCAPTCHA ne peut pas attester : le SDK genere un
+      // "debug token" affiche en console, a enregistrer une fois dans
+      // Firebase Console → App Check → Applications → menu ⋮ → Jetons de debug.
+      self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+    }
+    try {
+      initializeAppCheck(app, {
+        provider: new ReCaptchaV3Provider(recaptchaKey),
+        isTokenAutoRefreshEnabled: true,
+      });
+    } catch (e) {
+      console.warn('[appcheck] Initialisation impossible :', e.message);
+    }
   }
 }
 

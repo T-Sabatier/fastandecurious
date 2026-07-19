@@ -131,10 +131,26 @@ vérification du reçu d'achat :
       5. Vérifier après quelques jours : App Check → Realtime Database →
          le graphe doit montrer une part croissante de requêtes « Vérifiées ».
 
-      **Phase 2 — Android (Play Integrity) :** nécessite d'enregistrer l'app
-      Android dans le projet Firebase (google-services.json) + un plugin natif
-      (@capacitor-firebase/app-check) car le SDK JS seul ne peut pas attester
-      dans la webview. À faire avec Fable le moment venu.
+      **Phase 2 — Android (Play Integrity), CODE PRÊT (19/07) :** plugin
+      @capacitor-firebase/app-check installé (a nécessité l'upgrade firebase
+      v10→v12, fait), pont natif→JS via CustomProvider dans firebase.js.
+      Tant que `android/app/google-services.json` est ABSENT, l'init échoue
+      proprement (aucun blocage). Pour finir la phase 2 :
+      1. Console Firebase → ⚙️ Paramètres du projet → Vos applications →
+         **Ajouter une application → Android** : package `com.snaptap.game`,
+         et ajouter les DEUX empreintes SHA-256 :
+         - clé de signature Play (App Signing) : B8:AF:BB:70:FD:0C:03:43:AD:
+           F3:A1:73:E5:7E:4F:12:24:0F:BF:4C:44:05:A8:96:66:A6:C4:3A:61:F4:52:CC
+         - clé d'upload : BA:B7:EC:A8:90:44:C4:C0:… (celle d'assetlinks.json)
+      2. Télécharger `google-services.json` → le mettre dans `android/app/`
+         (le gradle du template l'applique automatiquement s'il existe).
+      3. Console Firebase → App Check → Applications → app **Android** →
+         Enregistrer → fournisseur **Play Integrity**.
+      4. Rebuild AAB (nouveau versionCode) → upload sur la piste de test →
+         installer via le Play Store (Play Integrity ne fonctionne QUE pour
+         une app installée depuis Play, pas en sideload/debug).
+      5. Vérifier dans App Check → métriques que le trafic app devient
+         « vérifié ».
 
       **Phase 3 — Enforcement :** quand web (phase 1) ET app (phase 2) montrent
       ~100 % de requêtes vérifiées dans les métriques → App Check → Realtime
