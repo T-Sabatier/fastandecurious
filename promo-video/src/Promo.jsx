@@ -322,7 +322,7 @@ const SmallCard = ({ text, emoji, selected }) => (
       alignItems: 'center',
       justifyContent: 'center',
       textAlign: 'center',
-      fontSize: 44,
+      fontSize: 52,
       lineHeight: 0.95,
       padding: '34px 24px 24px',
     }}
@@ -332,15 +332,16 @@ const SmallCard = ({ text, emoji, selected }) => (
   </div>
 );
 
-// LA MAIN DE 7 CARTES (comme en vrai) — la vitrine du jeu, cartes jeunes.
+// LA MAIN DE 7 CARTES (comme en vrai) — la vitrine du jeu. PUB = LECTURE
+// ECLAIR : cartes de 1-2 mots, sauf 2 exceptions (les heroines de l'histoire).
 const HAND = [
   { t: 'ANANAS SUR LA PIZZA', e: '🍕' },
-  { t: 'MATCH SUR APPLI', e: '❤️' },
+  { t: 'TÉLÉPORTATION', e: '🤪' },
   { t: 'APPELER TON EX', e: '🍻' },
-  { t: 'DORMIR 18H', e: '🤪' },
-  { t: 'SALLE DE SPORT À 18H', e: '☕' },
+  { t: 'RACLETTE', e: '🍕' },
+  { t: 'MOJITO', e: '🥤' },
   { t: 'CAMPING SAUVAGE', e: '✈️' },
-  { t: 'DANSER SUR UNE TABLE', e: '🍻' },
+  { t: 'COUCHE-TARD', e: '☕' },
 ];
 
 const HandGrid = ({ selectedIdx, tapAt }) => {
@@ -447,10 +448,10 @@ const ScenePlay = () => {
 
 const PICK_AT = 55;
 const PLAYED = [
-  { t: 'MOUSTIQUES EN ÉTÉ', e: '🌿' },
+  { t: 'SIESTE', e: '☕' },
   { t: 'APPELER TON EX', e: '🍻' },
-  { t: 'SALLE DE SPORT À 18H', e: '☕' },
-  { t: 'CAMPING SAUVAGE', e: '✈️' },
+  { t: 'MARIAGE', e: '❤️' },
+  { t: 'PASTIS', e: '🥤' },
 ];
 const PICKED = 1;
 
