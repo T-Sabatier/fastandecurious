@@ -552,7 +552,6 @@ const PlayButton = ({ label, pressed }) => (
 
 const SceneLogo = () => (
   <AbsoluteFill style={{ backgroundColor: YELLOW }}>
-    <FloatingEmojis />
     <Center>
       <Stamp from={3.2}>
         <Wiggle amp={1.3} speed={13}>
@@ -597,9 +596,8 @@ const ScenePlay = () => {
   const frame = useCurrentFrame();
   const selected = frame >= TAP_AT + 4;
   const punch = usePunch();
-  const shake = useShake(PRESS_AT, 12, 13);
   return (
-    <AbsoluteFill style={{ backgroundColor: YELLOW, transform: punch + shake }}>
+    <AbsoluteFill style={{ backgroundColor: YELLOW, transform: punch }}>
       <GameChrome right="0/4 POSÉ" />
       <Center style={{ paddingTop: 175, paddingBottom: 175 }}>
         <Appear delay={0}>
@@ -808,9 +806,8 @@ const SceneAperoPlay = () => {
   const frame = useCurrentFrame();
   const betOn = frame >= A_TAP_BET + 4;
   const punch = usePunch();
-  const shake = useShake(A_PRESS, 12, 13);
   return (
-    <AbsoluteFill style={{ transform: punch + shake }}>
+    <AbsoluteFill style={{ transform: punch }}>
       <Img
         src={staticFile('apero-bg.webp')}
         style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover' }}
@@ -953,7 +950,6 @@ const SceneAperoResult = () => {
 
 const ScenePitch = () => (
   <AbsoluteFill style={{ backgroundColor: YELLOW }}>
-    <FloatingEmojis />
     <Center>
       <Stamp delay={0}>
         <Wiggle amp={2} speed={9}>
@@ -978,7 +974,6 @@ const ScenePitch = () => (
 
 const SceneEnd = () => (
   <AbsoluteFill style={{ backgroundColor: YELLOW }}>
-    <FloatingEmojis />
     <Center>
       <Stamp from={1.8}>
         <Wiggle amp={1.4} speed={12}>
