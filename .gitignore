@@ -15,3 +15,6 @@ scripts/.admin-credentials.json
 .env.*.bak
 *-serviceaccount*.json
 *-sa.json
+
+# Visuels de com generes (regenerables via scripts/gen-promo.mjs)
+store-assets/promo/
