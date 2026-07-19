@@ -1,13 +1,13 @@
-// Video de presentation Snap Tap (~32 s, 1080x1920) — le parcours complet :
-// logo → LOBBY (code + QR + les potes qui rejoignent) → une manche (main,
-// selection, choix du VIP en mode projecteur) → Mode Apero (mise de gorgees)
-// → pitch → QR final. Identite du jeu : Anton, jaune/rose/noir, brutaliste,
-// vraies couleurs joueurs, badges categorie sur les cartes.
+// Video de presentation Snap Tap (~28 s, 1080x1920) — une vraie manche vue
+// de l'interieur : habillage de partie (barre ROOM + scoreboard pseudos/points
+// comme dans le jeu), main du joueur, selection, choix du VIP en mode
+// projecteur, puis Mode Apero (mise de gorgees), pitch et QR final.
 // Pas de son integre : musique ajoutee dans TikTok/IG au moment de poster.
 //
 // REGLE EDITORIALE : aucune vraie personne ni marque dans les visuels
 // marketing — cartes generiques du deck uniquement (prenoms fictifs OK).
-// LES CARTES MONTREES SONT LA VITRINE DU JEU : choisir les plus droles.
+// LES CARTES MONTREES SONT LA VITRINE DU JEU : parler aux jeunes, pas de
+// carte coquine ici (la video doit rester tous publics).
 import {
   AbsoluteFill,
   Sequence,
@@ -35,9 +35,9 @@ const anton = {
 // Style "sticker" des pseudos (identique au jeu : blanc + contour noir).
 const nameStyle = {
   color: '#fff',
-  WebkitTextStroke: '0.12em #000',
+  WebkitTextStroke: '0.10em #000',
   paintOrder: 'stroke fill',
-  letterSpacing: '0.07em',
+  letterSpacing: '0.06em',
 };
 
 // ---------- Briques visuelles ----------
@@ -88,6 +88,79 @@ const Chip = ({ text, bg, color = '#fff', tilt = -2, fontSize = 72 }) => (
     }}
   >
     {text}
+  </div>
+);
+
+// ---------- Habillage de partie (TopBar + Scoreboard, comme Game.jsx) ----------
+
+// Joueurs de la manche : vraies couleurs du jeu (PLAYER_COLORS de cards.js).
+// LÉA est le VIP de la manche (contour jaune sur le scoreboard, comme en jeu).
+const PLAYERS = [
+  { n: 'LÉA', c: '#FF0040', score: 2, vip: true },
+  { n: 'MAX', c: '#00B0FF', score: 1 },
+  { n: 'SARAH', c: '#00E676', score: 2 },
+  { n: 'TOM', c: '#FF6D00', score: 0 },
+  { n: 'JUJU', c: '#D500F9', score: 1 },
+];
+
+const GameChrome = () => (
+  <div style={{ position: 'absolute', top: 0, left: 0, right: 0 }}>
+    {/* Barre du haut : room + tour (fond jaune, comme le jeu) */}
+    <div
+      style={{
+        backgroundColor: YELLOW,
+        borderBottom: '8px solid #000',
+        padding: '28px 50px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
+    >
+      <div style={{ ...anton, fontSize: 44 }}>ROOM KZ4P</div>
+      <div style={{ ...anton, fontSize: 40, opacity: 0.7 }}>TOUR 3</div>
+    </div>
+    {/* Scoreboard : pastilles pseudo + score (bande blanche translucide) */}
+    <div
+      style={{
+        backgroundColor: 'rgba(255,255,255,0.4)',
+        borderBottom: '8px solid #000',
+        padding: '22px 30px',
+        display: 'flex',
+        justifyContent: 'center',
+        gap: 22,
+        flexWrap: 'wrap',
+      }}
+    >
+      {PLAYERS.map((p) => (
+        <div
+          key={p.n}
+          style={{
+            backgroundColor: p.c,
+            border: '5px solid #000',
+            outline: p.vip ? `6px solid ${YELLOW}` : 'none',
+            outlineOffset: 2,
+            padding: '10px 18px 14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 14,
+          }}
+        >
+          <span style={{ ...anton, ...nameStyle, fontSize: 40, lineHeight: 1 }}>{p.n}</span>
+          <span
+            style={{
+              ...anton,
+              fontSize: 34,
+              lineHeight: 1,
+              backgroundColor: '#000',
+              color: YELLOW,
+              padding: '6px 14px 10px',
+            }}
+          >
+            {p.score}
+          </span>
+        </div>
+      ))}
+    </div>
   </div>
 );
 
@@ -180,118 +253,16 @@ const SceneLogo = () => (
   </Center>
 );
 
-// ---------- 2. Lobby : code + QR + les potes rejoignent (75 → 195) ----------
+// ---------- 2. Ta main + selection (75 → 255) ----------
 
-// Vraies couleurs joueurs du jeu (PLAYER_COLORS de cards.js).
-const LOBBY_PLAYERS = [
-  { n: 'LÉA', c: '#FF0040', host: true },
-  { n: 'MAX', c: '#00B0FF' },
-  { n: 'SARAH', c: '#00E676' },
-  { n: 'TOM', c: '#FF6D00' },
-  { n: 'JUJU', c: '#D500F9' },
-];
-
-const NameChip = ({ name, color, host }) => (
-  <div
-    style={{
-      backgroundColor: color,
-      border: '6px solid #000',
-      boxShadow: '8px 8px 0 #000',
-      padding: '16px 32px 24px',
-      display: 'flex',
-      alignItems: 'center',
-      gap: 20,
-    }}
-  >
-    <span style={{ ...anton, ...nameStyle, fontSize: 58, lineHeight: 1 }}>{name}</span>
-    {host && (
-      <span
-        style={{
-          ...anton,
-          fontSize: 26,
-          lineHeight: 1,
-          backgroundColor: YELLOW,
-          padding: '6px 12px 10px',
-        }}
-      >
-        HOST
-      </span>
-    )}
-  </div>
-);
-
-const SceneLobby = () => (
-  <Center>
-    <Stamp delay={0}>
-      <div style={{ ...anton, fontSize: 76 }}>CRÉE TON SALON</div>
-    </Stamp>
-    <div style={{ height: 55 }} />
-    <SlideUp delay={10} dist={400}>
-      <div
-        style={{
-          backgroundColor: '#000',
-          boxShadow: '14px 14px 0 rgba(0,0,0,0.35)',
-          padding: '45px 60px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 60,
-        }}
-      >
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ ...anton, fontSize: 30, color: '#fff', opacity: 0.6 }}>
-            CODE DE LA ROOM
-          </div>
-          <div
-            style={{
-              ...anton,
-              fontSize: 150,
-              color: YELLOW,
-              letterSpacing: '0.12em',
-              lineHeight: 1.05,
-            }}
-          >
-            KZ4P
-          </div>
-        </div>
-        <div style={{ backgroundColor: '#fff', padding: 14 }}>
-          <Img src={staticFile('qr.png')} style={{ width: 240, height: 240, display: 'block' }} />
-        </div>
-      </div>
-    </SlideUp>
-    <div style={{ height: 65 }} />
-    <Stamp delay={38} from={1.6}>
-      <div style={{ ...anton, fontSize: 54, opacity: 0.75 }}>LES POTES SCANNENT 👇</div>
-    </Stamp>
-    <div style={{ height: 55 }} />
-    <div
-      style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: 32,
-        justifyContent: 'center',
-        maxWidth: 920,
-      }}
-    >
-      {LOBBY_PLAYERS.map((p, i) => (
-        <Stamp key={p.n} delay={52 + i * 12} from={2.2}>
-          <NameChip name={p.n} color={p.c} host={p.host} />
-        </Stamp>
-      ))}
-    </div>
-  </Center>
-);
-
-// ---------- 3. Ta main + selection (195 → 375) ----------
-
-// LA VITRINE : cartes choisies pour faire rire/intriguer en 2 secondes.
-// e = emoji de la categorie (badge en haut a droite, comme dans le jeu).
+// LA VITRINE : cartes qui parlent aux jeunes, pas de coquin ici.
 const HAND = [
   { t: 'ANANAS SUR LA PIZZA', e: '🍕' },
-  { t: 'GARDER LES CHAUSSETTES', e: '🌶️' },
+  { t: 'MATCH SUR APPLI', e: '❤️' },
   { t: 'APPELER TON EX', e: '🍻' },
-  { t: 'KEBAB À 3H DU MAT', e: '🍻' },
+  { t: 'DORMIR 18H', e: '🤪' },
 ];
-const SELECTED = 1; // GARDER LES CHAUSSETTES — le pick le plus drole
+const SELECTED = 2; // APPELER TON EX — le pick le plus drole en "j'aime pas"
 const TAP_AT = 95;
 const BTN_AT = 112;
 const PRESS_AT = 150;
@@ -344,70 +315,74 @@ const SceneHand = () => {
   const frame = useCurrentFrame();
   const pressed = frame >= PRESS_AT;
   return (
-    <Center>
-      <Stamp delay={0}>
-        <Chip text="LÉA VEUT : J'AIME PAS 💔" bg={RED} tilt={-2} fontSize={58} />
-      </Stamp>
-      <div style={{ height: 40 }} />
-      <Stamp delay={16} from={1.4}>
-        <div style={{ ...anton, fontSize: 52, opacity: 0.75 }}>TA MAIN — POSE TA CARTE</div>
-      </Stamp>
-      <div style={{ height: 55 }} />
-      <div style={{ display: 'grid', gridTemplateColumns: '440px 440px', gap: 45 }}>
-        {HAND.map((c, i) => (
-          <div key={c.t} style={{ position: 'relative' }}>
-            <HandCard
-              text={c.t}
-              emoji={c.e}
-              selected={i === SELECTED && frame >= TAP_AT + 4}
-              popDelay={22 + i * 9}
-            />
-            {i === SELECTED && <TapRing delay={TAP_AT} />}
-          </div>
-        ))}
-      </div>
-      <div style={{ height: 80 }} />
-      <SlideUp delay={BTN_AT} dist={300}>
-        <div
-          style={{
-            ...anton,
-            backgroundColor: '#000',
-            color: '#fff',
-            border: '10px solid #000',
-            boxShadow: pressed ? '4px 4px 0 #000' : '12px 12px 0 #000',
-            transform: pressed ? 'translate(6px,6px)' : 'none',
-            padding: '26px 70px 34px',
-            fontSize: 62,
-            lineHeight: 1,
-          }}
-        >
-          JOUER CETTE CARTE ▸
+    <AbsoluteFill style={{ backgroundColor: YELLOW }}>
+      <GameChrome />
+      <Center style={{ paddingTop: 200 }}>
+        <Stamp delay={0}>
+          <Chip text="LÉA VEUT : J'AIME PAS 💔" bg={RED} tilt={-2} fontSize={58} />
+        </Stamp>
+        <div style={{ height: 40 }} />
+        <Stamp delay={16} from={1.4}>
+          <div style={{ ...anton, fontSize: 50, opacity: 0.75 }}>TA MAIN — POSE TA CARTE</div>
+        </Stamp>
+        <div style={{ height: 50 }} />
+        <div style={{ display: 'grid', gridTemplateColumns: '440px 440px', gap: 45 }}>
+          {HAND.map((c, i) => (
+            <div key={c.t} style={{ position: 'relative' }}>
+              <HandCard
+                text={c.t}
+                emoji={c.e}
+                selected={i === SELECTED && frame >= TAP_AT + 4}
+                popDelay={22 + i * 9}
+              />
+              {i === SELECTED && <TapRing delay={TAP_AT} />}
+            </div>
+          ))}
         </div>
-      </SlideUp>
-    </Center>
+        <div style={{ height: 70 }} />
+        <SlideUp delay={BTN_AT} dist={300}>
+          <div
+            style={{
+              ...anton,
+              backgroundColor: '#000',
+              color: '#fff',
+              border: '10px solid #000',
+              boxShadow: pressed ? '4px 4px 0 #000' : '12px 12px 0 #000',
+              transform: pressed ? 'translate(6px,6px)' : 'none',
+              padding: '26px 70px 34px',
+              fontSize: 62,
+              lineHeight: 1,
+            }}
+          >
+            JOUER CETTE CARTE ▸
+          </div>
+        </SlideUp>
+      </Center>
+    </AbsoluteFill>
   );
 };
 
-// ---------- 4. Le VIP choisit (mode projecteur sombre) (375 → 500) ----------
+// ---------- 3. Le VIP choisit (mode projecteur sombre) (255 → 380) ----------
 
 const PICK_AT = 58;
 const PLAYED = [
   { t: 'MOUSTIQUES EN ÉTÉ', e: '🌿' },
-  { t: 'GARDER LES CHAUSSETTES', e: '🌶️' },
+  { t: 'APPELER TON EX', e: '🍻' },
   { t: 'SALLE DE SPORT À 18H', e: '☕' },
   { t: 'CAMPING SAUVAGE', e: '✈️' },
 ];
-const PICKED = 1; // ta carte — Lea deteste, TU MARQUES
+const PICKED = 1; // ta carte — Lea deteste le plus, TU MARQUES
 
 const SceneReveal = () => {
   const frame = useCurrentFrame();
   return (
     <AbsoluteFill style={{ backgroundColor: '#0a0a0a' }}>
-      <Center>
+      <GameChrome />
+      <Center style={{ paddingTop: 200 }}>
         <Stamp delay={0}>
-          <div style={{ ...anton, fontSize: 68, color: '#fff' }}>👀 LÉA CHOISIT…</div>
+          <div style={{ ...anton, fontSize: 66, color: '#fff' }}>👀 LÉA CHOISIT…</div>
         </Stamp>
-        <div style={{ height: 70 }} />
+        <div style={{ height: 60 }} />
         <div style={{ display: 'grid', gridTemplateColumns: '440px 440px', gap: 45 }}>
           {PLAYED.map((c, i) => {
             const picked = i === PICKED && frame >= PICK_AT;
@@ -443,16 +418,22 @@ const SceneReveal = () => {
             );
           })}
         </div>
-        <div style={{ height: 90 }} />
+        <div style={{ height: 80 }} />
         <Stamp delay={PICK_AT + 22} from={3}>
-          <Chip text="C'ÉTAIT TA CARTE : +1 POINT 🎉" bg="#000" color={YELLOW} tilt={-3} fontSize={58} />
+          <Chip
+            text="C'ÉTAIT TA CARTE : +1 POINT 🎉"
+            bg="#000"
+            color={YELLOW}
+            tilt={-3}
+            fontSize={56}
+          />
         </Stamp>
       </Center>
     </AbsoluteFill>
   );
 };
 
-// ---------- 5. Transition (500 → 560) ----------
+// ---------- 4. Transition (380 → 440) ----------
 
 const SceneTransition = () => (
   <AbsoluteFill style={{ backgroundColor: '#000' }}>
@@ -480,7 +461,7 @@ const SceneTransition = () => (
   </AbsoluteFill>
 );
 
-// ---------- 6. Mode Apero : la mise de gorgees (560 → 730) ----------
+// ---------- 5. Mode Apero : la mise de gorgees (440 → 610) ----------
 
 const BET_TAP_AT = 78;
 const BET = 2; // bouton "3"
@@ -557,7 +538,7 @@ const SceneApero = () => {
   );
 };
 
-// ---------- 7. Pitch (730 → 820) ----------
+// ---------- 6. Pitch (610 → 700) ----------
 
 const ScenePitch = () => (
   <Center>
@@ -575,7 +556,7 @@ const ScenePitch = () => (
   </Center>
 );
 
-// ---------- 8. Fin : logo + QR + url (820 → 955) ----------
+// ---------- 7. Fin : logo + QR + url (700 → 835) ----------
 
 const SceneEnd = () => (
   <Center>
@@ -614,25 +595,22 @@ export const Promo = () => (
     <Sequence from={0} durationInFrames={75}>
       <SceneLogo />
     </Sequence>
-    <Sequence from={75} durationInFrames={120}>
-      <SceneLobby />
-    </Sequence>
-    <Sequence from={195} durationInFrames={180}>
+    <Sequence from={75} durationInFrames={180}>
       <SceneHand />
     </Sequence>
-    <Sequence from={375} durationInFrames={125}>
+    <Sequence from={255} durationInFrames={125}>
       <SceneReveal />
     </Sequence>
-    <Sequence from={500} durationInFrames={60}>
+    <Sequence from={380} durationInFrames={60}>
       <SceneTransition />
     </Sequence>
-    <Sequence from={560} durationInFrames={170}>
+    <Sequence from={440} durationInFrames={170}>
       <SceneApero />
     </Sequence>
-    <Sequence from={730} durationInFrames={90}>
+    <Sequence from={610} durationInFrames={90}>
       <ScenePitch />
     </Sequence>
-    <Sequence from={820} durationInFrames={135}>
+    <Sequence from={700} durationInFrames={135}>
       <SceneEnd />
     </Sequence>
   </AbsoluteFill>
