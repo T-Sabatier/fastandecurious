@@ -1,6 +1,8 @@
 import { initializeApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
 import { getAuth, onAuthStateChanged, signInAnonymously } from 'firebase/auth';
+import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
+import { Capacitor } from '@capacitor/core';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -13,6 +15,31 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
+// --- App Check (anti-abus) : atteste que les requetes viennent du VRAI site.
+// WEB UNIQUEMENT (reCAPTCHA v3, invisible). Dans l'app native, reCAPTCHA ne
+// marche pas (origine capacitor://localhost) : le natif aura Play Integrity
+// via un plugin dedie (phase 2). Ne s'active que si la cle publique est
+// fournie (VITE_RECAPTCHA_V3_SITE_KEY) → aucun effet tant qu'elle est absente,
+// et AUCUN blocage tant que l'enforcement n'est pas active dans la console.
+const recaptchaKey = import.meta.env.VITE_RECAPTCHA_V3_SITE_KEY;
+if (recaptchaKey && !Capacitor.isNativePlatform()) {
+  if (import.meta.env.DEV) {
+    // En dev (localhost), reCAPTCHA ne peut pas attester : le SDK genere un
+    // "debug token" affiche en console, a enregistrer une fois dans
+    // Firebase Console → App Check → Applications → menu ⋮ → Jetons de debug.
+    self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+  }
+  try {
+    initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider(recaptchaKey),
+      isTokenAutoRefreshEnabled: true,
+    });
+  } catch (e) {
+    console.warn('[appcheck] Initialisation impossible :', e.message);
+  }
+}
+
 export const db = getDatabase(app);
 
 // getAuth() LEVE une exception si la cle API est absente/invalide (la RTDB,

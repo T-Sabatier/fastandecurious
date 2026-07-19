@@ -110,11 +110,35 @@ vérification du reçu d'achat :
 
 ## À faire plus tard (phase Android / avant gros trafic)
 
-- [ ] **Firebase App Check** : reCAPTCHA v3 (web) + Play Integrity (Android via
-      Capacitor). Bloque les clients qui ne sont pas l'app officielle.
-      ⚠️ Ne PAS activer l'« enforcement » avant d'avoir enregistré les deux
-      fournisseurs dans la console + intégré le SDK client, sinon TOUTES les
-      requêtes sont rejetées et l'app casse.
+- [~] **Firebase App Check** — EN COURS, plan en 3 phases. Bloque (à terme) les
+      clients qui ne sont pas l'app/le site officiels.
+      ⚠️ RÈGLE D'OR : ne PAS activer l'« enforcement » (phase 3) avant que les
+      phases 1 ET 2 soient faites et vérifiées dans les métriques, sinon TOUTES
+      les requêtes sont rejetées et l'app casse.
+
+      **Phase 1 — Web (reCAPTCHA v3), code prêt (firebase.js) :**
+      1. Créer une clé reCAPTCHA v3 : https://www.google.com/recaptcha/admin/create
+         → type « reCAPTCHA v3 », domaines : `www.snaptapparty.com`,
+         `snaptapparty.com`, `snap-tap.vercel.app`, `localhost`.
+         → note la CLÉ DE SITE (publique) et la CLÉ SECRÈTE.
+      2. Firebase Console → **App Check** → Applications → app **Web** →
+         Enregistrer → fournisseur **reCAPTCHA v3** → coller la CLÉ SECRÈTE.
+      3. Mettre la CLÉ DE SITE dans `.env` local (`VITE_RECAPTCHA_V3_SITE_KEY=...`)
+         ET dans les variables d'env Vercel → redéployer.
+      4. En dev (localhost) : au premier lancement, la console du navigateur
+         affiche un « debug token » → l'enregistrer dans App Check →
+         Applications → ⋮ → Gérer les jetons de débogage.
+      5. Vérifier après quelques jours : App Check → Realtime Database →
+         le graphe doit montrer une part croissante de requêtes « Vérifiées ».
+
+      **Phase 2 — Android (Play Integrity) :** nécessite d'enregistrer l'app
+      Android dans le projet Firebase (google-services.json) + un plugin natif
+      (@capacitor-firebase/app-check) car le SDK JS seul ne peut pas attester
+      dans la webview. À faire avec Fable le moment venu.
+
+      **Phase 3 — Enforcement :** quand web (phase 1) ET app (phase 2) montrent
+      ~100 % de requêtes vérifiées dans les métriques → App Check → Realtime
+      Database → « Appliquer ». Les scripts sont alors rejetés par Firebase.
 - [ ] **Plan Blaze** + alertes budget : le plan gratuit est limité à
       **100 connexions simultanées** (~15-25 parties en même temps). À activer
       avant toute promo, sinon l'app cesse de répondre aux nouveaux joueurs.
