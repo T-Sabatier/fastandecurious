@@ -297,8 +297,24 @@ async function storyLancement() {
   await render(svg, W, H, 'story-lancement-1080x1920.png');
 }
 
+// ============ 5. MINIATURE YOUTUBE 1280x720 ============
+async function thumbnail() {
+  const W = 1280, H = 720;
+  const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+  <rect width="${W}" height="${H}" fill="${YELLOW}"/>
+  <g transform="translate(${90} ${105}) scale(0.95)">${logoGroup()}</g>
+  ${chip("LE JEU D'APÉRO", 300, 335, 640, BLACK, -2, YELLOW)}
+  ${gameCard('Pizza ananas', 890, 250, 520, 260, 3)}
+  ${chip("J'AIME", 170, 760, 480, GREEN, -4, BLACK)}
+  ${chip("J'AIME PAS", 250, 1040, 500, RED, 3)}
+  ${textAt('GRATUIT · 3 À 16 JOUEURS', 40, 890, 640, BLACK)}
+</svg>`;
+  await render(svg, W, H, 'miniature-youtube-1280x720.png');
+}
+
 await memes();
 await duels();
 await poster();
 await storyLancement();
-console.log(`\n${MEME_CARDS.length * 2 + VS_PAIRS.length + 2} visuels generes dans store-assets/promo/`);
+await thumbnail();
+console.log(`\n${MEME_CARDS.length * 2 + VS_PAIRS.length + 3} visuels generes dans store-assets/promo/`);
