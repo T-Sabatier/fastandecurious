@@ -340,8 +340,8 @@ const HAND = [
   { t: 'APPELER TON EX', e: '🍻' },
   { t: 'RACLETTE', e: '🍕' },
   { t: 'MOJITO', e: '🥤' },
-  { t: 'CAMPING SAUVAGE', e: '✈️' },
-  { t: 'COUCHE-TARD', e: '☕' },
+  { t: 'DORMIR 18H', e: '🤪' },
+  { t: 'BUBBLE TEA', e: '🥤' },
 ];
 
 const HandGrid = ({ selectedIdx, tapAt }) => {
@@ -429,7 +429,7 @@ const ScenePlay = () => {
       <GameChrome right="0/4 POSÉ" />
       <Center style={{ paddingTop: 175, paddingBottom: 175 }}>
         <Appear delay={0}>
-          <ModeBanner name="LÉA" color={LEA} like={false} />
+          <ModeBanner name="LÉA" color={LEA} like />
         </Appear>
         <div style={{ height: 38 }} />
         <HandGrid selectedIdx={SELECTED} tapAt={TAP_AT} />
@@ -482,14 +482,14 @@ const SceneReveal = () => {
                 ...anton,
                 display: 'inline-block',
                 marginTop: 12,
-                border: `4px solid ${DISLIKE_RED}`,
-                color: DISLIKE_RED,
+                border: `4px solid ${LIKE_GREEN}`,
+                color: LIKE_GREEN,
                 padding: '9px 22px 15px',
                 fontSize: 36,
                 lineHeight: 1,
               }}
             >
-              💔 CHOISIT CE QU'ELLE AIME PAS
+              💚 CHOISIT SA PRÉFÉRÉE
             </div>
           </div>
         </Appear>
@@ -802,38 +802,28 @@ export const Promo = () => (
     <Sequence from={0} durationInFrames={70}>
       <SceneLogo />
     </Sequence>
-
-    <Sequence from={70} durationInFrames={40}>
-      <Intertitle lines={['LE VIP ANNONCE', 'SON MODE']} />
-    </Sequence>
-    <Sequence from={110} durationInFrames={160}>
+    <Sequence from={70} durationInFrames={160}>
       <ScenePlay />
     </Sequence>
-
-    <Sequence from={270} durationInFrames={40}>
-      <Intertitle lines={['LE VIP CHOISIT', 'SA PRÉFÉRÉE']} />
-    </Sequence>
-    <Sequence from={310} durationInFrames={100}>
+    <Sequence from={230} durationInFrames={100}>
       <SceneReveal />
     </Sequence>
-    <Sequence from={410} durationInFrames={90}>
+    <Sequence from={330} durationInFrames={90}>
       <SceneResult />
     </Sequence>
-
-    <Sequence from={500} durationInFrames={55}>
+    <Sequence from={420} durationInFrames={55}>
       <Intertitle lines={['ET EN', 'MODE APÉRO ?']} emoji="🍻" />
     </Sequence>
-    <Sequence from={555} durationInFrames={165}>
+    <Sequence from={475} durationInFrames={165}>
       <SceneAperoPlay />
     </Sequence>
-    <Sequence from={720} durationInFrames={95}>
+    <Sequence from={640} durationInFrames={95}>
       <SceneAperoResult />
     </Sequence>
-
-    <Sequence from={815} durationInFrames={75}>
+    <Sequence from={735} durationInFrames={75}>
       <ScenePitch />
     </Sequence>
-    <Sequence from={890} durationInFrames={115}>
+    <Sequence from={810} durationInFrames={115}>
       <SceneEnd />
     </Sequence>
   </AbsoluteFill>
