@@ -176,29 +176,27 @@ const SceneConcept = () => (
         <div style={{ ...anton, fontSize: 84 }}>T'AIMES OU PAS ?</div>
       </Stamp>
     </div>
-    <SlideUp delay={12}>
+    <SlideUp delay={15}>
       <Card>ANANAS SUR LA PIZZA</Card>
     </SlideUp>
     <div style={{ height: 90 }} />
     <div style={{ display: 'flex', gap: 40 }}>
-      <Stamp delay={45}>
+      <Stamp delay={60}>
         <Chip text="J'AIME" bg={GREEN} color="#000" tilt={-4} />
       </Stamp>
-      <Stamp delay={60}>
+      <Stamp delay={85}>
         <Chip text="J'AIME PAS" bg={RED} tilt={3} />
       </Stamp>
     </div>
   </Center>
 );
 
-// 3. Montage rapide de cartes avec verdict (165 → 345, 6 x 30 frames)
+// 3. Montage de cartes CLIVANTES avec verdict (3 cartes, ~1,7 s chacune —
+// assez lent pour lire ET reagir). Choisir des cartes qui divisent vraiment.
 const MONTAGE = [
   { t: 'GARDER LES CHAUSSETTES', like: false, tilt: -3 },
-  { t: 'KEBAB À 3H DU MAT', like: true, tilt: 2 },
-  { t: 'APPELER TON EX', like: false, tilt: -2 },
-  { t: 'RACLETTE', like: true, tilt: 3 },
-  { t: 'MOUSTIQUES EN ÉTÉ', like: false, tilt: -3 },
-  { t: 'DANSER SUR UNE TABLE', like: true, tilt: 2 },
+  { t: 'APPELER TON EX', like: true, tilt: 2 },
+  { t: 'CAMPING SAUVAGE', like: false, tilt: -2 },
 ];
 
 const MontageItem = ({ t, like, tilt }) => (
@@ -209,7 +207,7 @@ const MontageItem = ({ t, like, tilt }) => (
       </Card>
     </Stamp>
     <div style={{ height: 80 }} />
-    <Stamp delay={9} from={3}>
+    <Stamp delay={18} from={3}>
       <Chip
         text={like ? "J'AIME" : "J'AIME PAS"}
         bg={like ? GREEN : RED}
@@ -221,18 +219,49 @@ const MontageItem = ({ t, like, tilt }) => (
   </Center>
 );
 
-// 4. Le pitch (345 → 460)
+// 3 bis. Mode Apero : fond biere + regles du jeu a boire (assets du jeu).
+const SceneApero = () => (
+  <AbsoluteFill>
+    <Img
+      src={staticFile('apero-bg.webp')}
+      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+    />
+    <Center>
+      <Stamp from={3}>
+        <Chip text="🍻 MODE APÉRO" bg={PINK} tilt={-2} fontSize={92} />
+      </Stamp>
+      <div style={{ height: 90 }} />
+      <SlideUp delay={25} dist={600}>
+        <Card tilt={-2} fontSize={88} minH={300} w={820}>
+          MISE TES GORGÉES SUR TA CARTE
+        </Card>
+      </SlideUp>
+      <div style={{ height: 70 }} />
+      <Stamp delay={60} from={2.4}>
+        <Chip
+          text="TA CARTE GAGNE = ILS BOIVENT"
+          bg="#000"
+          color={YELLOW}
+          tilt={2}
+          fontSize={54}
+        />
+      </Stamp>
+    </Center>
+  </AbsoluteFill>
+);
+
+// 4. Le pitch
 const ScenePitch = () => (
   <Center>
     <Stamp delay={0}>
       <Chip text="3 À 16 JOUEURS" bg="#000" color={YELLOW} tilt={-2} fontSize={78} />
     </Stamp>
     <div style={{ height: 70 }} />
-    <Stamp delay={20}>
+    <Stamp delay={28}>
       <Chip text="CHACUN SUR SON TEL" bg="#fff" color="#000" tilt={2} fontSize={78} />
     </Stamp>
     <div style={{ height: 70 }} />
-    <Stamp delay={40} from={3.4}>
+    <Stamp delay={56} from={3.4}>
       <Chip text="GRATUIT" bg={PINK} tilt={-3} fontSize={120} />
     </Stamp>
   </Center>
@@ -273,21 +302,24 @@ const SceneEnd = () => (
 
 export const Promo = () => (
   <AbsoluteFill style={{ backgroundColor: YELLOW }}>
-    <Sequence from={0} durationInFrames={60}>
+    <Sequence from={0} durationInFrames={75}>
       <SceneLogo />
     </Sequence>
-    <Sequence from={60} durationInFrames={105}>
+    <Sequence from={75} durationInFrames={135}>
       <SceneConcept />
     </Sequence>
     {MONTAGE.map((m, i) => (
-      <Sequence key={m.t} from={165 + i * 30} durationInFrames={30}>
+      <Sequence key={m.t} from={210 + i * 50} durationInFrames={50}>
         <MontageItem {...m} />
       </Sequence>
     ))}
-    <Sequence from={345} durationInFrames={115}>
+    <Sequence from={360} durationInFrames={135}>
+      <SceneApero />
+    </Sequence>
+    <Sequence from={495} durationInFrames={120}>
       <ScenePitch />
     </Sequence>
-    <Sequence from={460} durationInFrames={140}>
+    <Sequence from={615} durationInFrames={135}>
       <SceneEnd />
     </Sequence>
   </AbsoluteFill>
