@@ -1,12 +1,11 @@
-// Video de presentation Snap Tap (~32 s, 1080x1920) — SIMULATION D'UNE VRAIE
-// PARTIE, ecrans copies de Game.jsx : TopBar (Quitter / Room / statut),
-// scoreboard, banniere de mode avec prenom colore, main + selection, mode
-// projecteur (choix du VIP), ecran resultat "Carte choisie / Posee par",
-// puis la meme boucle en MODE APERO (mise de gorgees + "Tout le monde boit").
-// Pas de son integre : musique ajoutee dans TikTok/IG au moment de poster.
+// Video de presentation Snap Tap (~32 s, 1080x1920) — simulation d'une VRAIE
+// partie, lisible : des INTERTITRES expliquent chaque etape, puis on voit
+// l'ecran du jeu correspondant (copie de Game.jsx), avec une main de 7 CARTES
+// comme en vrai. Animations sobres : les ecrans sont poses, seuls les taps
+// bougent. Pas de son integre (musique ajoutee dans TikTok/IG au post).
 //
 // REGLE EDITORIALE : aucune vraie personne ni marque — cartes generiques qui
-// parlent aux jeunes, pas de coquin (la video reste tous publics).
+// parlent aux jeunes, pas de coquin (video tous publics).
 import {
   AbsoluteFill,
   Sequence,
@@ -34,7 +33,7 @@ const anton = {
   color: '#000',
 };
 
-// Style "sticker" des pseudos (NAME_STYLE du jeu : blanc + contour noir).
+// NAME_STYLE du jeu : blanc + contour noir.
 const nameStyle = {
   color: '#fff',
   WebkitTextStroke: '0.10em #000',
@@ -42,91 +41,80 @@ const nameStyle = {
   letterSpacing: '0.06em',
 };
 
-// Joueurs (vraies couleurs PLAYER_COLORS). LÉA = VIP de la manche classique.
 const LEA = '#FF0040';
 const SARAH = '#00E676';
 const MAX = '#00B0FF';
 const PLAYERS = [
-  { n: 'LÉA', c: LEA, score: 2, vip: true },
+  { n: 'LÉA', c: LEA, score: 2 },
   { n: 'MAX', c: MAX, score: 1 },
   { n: 'SARAH', c: SARAH, score: 2 },
   { n: 'TOM', c: '#FF6D00', score: 0 },
   { n: 'JUJU', c: '#D500F9', score: 1 },
 ];
 
-// ---------- Habillage de partie (TopBar + Scoreboard, copie de Game.jsx) ----------
+// ---------- Habillage de partie (TopBar + Scoreboard, copie du jeu) ----------
 
-const TopBar = ({ right, bg = YELLOW }) => (
-  <div
-    style={{
-      backgroundColor: bg,
-      borderBottom: '8px solid #000',
-      padding: '26px 44px',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    }}
-  >
-    <div style={{ ...anton, fontSize: 34, opacity: 0.85 }}>↩ QUITTER</div>
-    <div style={{ ...anton, fontSize: 46 }}>ROOM KZ4P</div>
-    <div style={{ ...anton, fontSize: 32, opacity: 0.75, minWidth: 150, textAlign: 'right' }}>
-      {right}
+const GameChrome = ({ right, bg = YELLOW, vip = 'LÉA' }) => (
+  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 5 }}>
+    <div
+      style={{
+        backgroundColor: bg,
+        borderBottom: '7px solid #000',
+        padding: '22px 40px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
+    >
+      <div style={{ ...anton, fontSize: 30, opacity: 0.85 }}>↩ QUITTER</div>
+      <div style={{ ...anton, fontSize: 42 }}>ROOM KZ4P</div>
+      <div style={{ ...anton, fontSize: 28, opacity: 0.75, minWidth: 140, textAlign: 'right' }}>
+        {right}
+      </div>
+    </div>
+    <div
+      style={{
+        backgroundColor: 'rgba(255,255,255,0.4)',
+        borderBottom: '7px solid #000',
+        padding: '16px 20px',
+        display: 'flex',
+        justifyContent: 'center',
+        gap: 18,
+      }}
+    >
+      {PLAYERS.map((p) => (
+        <div
+          key={p.n}
+          style={{
+            backgroundColor: p.c,
+            border: '4px solid #000',
+            outline: p.n === vip ? `5px solid ${YELLOW}` : 'none',
+            outlineOffset: 2,
+            padding: '7px 14px 11px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+          }}
+        >
+          <span style={{ ...anton, ...nameStyle, fontSize: 34, lineHeight: 1 }}>{p.n}</span>
+          <span
+            style={{
+              ...anton,
+              fontSize: 28,
+              lineHeight: 1,
+              backgroundColor: '#000',
+              color: YELLOW,
+              padding: '4px 11px 8px',
+            }}
+          >
+            {p.score}
+          </span>
+        </div>
+      ))}
     </div>
   </div>
 );
 
-const Scoreboard = ({ vip = 'LÉA' }) => (
-  <div
-    style={{
-      backgroundColor: 'rgba(255,255,255,0.4)',
-      borderBottom: '8px solid #000',
-      padding: '20px 24px',
-      display: 'flex',
-      justifyContent: 'center',
-      gap: 20,
-      flexWrap: 'wrap',
-    }}
-  >
-    {PLAYERS.map((p) => (
-      <div
-        key={p.n}
-        style={{
-          backgroundColor: p.c,
-          border: '5px solid #000',
-          outline: p.n === vip ? `6px solid ${YELLOW}` : 'none',
-          outlineOffset: 2,
-          padding: '8px 16px 12px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-        }}
-      >
-        <span style={{ ...anton, ...nameStyle, fontSize: 38, lineHeight: 1 }}>{p.n}</span>
-        <span
-          style={{
-            ...anton,
-            fontSize: 32,
-            lineHeight: 1,
-            backgroundColor: '#000',
-            color: YELLOW,
-            padding: '5px 13px 9px',
-          }}
-        >
-          {p.score}
-        </span>
-      </div>
-    ))}
-  </div>
-);
-
-const GameChrome = ({ right, bg, vip }) => (
-  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 5 }}>
-    <TopBar right={right} bg={bg} />
-    <Scoreboard vip={vip} />
-  </div>
-);
-
-// Barre du bas fixe (comme le jeu : fond couleur de base + bord noir).
 const BottomBar = ({ children, bg = YELLOW }) => (
   <div
     style={{
@@ -136,40 +124,39 @@ const BottomBar = ({ children, bg = YELLOW }) => (
       right: 0,
       zIndex: 5,
       backgroundColor: bg,
-      borderTop: '8px solid #000',
-      padding: '36px 50px 56px',
+      borderTop: '7px solid #000',
+      padding: '30px 46px 46px',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      gap: 28,
+      gap: 24,
     }}
   >
     {children}
   </div>
 );
 
-// Banniere de mode (copie du jeu) : "<PRENOM> veut J'aime / J'aime pas".
 const ModeBanner = ({ name, color, like }) => (
   <div
     style={{
       ...anton,
       backgroundColor: like ? LIKE_GREEN : DISLIKE_RED,
       color: like ? '#000' : '#fff',
-      border: '8px solid #000',
-      boxShadow: '10px 10px 0 #000',
+      border: '7px solid #000',
+      boxShadow: '9px 9px 0 #000',
       transform: `rotate(${like ? -1 : 1}deg)`,
-      padding: '24px 44px 32px',
-      fontSize: 58,
+      padding: '20px 38px 27px',
+      fontSize: 52,
       lineHeight: 1,
       display: 'flex',
       alignItems: 'center',
-      gap: 24,
+      gap: 20,
       whiteSpace: 'nowrap',
     }}
   >
     <span style={{ ...nameStyle, WebkitTextStroke: '0.08em #000', color }}>{name}</span>
     <span>VEUT {like ? "J'AIME" : "J'AIME PAS"}</span>
-    <span style={{ fontSize: 64 }}>{like ? '💚' : '💔'}</span>
+    <span style={{ fontSize: 56 }}>{like ? '💚' : '💔'}</span>
   </div>
 );
 
@@ -191,20 +178,19 @@ const Stamp = ({ children, delay = 0, from = 2.6 }) => {
   );
 };
 
-const SlideUp = ({ children, delay = 0, dist = 900 }) => {
+// Apparition douce (petit fondu + montee) : pour poser un ecran sans agitation.
+const Appear = ({ children, delay = 0 }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const s = spring({
-    frame: frame - delay,
-    fps,
-    config: { damping: 16, stiffness: 130 },
+  const t = frame - delay;
+  const opacity = interpolate(t, [0, 12], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
   });
-  const y = interpolate(s, [0, 1], [dist, 0]);
-  return (
-    <div style={{ transform: `translateY(${y}px)`, opacity: frame < delay ? 0 : 1 }}>
-      {children}
-    </div>
-  );
+  const y = interpolate(t, [0, 12], [30, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  return <div style={{ opacity, transform: `translateY(${y}px)` }}>{children}</div>;
 };
 
 const TapRing = ({ delay }) => {
@@ -219,12 +205,12 @@ const TapRing = ({ delay }) => {
         position: 'absolute',
         left: '50%',
         top: '50%',
-        width: 150,
-        height: 150,
-        marginLeft: -75,
-        marginTop: -75,
+        width: 130,
+        height: 130,
+        marginLeft: -65,
+        marginTop: -65,
         borderRadius: '50%',
-        border: '12px solid #000',
+        border: '11px solid #000',
         backgroundColor: 'rgba(255,255,255,0.35)',
         transform: `scale(${scale})`,
         opacity,
@@ -267,13 +253,49 @@ const Chip = ({ text, bg, color = '#fff', tilt = -2, fontSize = 72 }) => (
   </div>
 );
 
+// ---------- Intertitres (une idee par ecran, on comprend le deroule) ----------
+
+const Intertitle = ({ lines, emoji }) => (
+  <AbsoluteFill style={{ backgroundColor: '#000' }}>
+    <Center>
+      <Stamp from={2.2}>
+        <div
+          style={{
+            ...anton,
+            fontSize: 92,
+            color: '#fff',
+            textAlign: 'center',
+            lineHeight: 1.08,
+          }}
+        >
+          {lines.map((l, i) => (
+            <div key={i} style={{ color: i === lines.length - 1 ? YELLOW : '#fff' }}>
+              {l}
+            </div>
+          ))}
+        </div>
+      </Stamp>
+      {emoji && (
+        <>
+          <div style={{ height: 45 }} />
+          <Stamp delay={12} from={3}>
+            <div style={{ fontSize: 120, lineHeight: 1 }}>{emoji}</div>
+          </Stamp>
+        </>
+      )}
+    </Center>
+  </AbsoluteFill>
+);
+
+// ---------- Cartes ----------
+
 const CardBadge = ({ emoji, dim }) => (
   <span
     style={{
       position: 'absolute',
-      top: 12,
-      right: 18,
-      fontSize: 42,
+      top: 8,
+      right: 14,
+      fontSize: 34,
       lineHeight: 1,
       opacity: dim ? 0.55 : 0.8,
       filter: dim ? 'grayscale(0.6)' : 'none',
@@ -283,88 +305,63 @@ const CardBadge = ({ emoji, dim }) => (
   </span>
 );
 
-const Logo = ({ scale = 1 }) => (
+// Carte de main compacte (proportions du jeu : petite, texte ajuste).
+const SmallCard = ({ text, emoji, selected }) => (
   <div
     style={{
-      transform: `scale(${scale})`,
+      ...anton,
+      position: 'relative',
+      width: 470,
+      height: 205,
+      backgroundColor: selected ? PINK : '#fff',
+      color: selected ? '#fff' : '#000',
+      border: '8px solid #000',
+      boxShadow: selected ? '13px 13px 0 #000' : '8px 8px 0 #000',
+      transform: selected ? 'translate(-5px,-5px)' : 'none',
       display: 'flex',
-      flexDirection: 'column',
       alignItems: 'center',
+      justifyContent: 'center',
+      textAlign: 'center',
+      fontSize: 44,
+      lineHeight: 0.95,
+      padding: '34px 24px 24px',
     }}
   >
-    <div style={{ ...anton, fontSize: 210, lineHeight: 0.85 }}>SNAP</div>
-    <div
-      style={{
-        ...anton,
-        fontSize: 120,
-        lineHeight: 1,
-        color: '#fff',
-        backgroundColor: PINK,
-        border: '10px solid #000',
-        boxShadow: '14px 14px 0 #000',
-        padding: '10px 48px 18px',
-        transform: 'rotate(-3deg)',
-        marginTop: 10,
-      }}
-    >
-      TAP
-    </div>
+    <CardBadge emoji={emoji} />
+    {text}
   </div>
 );
 
-// ---------- 1. Logo (0 → 75) ----------
-
-const SceneLogo = () => (
-  <Center>
-    <Stamp from={3.2}>
-      <Logo />
-    </Stamp>
-    <div style={{ height: 90 }} />
-    <Stamp delay={22}>
-      <Chip text="LE JEU D'APÉRO" bg="#000" color={YELLOW} tilt={-2} />
-    </Stamp>
-  </Center>
-);
-
-// ---------- 2. Ecran PLAY classique : main + selection (75 → 245) ----------
-
+// LA MAIN DE 7 CARTES (comme en vrai) — la vitrine du jeu, cartes jeunes.
 const HAND = [
   { t: 'ANANAS SUR LA PIZZA', e: '🍕' },
   { t: 'MATCH SUR APPLI', e: '❤️' },
   { t: 'APPELER TON EX', e: '🍻' },
   { t: 'DORMIR 18H', e: '🤪' },
+  { t: 'SALLE DE SPORT À 18H', e: '☕' },
+  { t: 'CAMPING SAUVAGE', e: '✈️' },
+  { t: 'DANSER SUR UNE TABLE', e: '🍻' },
 ];
-const SELECTED = 2; // APPELER TON EX
-const TAP_AT = 85;
-const PRESS_AT = 135;
 
-const HandCard = ({ text, emoji, selected, popDelay }) => (
-  <Stamp delay={popDelay} from={1.5}>
-    <div
-      style={{
-        ...anton,
-        position: 'relative',
-        width: 440,
-        height: 260,
-        backgroundColor: selected ? PINK : '#fff',
-        color: selected ? '#fff' : '#000',
-        border: '10px solid #000',
-        boxShadow: selected ? '16px 16px 0 #000' : '10px 10px 0 #000',
-        transform: selected ? 'translate(-6px,-6px)' : 'none',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center',
-        fontSize: 52,
-        lineHeight: 0.95,
-        padding: '40px 28px 28px',
-      }}
-    >
-      <CardBadge emoji={emoji} />
-      {text}
+const HandGrid = ({ selectedIdx, tapAt }) => {
+  const frame = useCurrentFrame();
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '470px 470px', gap: 26 }}>
+      {HAND.map((c, i) => (
+        <div key={c.t} style={{ position: 'relative' }}>
+          <Appear delay={6 + i * 3}>
+            <SmallCard
+              text={c.t}
+              emoji={c.e}
+              selected={i === selectedIdx && frame >= tapAt + 4}
+            />
+          </Appear>
+          {i === selectedIdx && <TapRing delay={tapAt} />}
+        </div>
+      ))}
     </div>
-  </Stamp>
-);
+  );
+};
 
 const PlayButton = ({ label, pressed }) => (
   <div
@@ -374,10 +371,10 @@ const PlayButton = ({ label, pressed }) => (
       textAlign: 'center',
       backgroundColor: '#000',
       color: '#fff',
-      boxShadow: pressed ? '3px 3px 0 #000' : '10px 10px 0 #000',
-      transform: pressed ? 'translate(5px,5px)' : 'none',
-      padding: '30px 40px 40px',
-      fontSize: 58,
+      boxShadow: pressed ? '3px 3px 0 #000' : '9px 9px 0 #000',
+      transform: pressed ? 'translate(4px,4px)' : 'none',
+      padding: '26px 40px 36px',
+      fontSize: 54,
       lineHeight: 1,
     }}
   >
@@ -385,30 +382,56 @@ const PlayButton = ({ label, pressed }) => (
   </div>
 );
 
+// ---------- 1. Logo ----------
+
+const SceneLogo = () => (
+  <Center>
+    <Stamp from={3.2}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ ...anton, fontSize: 210, lineHeight: 0.85 }}>SNAP</div>
+        <div
+          style={{
+            ...anton,
+            fontSize: 120,
+            lineHeight: 1,
+            color: '#fff',
+            backgroundColor: PINK,
+            border: '10px solid #000',
+            boxShadow: '14px 14px 0 #000',
+            padding: '10px 48px 18px',
+            transform: 'rotate(-3deg)',
+            marginTop: 10,
+          }}
+        >
+          TAP
+        </div>
+      </div>
+    </Stamp>
+    <div style={{ height: 90 }} />
+    <Stamp delay={22}>
+      <Chip text="LE JEU D'APÉRO" bg="#000" color={YELLOW} tilt={-2} />
+    </Stamp>
+  </Center>
+);
+
+// ---------- 2. Ecran PLAY classique : 7 cartes, tap, jouer ----------
+
+const TAP_AT = 70;
+const PRESS_AT = 115;
+const SELECTED = 2; // APPELER TON EX
+
 const ScenePlay = () => {
   const frame = useCurrentFrame();
   const selected = frame >= TAP_AT + 4;
   return (
     <AbsoluteFill style={{ backgroundColor: YELLOW }}>
       <GameChrome right="0/4 POSÉ" />
-      <Center style={{ paddingTop: 210, paddingBottom: 250 }}>
-        <Stamp delay={2}>
+      <Center style={{ paddingTop: 175, paddingBottom: 175 }}>
+        <Appear delay={0}>
           <ModeBanner name="LÉA" color={LEA} like={false} />
-        </Stamp>
-        <div style={{ height: 55 }} />
-        <div style={{ display: 'grid', gridTemplateColumns: '440px 440px', gap: 42 }}>
-          {HAND.map((c, i) => (
-            <div key={c.t} style={{ position: 'relative' }}>
-              <HandCard
-                text={c.t}
-                emoji={c.e}
-                selected={i === SELECTED && selected}
-                popDelay={18 + i * 8}
-              />
-              {i === SELECTED && <TapRing delay={TAP_AT} />}
-            </div>
-          ))}
-        </div>
+        </Appear>
+        <div style={{ height: 38 }} />
+        <HandGrid selectedIdx={SELECTED} tapAt={TAP_AT} />
       </Center>
       <BottomBar>
         <PlayButton
@@ -420,9 +443,9 @@ const ScenePlay = () => {
   );
 };
 
-// ---------- 3. Mode PROJECTEUR : Lea choisit (245 → 360) ----------
+// ---------- 3. Mode PROJECTEUR : Lea choisit parmi les 4 cartes posees ----------
 
-const PICK_AT = 60;
+const PICK_AT = 55;
 const PLAYED = [
   { t: 'MOUSTIQUES EN ÉTÉ', e: '🌿' },
   { t: 'APPELER TON EX', e: '🍻' },
@@ -436,18 +459,17 @@ const SceneReveal = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: '#0a0a0a' }}>
       <GameChrome right="4 CARTES" />
-      <Center style={{ paddingTop: 210 }}>
-        {/* En-tete projecteur : gros nom du VIP dans SA couleur + badge mode */}
-        <Stamp delay={0} from={1.8}>
+      <Center style={{ paddingTop: 190 }}>
+        <Appear delay={0}>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 60, lineHeight: 1, marginBottom: 8 }}>👀</div>
+            <div style={{ fontSize: 54, lineHeight: 1, marginBottom: 8 }}>👀</div>
             <div
               style={{
                 ...anton,
-                fontSize: 130,
+                fontSize: 120,
                 lineHeight: 0.95,
                 color: LEA,
-                WebkitTextStroke: '10px #000',
+                WebkitTextStroke: '9px #000',
                 paintOrder: 'stroke fill',
                 letterSpacing: '0.06em',
               }}
@@ -458,51 +480,51 @@ const SceneReveal = () => {
               style={{
                 ...anton,
                 display: 'inline-block',
-                marginTop: 14,
-                border: `5px solid ${DISLIKE_RED}`,
+                marginTop: 12,
+                border: `4px solid ${DISLIKE_RED}`,
                 color: DISLIKE_RED,
-                padding: '10px 24px 16px',
-                fontSize: 40,
+                padding: '9px 22px 15px',
+                fontSize: 36,
                 lineHeight: 1,
               }}
             >
               💔 CHOISIT CE QU'ELLE AIME PAS
             </div>
           </div>
-        </Stamp>
-        <div style={{ height: 60 }} />
-        <div style={{ display: 'grid', gridTemplateColumns: '440px 440px', gap: 42 }}>
+        </Appear>
+        <div style={{ height: 55 }} />
+        <div style={{ display: 'grid', gridTemplateColumns: '470px 470px', gap: 30 }}>
           {PLAYED.map((c, i) => {
             const picked = i === PICKED && frame >= PICK_AT;
             const rot = i % 2 === 0 ? -1.5 : 1.5;
             return (
               <div key={c.t} style={{ position: 'relative' }}>
-                <Stamp delay={12 + i * 8} from={1.3}>
+                <Appear delay={8 + i * 4}>
                   <div
                     style={{
                       ...anton,
                       position: 'relative',
-                      width: 440,
-                      height: 260,
+                      width: 470,
+                      height: 240,
                       backgroundColor: picked ? '#fff' : '#33333a',
                       color: picked ? '#000' : '#c9c9d2',
-                      border: picked ? `10px solid ${PINK}` : '10px solid #55555f',
-                      boxShadow: picked ? `0 0 0 8px ${PINK}, 0 0 70px ${PINK}` : 'none',
+                      border: picked ? `9px solid ${PINK}` : '9px solid #55555f',
+                      boxShadow: picked ? `0 0 0 7px ${PINK}, 0 0 65px ${PINK}` : 'none',
                       transform: picked ? `scale(1.07) rotate(${rot}deg)` : `rotate(${rot}deg)`,
                       opacity: picked ? 1 : 0.82,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       textAlign: 'center',
-                      fontSize: 52,
+                      fontSize: 46,
                       lineHeight: 0.95,
-                      padding: '40px 28px 28px',
+                      padding: '36px 26px 26px',
                     }}
                   >
                     <CardBadge emoji={c.e} dim={!picked} />
                     {c.t}
                   </div>
-                </Stamp>
+                </Appear>
                 {i === PICKED && <TapRing delay={PICK_AT - 4} />}
               </div>
             );
@@ -513,17 +535,19 @@ const SceneReveal = () => {
   );
 };
 
-// ---------- 4. Ecran RESULTAT classique (360 → 460) ----------
+// ---------- 4. Ecran RESULTAT classique ----------
 
 const SceneResult = () => (
   <AbsoluteFill style={{ backgroundColor: YELLOW }}>
     <GameChrome right="" />
-    <Center style={{ paddingTop: 210 }}>
-      <Stamp delay={0} from={1.5}>
-        <div style={{ ...anton, fontSize: 38, opacity: 0.6 }}>CARTE CHOISIE</div>
-      </Stamp>
-      <div style={{ height: 30 }} />
-      <Stamp delay={6}>
+    <Center style={{ paddingTop: 190 }}>
+      <Appear delay={0}>
+        <div style={{ ...anton, fontSize: 36, opacity: 0.6, textAlign: 'center' }}>
+          CARTE CHOISIE
+        </div>
+      </Appear>
+      <div style={{ height: 28 }} />
+      <Stamp delay={5} from={1.6}>
         <div
           style={{
             ...anton,
@@ -531,11 +555,10 @@ const SceneResult = () => (
             width: 700,
             backgroundColor: '#000',
             color: YELLOW,
-            border: '10px solid #000',
-            boxShadow: '18px 18px 0 #000',
+            boxShadow: '16px 16px 0 #000',
             transform: 'rotate(-2deg)',
-            padding: '70px 50px',
-            fontSize: 88,
+            padding: '64px 46px',
+            fontSize: 84,
             lineHeight: 0.95,
             textAlign: 'center',
           }}
@@ -544,16 +567,16 @@ const SceneResult = () => (
           APPELER TON EX
         </div>
       </Stamp>
-      <div style={{ height: 55 }} />
-      <Stamp delay={30} from={1.5}>
-        <div style={{ ...anton, fontSize: 38, opacity: 0.6 }}>POSÉE PAR</div>
-      </Stamp>
-      <div style={{ height: 20 }} />
-      <Stamp delay={38} from={2}>
+      <div style={{ height: 50 }} />
+      <Appear delay={28}>
+        <div style={{ ...anton, fontSize: 36, opacity: 0.6, textAlign: 'center' }}>POSÉE PAR</div>
+      </Appear>
+      <div style={{ height: 18 }} />
+      <Stamp delay={34} from={2}>
         <div
           style={{
             ...anton,
-            fontSize: 150,
+            fontSize: 145,
             lineHeight: 1,
             color: MAX,
             WebkitTextStroke: '10px #000',
@@ -564,51 +587,23 @@ const SceneResult = () => (
           TOI 🎉
         </div>
       </Stamp>
-      <div style={{ height: 55 }} />
-      <Stamp delay={60} from={3}>
-        <Chip text="+1 POINT" bg="#000" color={YELLOW} tilt={3} fontSize={80} />
-      </Stamp>
-    </Center>
-  </AbsoluteFill>
-);
-
-// ---------- 5. Transition (460 → 520) ----------
-
-const SceneTransition = () => (
-  <AbsoluteFill style={{ backgroundColor: '#000' }}>
-    <Center>
-      <Stamp from={2.8}>
-        <div
-          style={{
-            ...anton,
-            fontSize: 96,
-            color: '#fff',
-            textAlign: 'center',
-            lineHeight: 1.05,
-          }}
-        >
-          ET EN
-          <br />
-          <span style={{ color: YELLOW }}>MODE APÉRO</span> ?
-        </div>
-      </Stamp>
       <div style={{ height: 50 }} />
-      <Stamp delay={18} from={3.5}>
-        <div style={{ fontSize: 140, lineHeight: 1 }}>🍻</div>
+      <Stamp delay={55} from={3}>
+        <Chip text="+1 POINT" bg="#000" color={YELLOW} tilt={3} fontSize={76} />
       </Stamp>
     </Center>
   </AbsoluteFill>
 );
 
-// ---------- 6. Ecran PLAY apero : mise de gorgees (520 → 700) ----------
+// ---------- 5. Ecran PLAY apero : 7 cartes + mise de gorgees ----------
 
-const BET_TAP_AT = 70;
-const BET = 2; // bouton "3"
-const APERO_PRESS_AT = 130;
+const A_TAP_CARD = 45;
+const A_TAP_BET = 90;
+const A_PRESS = 135;
 
 const SceneAperoPlay = () => {
   const frame = useCurrentFrame();
-  const betOn = frame >= BET_TAP_AT + 4;
+  const betOn = frame >= A_TAP_BET + 4;
   return (
     <AbsoluteFill>
       <Img
@@ -616,66 +611,53 @@ const SceneAperoPlay = () => {
         style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover' }}
       />
       <GameChrome right="🍻 APÉRO" bg={AMBER} vip="SARAH" />
-      <Center style={{ paddingTop: 210, paddingBottom: 360 }}>
-        <Stamp delay={2}>
+      <Center style={{ paddingTop: 175, paddingBottom: 300 }}>
+        <Appear delay={0}>
           <ModeBanner name="SARAH" color={SARAH} like />
-        </Stamp>
-        <div style={{ height: 50 }} />
-        <div style={{ display: 'grid', gridTemplateColumns: '440px 440px', gap: 42 }}>
-          {[
-            { t: 'ANANAS SUR LA PIZZA', e: '🍕' },
-            { t: 'MATCH SUR APPLI', e: '❤️' },
-          ].map((c, i) => (
-            <div key={c.t} style={{ position: 'relative' }}>
-              <HandCard text={c.t} emoji={c.e} selected={i === 0 && frame >= 40} popDelay={16 + i * 8} />
-              {i === 0 && <TapRing delay={36} />}
-            </div>
-          ))}
-        </div>
+        </Appear>
+        <div style={{ height: 34 }} />
+        <HandGrid selectedIdx={0} tapAt={A_TAP_CARD} />
       </Center>
       <BottomBar bg={AMBER}>
-        {/* Selecteur de mise 1-4 (copie du jeu, partyMode) */}
-        <div style={{ display: 'flex', gap: 28 }}>
+        <div style={{ display: 'flex', gap: 26 }}>
           {[1, 2, 3, 4].map((n, i) => {
-            const on = i === BET && betOn;
+            const on = i === 2 && betOn;
             return (
               <div key={n} style={{ position: 'relative' }}>
-                <Stamp delay={20 + i * 6} from={1.4}>
-                  <div
-                    style={{
-                      ...anton,
-                      width: 140,
-                      height: 120,
-                      backgroundColor: on ? PINK : '#fff',
-                      color: on ? '#fff' : '#000',
-                      border: '10px solid #000',
-                      boxShadow: on ? '12px 12px 0 #000' : '6px 6px 0 #000',
-                      transform: on ? 'translate(-4px,-4px)' : 'none',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 70,
-                      lineHeight: 1,
-                    }}
-                  >
-                    {n}
-                  </div>
-                </Stamp>
-                {i === BET && <TapRing delay={BET_TAP_AT} />}
+                <div
+                  style={{
+                    ...anton,
+                    width: 132,
+                    height: 108,
+                    backgroundColor: on ? PINK : '#fff',
+                    color: on ? '#fff' : '#000',
+                    border: '9px solid #000',
+                    boxShadow: on ? '11px 11px 0 #000' : '5px 5px 0 #000',
+                    transform: on ? 'translate(-4px,-4px)' : 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 62,
+                    lineHeight: 1,
+                  }}
+                >
+                  {n}
+                </div>
+                {i === 2 && <TapRing delay={A_TAP_BET} />}
               </div>
             );
           })}
         </div>
         <PlayButton
-          label={betOn ? 'JOUER · MISE 3 🍺' : 'MISE TES GORGÉES'}
-          pressed={frame >= APERO_PRESS_AT}
+          label={betOn ? 'JOUER · MISE 3 🍺' : 'MISE TES GORGÉES (1-4)'}
+          pressed={frame >= A_PRESS}
         />
       </BottomBar>
     </AbsoluteFill>
   );
 };
 
-// ---------- 7. Ecran RESULTAT apero : tout le monde boit (700 → 800) ----------
+// ---------- 6. Ecran RESULTAT apero ----------
 
 const SceneAperoResult = () => (
   <AbsoluteFill>
@@ -684,24 +666,25 @@ const SceneAperoResult = () => (
       style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover' }}
     />
     <GameChrome right="🍻 APÉRO" bg={AMBER} vip="SARAH" />
-    <Center style={{ paddingTop: 210 }}>
-      <Stamp delay={0} from={1.5}>
-        <div style={{ ...anton, fontSize: 38, opacity: 0.6 }}>CARTE CHOISIE</div>
-      </Stamp>
-      <div style={{ height: 30 }} />
-      <Stamp delay={6}>
+    <Center style={{ paddingTop: 190 }}>
+      <Appear delay={0}>
+        <div style={{ ...anton, fontSize: 36, opacity: 0.6, textAlign: 'center' }}>
+          CARTE CHOISIE
+        </div>
+      </Appear>
+      <div style={{ height: 28 }} />
+      <Stamp delay={5} from={1.6}>
         <div
           style={{
             ...anton,
             position: 'relative',
-            width: 700,
+            width: 720,
             backgroundColor: '#000',
             color: YELLOW,
-            border: '10px solid #000',
-            boxShadow: '18px 18px 0 #000',
+            boxShadow: '16px 16px 0 #000',
             transform: 'rotate(-2deg)',
-            padding: '70px 50px',
-            fontSize: 88,
+            padding: '64px 46px',
+            fontSize: 80,
             lineHeight: 0.95,
             textAlign: 'center',
           }}
@@ -710,19 +693,19 @@ const SceneAperoResult = () => (
           ANANAS SUR LA PIZZA
         </div>
       </Stamp>
-      <div style={{ height: 50 }} />
-      <Stamp delay={28} from={1.5}>
-        <div style={{ ...anton, fontSize: 38, opacity: 0.6 }}>POSÉE PAR</div>
-      </Stamp>
-      <div style={{ height: 20 }} />
-      <Stamp delay={36} from={2}>
+      <div style={{ height: 45 }} />
+      <Appear delay={26}>
+        <div style={{ ...anton, fontSize: 36, opacity: 0.6, textAlign: 'center' }}>POSÉE PAR</div>
+      </Appear>
+      <div style={{ height: 16 }} />
+      <Stamp delay={32} from={2}>
         <div
           style={{
             ...anton,
-            fontSize: 130,
+            fontSize: 125,
             lineHeight: 1,
             color: MAX,
-            WebkitTextStroke: '10px #000',
+            WebkitTextStroke: '9px #000',
             paintOrder: 'stroke fill',
             letterSpacing: '0.06em',
           }}
@@ -730,21 +713,21 @@ const SceneAperoResult = () => (
           MAX
         </div>
       </Stamp>
-      <div style={{ height: 55 }} />
-      <Stamp delay={58} from={3.2}>
-        <Chip text="TOUT LE MONDE BOIT 3" bg={PINK} tilt={3} fontSize={72} />
+      <div style={{ height: 50 }} />
+      <Stamp delay={52} from={3.2}>
+        <Chip text="TOUT LE MONDE BOIT 3" bg={PINK} tilt={3} fontSize={68} />
       </Stamp>
-      <div style={{ height: 35 }} />
-      <Stamp delay={80} from={1.5}>
-        <div style={{ ...anton, fontSize: 34, opacity: 0.65 }}>
+      <div style={{ height: 32 }} />
+      <Appear delay={75}>
+        <div style={{ ...anton, fontSize: 32, opacity: 0.65, textAlign: 'center' }}>
           LE GAGNANT NE BOIT PAS 😎
         </div>
-      </Stamp>
+      </Appear>
     </Center>
   </AbsoluteFill>
 );
 
-// ---------- 8. Pitch (800 → 880) ----------
+// ---------- 7. Pitch + 8. Fin ----------
 
 const ScenePitch = () => (
   <Center>
@@ -762,67 +745,94 @@ const ScenePitch = () => (
   </Center>
 );
 
-// ---------- 9. Fin : logo + QR + url (880 → 1000) ----------
-
 const SceneEnd = () => (
   <Center>
     <Stamp from={1.8}>
-      <Logo scale={0.75} />
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ ...anton, fontSize: 160, lineHeight: 0.85 }}>SNAP</div>
+        <div
+          style={{
+            ...anton,
+            fontSize: 92,
+            lineHeight: 1,
+            color: '#fff',
+            backgroundColor: PINK,
+            border: '9px solid #000',
+            boxShadow: '12px 12px 0 #000',
+            padding: '8px 40px 15px',
+            transform: 'rotate(-3deg)',
+            marginTop: 8,
+          }}
+        >
+          TAP
+        </div>
+      </div>
     </Stamp>
-    <div style={{ height: 80 }} />
-    <SlideUp delay={14} dist={500}>
+    <div style={{ height: 70 }} />
+    <Stamp delay={14} from={1.8}>
       <div
         style={{
           backgroundColor: '#fff',
           border: '12px solid #000',
           boxShadow: '16px 16px 0 #000',
-          padding: 28,
+          padding: 26,
           transform: 'rotate(-2deg)',
         }}
       >
-        <Img src={staticFile('qr.png')} style={{ width: 380, height: 380, display: 'block' }} />
+        <Img src={staticFile('qr.png')} style={{ width: 360, height: 360, display: 'block' }} />
       </div>
-    </SlideUp>
-    <div style={{ height: 80 }} />
-    <Stamp delay={30}>
-      <div style={{ ...anton, fontSize: 76 }}>SCANNE. JOUE.</div>
     </Stamp>
-    <div style={{ height: 30 }} />
-    <Stamp delay={42}>
-      <div style={{ ...anton, fontSize: 58 }}>SNAPTAPPARTY.COM</div>
+    <div style={{ height: 70 }} />
+    <Stamp delay={28}>
+      <div style={{ ...anton, fontSize: 72 }}>SCANNE. JOUE.</div>
+    </Stamp>
+    <div style={{ height: 26 }} />
+    <Stamp delay={40}>
+      <div style={{ ...anton, fontSize: 54 }}>SNAPTAPPARTY.COM</div>
     </Stamp>
   </Center>
 );
 
 // ---------- Composition ----------
+// Intertitre → ecran, pour chaque etape : on comprend sans reflechir.
 
 export const Promo = () => (
   <AbsoluteFill style={{ backgroundColor: YELLOW }}>
-    <Sequence from={0} durationInFrames={75}>
+    <Sequence from={0} durationInFrames={70}>
       <SceneLogo />
     </Sequence>
-    <Sequence from={75} durationInFrames={170}>
+
+    <Sequence from={70} durationInFrames={40}>
+      <Intertitle lines={['LE VIP ANNONCE', 'SON MODE']} />
+    </Sequence>
+    <Sequence from={110} durationInFrames={160}>
       <ScenePlay />
     </Sequence>
-    <Sequence from={245} durationInFrames={115}>
+
+    <Sequence from={270} durationInFrames={40}>
+      <Intertitle lines={['LE VIP CHOISIT', 'SA PRÉFÉRÉE']} />
+    </Sequence>
+    <Sequence from={310} durationInFrames={100}>
       <SceneReveal />
     </Sequence>
-    <Sequence from={360} durationInFrames={100}>
+    <Sequence from={410} durationInFrames={90}>
       <SceneResult />
     </Sequence>
-    <Sequence from={460} durationInFrames={60}>
-      <SceneTransition />
+
+    <Sequence from={500} durationInFrames={55}>
+      <Intertitle lines={['ET EN', 'MODE APÉRO ?']} emoji="🍻" />
     </Sequence>
-    <Sequence from={520} durationInFrames={180}>
+    <Sequence from={555} durationInFrames={165}>
       <SceneAperoPlay />
     </Sequence>
-    <Sequence from={700} durationInFrames={100}>
+    <Sequence from={720} durationInFrames={95}>
       <SceneAperoResult />
     </Sequence>
-    <Sequence from={800} durationInFrames={80}>
+
+    <Sequence from={815} durationInFrames={75}>
       <ScenePitch />
     </Sequence>
-    <Sequence from={880} durationInFrames={120}>
+    <Sequence from={890} durationInFrames={115}>
       <SceneEnd />
     </Sequence>
   </AbsoluteFill>
