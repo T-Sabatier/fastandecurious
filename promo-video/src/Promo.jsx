@@ -340,8 +340,8 @@ const HAND = [
   { t: 'APPELER TON EX', e: '🍻' },
   { t: 'RACLETTE', e: '🍕' },
   { t: 'MOJITO', e: '🥤' },
-  { t: 'DORMIR 18H', e: '🤪' },
-  { t: 'BUBBLE TEA', e: '🥤' },
+  { t: 'CHAUSSETTES-CLAQUETTES', e: '👕' },
+  { t: 'TATOUAGE', e: '☕' },
 ];
 
 const HandGrid = ({ selectedIdx, tapAt }) => {
