@@ -14,6 +14,7 @@ import {
   interpolate,
   Easing,
   Img,
+  Audio,
   staticFile,
 } from 'remotion';
 import { loadFont } from '@remotion/fonts';
@@ -1035,6 +1036,17 @@ const SceneEnd = () => (
 
 export const Promo = () => (
   <AbsoluteFill style={{ backgroundColor: YELLOW }}>
+    {/* Musique (Suno "Sunlit Loop") : le beat demarre a la seconde 0, aucun
+        decalage necessaire. Fondu de sortie sur les ~2 dernieres secondes. */}
+    <Audio
+      src={staticFile('Sunlit Loop.mp3')}
+      volume={(f) =>
+        interpolate(f, [860, 920], [1, 0], {
+          extrapolateLeft: 'clamp',
+          extrapolateRight: 'clamp',
+        })
+      }
+    />
     <Sequence from={0} durationInFrames={70}>
       <SceneLogo />
     </Sequence>
