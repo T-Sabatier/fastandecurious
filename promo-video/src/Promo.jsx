@@ -998,32 +998,35 @@ const SceneEnd = () => (
           </div>
         </Wiggle>
       </Stamp>
-      <div style={{ height: 70 }} />
-      <Stamp delay={14} from={1.8}>
-        <Wiggle amp={1.8} speed={11} phase={1}>
+      <div style={{ height: 80 }} />
+      <Stamp delay={16} from={2}>
+        <Wiggle amp={1.4} speed={11}>
           <div
             style={{
-              backgroundColor: '#fff',
-              border: '12px solid #000',
-              boxShadow: '16px 16px 0 #000',
-              padding: 26,
-              transform: 'rotate(-2deg)',
+              ...anton,
+              backgroundColor: '#000',
+              color: YELLOW,
+              boxShadow: '14px 14px 0 #000',
+              padding: '26px 46px 36px',
+              fontSize: 66,
+              lineHeight: 1,
+              transform: 'rotate(-1.5deg)',
             }}
           >
-            <Img src={staticFile('qr.png')} style={{ width: 360, height: 360, display: 'block' }} />
+            SNAPTAPPARTY.COM
           </div>
         </Wiggle>
       </Stamp>
-      <div style={{ height: 70 }} />
-      <Stamp delay={28}>
-        <Bounce delay={28} amp={10} speed={8}>
-          <div style={{ ...anton, fontSize: 72 }}>SCANNE. JOUE.</div>
+      <div style={{ height: 60 }} />
+      <Stamp delay={32} from={3}>
+        <Bounce delay={32} amp={14} speed={8}>
+          <Chip text="LIEN EN BIO 👇" bg={PINK} tilt={2} fontSize={72} />
         </Bounce>
       </Stamp>
-      <div style={{ height: 26 }} />
-      <Stamp delay={40}>
-        <div style={{ ...anton, fontSize: 54 }}>SNAPTAPPARTY.COM</div>
-      </Stamp>
+      <div style={{ height: 45 }} />
+      <Appear delay={50}>
+        <div style={{ ...anton, fontSize: 40, opacity: 0.7 }}>GRATUIT · SANS COMPTE</div>
+      </Appear>
     </Center>
   </AbsoluteFill>
 );
