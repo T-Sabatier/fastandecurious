@@ -258,7 +258,7 @@ export default function Home({ playerId, onJoin, initialError }) {
               style={{ fontFamily: '"Space Mono", monospace' }}
               className="text-[10px] uppercase tracking-widest whitespace-nowrap text-black"
             >
-              {partyActive ? 'Mode apéro : on mise des gorgées' : "Devine ce qu'ils aiment ou pas…"}
+              {partyActive ? 'Mode apéro : les cartes font boire' : "Devine ce qu'ils aiment ou pas…"}
             </div>
           </div>
         </div>
@@ -288,7 +288,7 @@ export default function Home({ playerId, onJoin, initialError }) {
                 style={{ fontFamily: '"Space Mono", monospace' }}
                 className="text-[10px] uppercase tracking-widest mt-1 opacity-80"
               >
-                {party ? 'Activé · on mise des gorgées !' : 'Jeu à boire · active-le'}
+                {party ? 'Activé · les cartes font boire !' : 'Jeu à boire · active-le'}
               </div>
             </div>
             <div
@@ -488,9 +488,9 @@ export default function Home({ playerId, onJoin, initialError }) {
               <li>• 3 joueurs minimum, chacun sur son appareil</li>
               <li>• Main de <b>7 cartes</b> chacun</li>
               <li>• Un joueur tiré au sort annonce <b>J'AIME</b> ou <b>J'AIME PAS</b></li>
-              <li>• Chacun pose une carte et <b>mise 1 à 4 gorgées</b> dessus</li>
-              <li>• Ta carte choisie → tu marques et <b>tout le monde boit ta mise</b></li>
-              <li>• Sinon → tu bois la <b>mise de la carte gagnante</b></li>
+              <li>• Il choisit sa carte préférée → <b>+1 point</b> pour son auteur</li>
+              <li>• Et la carte choisie <b>déclenche une règle à boire</b> pour la table</li>
+              <li>• « Ceux qui ont Spotify boivent 2 », « le gagnant distribue 3 »…</li>
             </ul>
           ) : (
             <ul className="text-sm leading-relaxed space-y-1">
@@ -669,8 +669,8 @@ export default function Home({ playerId, onJoin, initialError }) {
               Premium · jeu à boire
             </div>
             <p className="text-sm mb-4">
-              Transforme Snap Tap en <b>jeu à boire</b> : tu mises des gorgées
-              sur tes cartes, et la carte choisie fait boire tout le salon.
+              Transforme Snap Tap en <b>jeu à boire</b> : chaque carte choisie
+              déclenche une règle qui fait boire la table.
             </p>
             <div className="border-t-2 border-black/10 pt-4 flex items-end justify-between gap-3">
               <p className="text-sm opacity-80 flex-1">
@@ -768,7 +768,7 @@ export default function Home({ playerId, onJoin, initialError }) {
                 {
                   emoji: '🍻',
                   name: 'Mode Apéro',
-                  desc: 'Le jeu à boire : mise des gorgées, fais boire toute la table. Inclut la catégorie « Bourré·e ».',
+                  desc: 'Le jeu à boire : chaque carte choisie fait boire la table. Inclut la catégorie « Bourré·e ».',
                   productId: PRODUCT_APERO,
                   owned: aperoOwned,
                 },

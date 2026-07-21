@@ -344,9 +344,9 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
             🍻 Mode Apéro
           </div>
           <ul className="text-sm leading-relaxed space-y-1">
-            <li>• En jouant, tu <b>mises 1 à 4 gorgées</b> sur ta carte</li>
-            <li>• Ta carte choisie → tu ne bois pas, tu marques, et <b>tout le monde boit ta mise</b></li>
-            <li>• Sinon → tu bois la <b>mise de la carte gagnante</b></li>
+            <li>• On joue normalement... mais <b>chaque carte choisie déclenche une règle à boire</b></li>
+            <li>• « Ceux qui ont Spotify boivent 2 », « le gagnant distribue 3 »...</li>
+            <li>• La règle s'affiche à la fin de chaque manche : <b>appliquez-la à la table</b> 🍻</li>
           </ul>
         </div>
         )}

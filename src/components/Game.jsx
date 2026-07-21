@@ -28,6 +28,30 @@ const CAT_EMOJI = Object.fromEntries(
 function catEmojiOf(card) {
   return CAT_EMOJI[card?.cat] || '';
 }
+
+// Mode Apero — regles a boire GENERIQUES, utilisees quand la carte choisie
+// n'a pas de regle dediee (champ g pose via l'admin/deck-tool). Le tirage est
+// DETERMINISTE (hash cardId + manche) : meme regle affichee chez tous.
+const GENERIC_GAGES = [
+  'Le gagnant distribue 3 gorgées',
+  'Tout le monde trinque, le dernier à reposer son verre boit 2',
+  "Ceux qui n'ont pas encore marqué de point boivent 2",
+  'Les voisins du gagnant boivent 2',
+  "Le gagnant choisit quelqu'un : il boit 3",
+  'Vote : le plus susceptible de finir sous la table boit 2',
+  'Le plus jeune de la table boit 2',
+  'Ceux qui ont leur tel à moins de 30% boivent 2',
+  'Tout le monde boit 1 à la santé du gagnant',
+  'Le dernier à lever la main boit 2',
+];
+
+function gageOf(card, cardId, round) {
+  if (card?.g) return card.g;
+  const s = `${cardId}_${round}`;
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return GENERIC_GAGES[Math.abs(h) % GENERIC_GAGES.length];
+}
 import {
   Heart,
   HeartCrack,
@@ -44,9 +68,8 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   const [selectedCard, setSelectedCard] = useState(null);
   const [busy, setBusy] = useState(false);
   const [vatoutArmed, setVatoutArmed] = useState(false);
-  // Mode Apero : mise (1-4 gorgees) posee avec sa carte. Si ta carte est
-  // choisie par le boss, tous les autres boivent ta mise.
-  const [bet, setBet] = useState(1);
+  // Mode Apero : la carte choisie declenche une regle a boire (champ g de la
+  // carte, ou une regle generique tiree au sort de facon deterministe).
   const [espionArming, setEspionArming] = useState(false);
   const [espionReveal, setEspionReveal] = useState({});
   const [espionDone, setEspionDone] = useState(false);
@@ -56,7 +79,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   const isBoss = room.bossId === playerId;
 
   // Mode Apero (jeu a boire) : couche d'affichage par-dessus le moteur normal.
-  // Systeme de mise (gorgees). Regle du jeu inchangee.
+  // La carte choisie declenche une regle a boire. Regle du jeu inchangee.
   const partyMode = !!room.settings?.partyMode;
   // Fond ambre "biere" quand le Mode Apero est actif (sinon jaune), en gardant
   // les accents jaunes sur noir et le rose. La couleur sert de SECOURS derriere
@@ -219,7 +242,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         played: null,
         bossPick: null,
         vatout: null,
-        bets: null, // Mode Apero : on repart avec des mises vierges chaque manche
+        bets: null, // nettoyage d'anciennes parties (systeme de mise retire)
         // Depart du timer par tour (si active dans les reglages du salon)
         playStartedAt: Date.now(),
       });
@@ -241,16 +264,11 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         updates[`vatout/${playerId}`] = true;
         updates[`players/${playerId}/sortsUsed/vatout`] = true;
       }
-      // Mode Apero : on enregistre la mise posee avec la carte.
-      if (partyMode) {
-        updates[`bets/${playerId}`] = bet;
-      }
       await update(ref(db, `rooms/${roomCode}`), updates);
     } finally {
       setBusy(false);
       setSelectedCard(null);
       setVatoutArmed(false);
-      setBet(1);
     }
   }
 
@@ -839,7 +857,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
           </div>
         </div>
 
-        <div className={`flex-1 px-4 overflow-y-auto ${partyMode ? 'pb-48' : 'pb-32'}`}>
+        <div className="flex-1 px-4 overflow-y-auto pb-32">
           <div className="grid grid-cols-2 gap-3 max-w-xl mx-auto">
             {myHandCardIds.map((cid) => {
               const card = pool[cid];
@@ -985,36 +1003,6 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                   </button>
                 </div>
               ))}
-            {partyMode && (
-              <div className="mb-2">
-                <div className="flex justify-center gap-2">
-                  {[1, 2, 3, 4].map((n) => {
-                    const on = bet === n;
-                    return (
-                      <button
-                        key={n}
-                        onClick={() => setBet(n)}
-                        style={{
-                          backgroundColor: on ? PINK : '#FFF',
-                          color: on ? '#FFF' : '#000',
-                          boxShadow: on ? '4px 4px 0 #000' : '2px 2px 0 #000',
-                          transform: on ? 'translate(-1px,-1px)' : 'none',
-                          minWidth: 52,
-                        }}
-                        className="border-4 border-black py-2 active:translate-x-[2px] active:translate-y-[2px]"
-                      >
-                        <span
-                          style={{ fontFamily: '"Anton", sans-serif' }}
-                          className="text-2xl uppercase leading-none"
-                        >
-                          {n}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
             <button
               onClick={playCard}
               disabled={!selectedCard || busy}
@@ -1027,11 +1015,9 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                   className="text-xl uppercase tracking-wide"
                 >
                   {selectedCard
-                    ? partyMode
-                      ? `Jouer · mise ${bet} 🍺`
-                      : vatoutArmed
-                        ? 'Jouer en x2 🔥'
-                        : 'Jouer cette carte'
+                    ? vatoutArmed
+                      ? 'Jouer en x2 🔥'
+                      : 'Jouer cette carte'
                     : 'Choisis une carte'}
                 </span>
                 {selectedCard && <ChevronRight size={24} />}
@@ -1321,8 +1307,6 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     const winnerP = playerById[room.winnerInfo.playerId];
     const winnerCard = pool[room.winnerInfo.cardId];
     const winnerGain = room.vatout?.[room.winnerInfo.playerId] ? 2 : 1;
-    // Mode Apero : la mise de la carte gagnante = ce que tout le monde boit.
-    const winnerBet = room.bets?.[room.winnerInfo.playerId] ?? 1;
     const winnerNewScore = (winnerP?.score || 0) + winnerGain;
     const willWinGame = winnerNewScore >= (room.settings?.winningScore ?? WINNING_SCORE);
     const iAmWinner = room.winnerInfo.playerId === playerId;
@@ -1387,66 +1371,34 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
           </div>
           {partyMode ? (
             <>
+              {/* LA regle a boire de la manche : celle de la carte choisie
+                  (champ g), sinon une generique tiree de facon DETERMINISTE
+                  (meme regle sur tous les ecrans). */}
               <div
                 style={{
                   fontFamily: '"Anton", sans-serif',
                   backgroundColor: PINK,
                   color: '#FFF',
-                  boxShadow: '4px 4px 0 #000',
-                  transform: 'rotate(3deg)',
+                  boxShadow: '5px 5px 0 #000',
+                  transform: 'rotate(1deg)',
+                  lineHeight: 1.1,
                 }}
-                className="inline-block border-4 border-black px-4 py-3 text-3xl uppercase leading-none whitespace-nowrap"
+                className="inline-block border-4 border-black px-5 py-4 text-2xl uppercase max-w-sm"
               >
-                Tout le monde boit {winnerBet}
+                🍺 {gageOf(winnerCard, room.winnerInfo.cardId, room.round || 1)}
               </div>
               <div
-                style={{ fontFamily: '"Space Mono", monospace' }}
-                className="text-[11px] uppercase tracking-widest mt-8 flex items-center justify-center gap-x-2 gap-y-1 flex-wrap"
+                style={{
+                  fontFamily: '"Anton", sans-serif',
+                  backgroundColor: '#000',
+                  color: YELLOW,
+                  boxShadow: '4px 4px 0 #000',
+                  transform: 'rotate(-2deg)',
+                }}
+                className="inline-block border-4 border-black px-3 py-2 text-lg uppercase mt-6"
               >
-                <span
-                  style={{
-                    fontFamily: '"Anton", sans-serif',
-                    fontSize: '1.6em',
-                    color: colorHex(winnerP?.color) || '#000',
-                    WebkitTextStroke: '3px #000',
-                    paintOrder: 'stroke fill',
-                    letterSpacing: '0.05em',
-                    lineHeight: 1.2,
-                  }}
-                >
-                  {winnerP?.name}
-                </span>
-                <span className="opacity-80">
-                  avait misé {winnerBet} gorgée{winnerBet > 1 ? 's' : ''}
-                </span>
+                +{winnerGain} point{winnerGain > 1 ? 's' : ''} pour {winnerP?.name || '?'}
               </div>
-              <div
-                style={{ fontFamily: '"Space Mono", monospace' }}
-                className="text-[9px] uppercase tracking-widest mt-1 opacity-50"
-              >
-                Le·la gagnant·e ne boit pas
-              </div>
-              {/* Regle a boire liee a la carte choisie (champ optionnel g,
-                  posee via l'admin/deck-tool). Style Picolo, contextuel. */}
-              {winnerCard?.g && (
-                <div
-                  className="border-4 border-black bg-white p-4 mt-6 max-w-sm text-left"
-                  style={{ boxShadow: '6px 6px 0 #000', transform: 'rotate(-1deg)' }}
-                >
-                  <div
-                    style={{ fontFamily: '"Space Mono", monospace' }}
-                    className="text-[10px] uppercase tracking-widest opacity-60 mb-1"
-                  >
-                    📢 Et en plus…
-                  </div>
-                  <div
-                    style={{ fontFamily: '"Anton", sans-serif', lineHeight: 1.05 }}
-                    className="uppercase text-xl"
-                  >
-                    {winnerCard.g}
-                  </div>
-                </div>
-              )}
             </>
           ) : (
             <>
