@@ -1426,6 +1426,27 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               >
                 Le·la gagnant·e ne boit pas
               </div>
+              {/* Regle a boire liee a la carte choisie (champ optionnel g,
+                  posee via l'admin/deck-tool). Style Picolo, contextuel. */}
+              {winnerCard?.g && (
+                <div
+                  className="border-4 border-black bg-white p-4 mt-6 max-w-sm text-left"
+                  style={{ boxShadow: '6px 6px 0 #000', transform: 'rotate(-1deg)' }}
+                >
+                  <div
+                    style={{ fontFamily: '"Space Mono", monospace' }}
+                    className="text-[10px] uppercase tracking-widest opacity-60 mb-1"
+                  >
+                    📢 Et en plus…
+                  </div>
+                  <div
+                    style={{ fontFamily: '"Anton", sans-serif', lineHeight: 1.05 }}
+                    className="uppercase text-xl"
+                  >
+                    {winnerCard.g}
+                  </div>
+                </div>
+              )}
             </>
           ) : (
             <>

@@ -154,7 +154,12 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
     const enabled = playableCards.filter((c) => cats[c.cat]);
     const shuffled = shuffle(enabled).map((c, i) => ({ ...c, id: `c${i}` }));
     const poolObj = Object.fromEntries(
-      shuffled.map((c) => [c.id, { t: c.t, cat: c.cat, spicy: !!c.spicy }])
+      shuffled.map((c) => [
+        c.id,
+        // g = regle a boire du Mode Apero (optionnelle), affichee a l'ecran
+        // resultat quand cette carte est choisie.
+        { t: c.t, cat: c.cat, spicy: !!c.spicy, ...(c.g ? { g: c.g } : {}) },
+      ])
     );
 
     let cursor = 0;

@@ -188,6 +188,28 @@ switch (cmd) {
     break;
   }
 
+  case 'setgage': {
+    // Regle a boire du Mode Apero, affichee quand CETTE carte est choisie.
+    // Texte vide ("") pour retirer la regle.
+    const [cardId, text] = args;
+    if (!cardId || text === undefined)
+      throw new Error('Usage: setgage <cardId> "Regle a boire" (ou "" pour retirer)');
+    await update(ref(db, `cards/${cardId}`), { g: text || null });
+    console.log(text ? `🍺 Gage posé sur ${cardId} : "${text}"` : `🧹 Gage retiré de ${cardId}`);
+    break;
+  }
+
+  case 'gages': {
+    // Liste toutes les cartes qui ont une regle a boire.
+    const { cards } = await loadAll();
+    const withG = Object.entries(cards).filter(([, c]) => c.g);
+    console.log(`${withG.length} carte(s) avec gage :\n`);
+    withG
+      .sort((a, b) => a[1].t.localeCompare(b[1].t))
+      .forEach(([id, c]) => console.log(`  ${c.t} → "${c.g}"  (${id})`));
+    break;
+  }
+
   case 'setpack': {
     // Rattache une categorie existante a un pack premium (verrouillage).
     const [id, packId] = args;
