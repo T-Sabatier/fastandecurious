@@ -156,13 +156,16 @@ function GageRoulette({ players, targetId, onDone }) {
 // Regle de la manche + eventuel joueur designe. Convention : une regle qui
 // commence par '@' est un DEFI INDIVIDUEL → l'app tire au sort qui s'y colle
 // (deterministe : meme joueur affiche sur tous les ecrans, comme Picolo).
-function gageOf(card, cardId, round, playersObj) {
+// Le GAGNANT de la manche est EXCLU du tirage : il a gagne, il ne boit pas.
+function gageOf(card, cardId, round, playersObj, winnerId) {
   let text = card?.g;
   if (!text) {
     text = GENERIC_GAGES[hashStr(`${cardId}_${round}`) % GENERIC_GAGES.length];
   }
   if (!text.startsWith('@')) return { text, targetId: null };
-  const ids = Object.keys(playersObj || {}).sort();
+  const ids = Object.keys(playersObj || {})
+    .filter((id) => id !== winnerId)
+    .sort();
   const targetId = ids.length
     ? ids[hashStr(`${cardId}_${round}_cible`) % ids.length]
     : null;
@@ -1497,7 +1500,12 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                     winnerCard,
                     room.winnerInfo.cardId,
                     room.round || 1,
-                    room.players
+                    room.players,
+                    room.winnerInfo.playerId
+                  );
+                  // Roulette : le gagnant est EXCLU (il ne boit pas).
+                  const eligible = players.filter(
+                    (p) => p.id !== room.winnerInfo.playerId
                   );
                   if (gage.targetId) {
                     return (
@@ -1511,7 +1519,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                           </div>
                         )}
                         <GageRoulette
-                          players={players}
+                          players={eligible}
                           targetId={gage.targetId}
                           onDone={() => setGageRouletteDone(true)}
                         />
