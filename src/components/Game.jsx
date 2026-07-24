@@ -1440,135 +1440,176 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         <TopBar />
         <Scoreboard />
         <div className="flex-1 flex flex-col items-center justify-center px-6 text-center py-6 max-w-xl mx-auto w-full">
-          <div
-            style={{ fontFamily: '"Space Mono", monospace' }}
-            className="text-[10px] uppercase tracking-widest opacity-60 mb-2"
-          >
-            Carte choisie
-          </div>
-          <div
-            className="border-4 border-black p-6 mb-6 max-w-sm w-full relative"
-            style={{
-              backgroundColor: '#000',
-              color: YELLOW,
-              boxShadow: '8px 8px 0 #000',
-              transform: 'rotate(-2deg)',
-            }}
-          >
-            <span
-              className="absolute top-1.5 right-2 text-lg leading-none opacity-80 select-none"
-              aria-hidden
-            >
-              {catEmojiOf(winnerCard)}
-            </span>
-            <div
-              style={{
-                fontFamily: '"Anton", sans-serif',
-                lineHeight: 0.92,
-                fontSize: fitBig(winnerCard?.t || ''),
-              }}
-              className="uppercase"
-            >
-              {winnerCard?.t || '?'}
-            </div>
-          </div>
-
-          <div
-            style={{ fontFamily: '"Space Mono", monospace' }}
-            className="text-[10px] uppercase tracking-widest opacity-60 mb-3"
-          >
-            Posée par
-          </div>
-          <div
-            style={{
-              fontFamily: '"Anton", sans-serif',
-              lineHeight: 1.05,
-              fontSize: fitBig(winnerP?.name || ''),
-              color: colorHex(winnerP?.color) || '#000',
-              WebkitTextStroke: '5px #000',
-              paintOrder: 'stroke fill',
-              letterSpacing: '0.08em',
-            }}
-            className="uppercase mb-6 break-words"
-          >
-            {winnerP?.name || '?'} {iAmWinner && '🎉'}
-          </div>
           {partyMode ? (
             <>
-              {/* Regle a boire de la manche. Defi individuel (targetId) → une
-                  ROULETTE designe le joueur, puis le texte du defi apparait. */}
-              {(() => {
-                const gage = gageOf(
-                  winnerCard,
-                  room.winnerInfo.cardId,
-                  room.round || 1,
-                  room.players
-                );
-                if (gage.targetId) {
-                  return (
-                    <div className="flex flex-col items-center">
-                      {!gageRouletteDone && (
-                        <div
-                          style={{ fontFamily: '"Space Mono", monospace' }}
-                          className="text-[11px] uppercase tracking-widest opacity-70 mb-2"
-                        >
-                          🎯 Qui s'y colle ?
-                        </div>
-                      )}
-                      <GageRoulette
-                        players={players}
-                        targetId={gage.targetId}
-                        onDone={() => setGageRouletteDone(true)}
-                      />
-                      {gageRouletteDone && (
-                        <div
-                          style={{
-                            fontFamily: '"Anton", sans-serif',
-                            backgroundColor: PINK,
-                            color: '#FFF',
-                            boxShadow: '5px 5px 0 #000',
-                            transform: 'rotate(1deg)',
-                            lineHeight: 1.1,
-                          }}
-                          className="inline-block border-4 border-black px-5 py-4 text-2xl uppercase max-w-sm gage-pop"
-                        >
-                          {gage.text}
-                        </div>
-                      )}
-                    </div>
-                  );
-                }
-                return (
-                  <div
-                    style={{
-                      fontFamily: '"Anton", sans-serif',
-                      backgroundColor: PINK,
-                      color: '#FFF',
-                      boxShadow: '5px 5px 0 #000',
-                      transform: 'rotate(1deg)',
-                      lineHeight: 1.1,
-                    }}
-                    className="inline-block border-4 border-black px-5 py-4 text-2xl uppercase max-w-sm"
-                  >
-                    🍺 {gage.text}
-                  </div>
-                );
-              })()}
+              {/* ---- ZONE 1 : resultat de la manche, COMPACT ---- */}
               <div
+                className="border-4 border-black px-5 py-3 mb-2 max-w-sm w-full relative"
                 style={{
-                  fontFamily: '"Anton", sans-serif',
                   backgroundColor: '#000',
                   color: YELLOW,
-                  boxShadow: '4px 4px 0 #000',
-                  transform: 'rotate(-2deg)',
+                  boxShadow: '5px 5px 0 #000',
+                  transform: 'rotate(-1.5deg)',
                 }}
-                className="inline-block border-4 border-black px-3 py-2 text-lg uppercase mt-6"
               >
-                +{winnerGain} point{winnerGain > 1 ? 's' : ''} pour {winnerP?.name || '?'}
+                <span
+                  className="absolute top-1 right-2 text-base leading-none opacity-80 select-none"
+                  aria-hidden
+                >
+                  {catEmojiOf(winnerCard)}
+                </span>
+                <div
+                  style={{
+                    fontFamily: '"Anton", sans-serif',
+                    lineHeight: 0.95,
+                    fontSize: fitCard(winnerCard?.t || ''),
+                  }}
+                  className="uppercase"
+                >
+                  {winnerCard?.t || '?'}
+                </div>
+              </div>
+              <div
+                style={{ fontFamily: '"Space Mono", monospace' }}
+                className="text-[11px] uppercase tracking-widest mb-6 flex items-center justify-center gap-2 flex-wrap"
+              >
+                <span className="opacity-60">Posée par</span>
+                <span
+                  style={{
+                    fontFamily: '"Anton", sans-serif',
+                    color: colorHex(winnerP?.color) || '#000',
+                    WebkitTextStroke: '2.5px #000',
+                    paintOrder: 'stroke fill',
+                    fontSize: '1.5em',
+                    letterSpacing: '0.04em',
+                  }}
+                >
+                  {winnerP?.name || '?'}
+                </span>
+                <span
+                  style={{ backgroundColor: '#000', color: YELLOW }}
+                  className="px-2 py-0.5 text-[11px]"
+                >
+                  +{winnerGain} PT{winnerGain > 1 ? 'S' : ''} {iAmWinner && '🎉'}
+                </span>
+              </div>
+
+              {/* ---- ZONE 2 : la regle a boire, LA VEDETTE ---- */}
+              <div className="w-full border-t-4 border-black/15 pt-5 flex flex-col items-center">
+                {(() => {
+                  const gage = gageOf(
+                    winnerCard,
+                    room.winnerInfo.cardId,
+                    room.round || 1,
+                    room.players
+                  );
+                  if (gage.targetId) {
+                    return (
+                      <div className="flex flex-col items-center">
+                        {!gageRouletteDone && (
+                          <div
+                            style={{ fontFamily: '"Space Mono", monospace' }}
+                            className="text-[11px] uppercase tracking-widest opacity-70 mb-2"
+                          >
+                            🎯 Qui s'y colle ?
+                          </div>
+                        )}
+                        <GageRoulette
+                          players={players}
+                          targetId={gage.targetId}
+                          onDone={() => setGageRouletteDone(true)}
+                        />
+                        {gageRouletteDone && (
+                          <div
+                            style={{
+                              fontFamily: '"Anton", sans-serif',
+                              backgroundColor: PINK,
+                              color: '#FFF',
+                              boxShadow: '6px 6px 0 #000',
+                              transform: 'rotate(1deg)',
+                              lineHeight: 1.1,
+                            }}
+                            className="inline-block border-4 border-black px-6 py-5 text-3xl uppercase max-w-sm gage-pop"
+                          >
+                            {gage.text}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
+                  return (
+                    <div
+                      style={{
+                        fontFamily: '"Anton", sans-serif',
+                        backgroundColor: PINK,
+                        color: '#FFF',
+                        boxShadow: '6px 6px 0 #000',
+                        transform: 'rotate(1deg)',
+                        lineHeight: 1.1,
+                      }}
+                      className="inline-block border-4 border-black px-6 py-5 text-3xl uppercase max-w-sm"
+                    >
+                      🍺 {gage.text}
+                    </div>
+                  );
+                })()}
               </div>
             </>
           ) : (
             <>
+              <div
+                style={{ fontFamily: '"Space Mono", monospace' }}
+                className="text-[10px] uppercase tracking-widest opacity-60 mb-2"
+              >
+                Carte choisie
+              </div>
+              <div
+                className="border-4 border-black p-6 mb-6 max-w-sm w-full relative"
+                style={{
+                  backgroundColor: '#000',
+                  color: YELLOW,
+                  boxShadow: '8px 8px 0 #000',
+                  transform: 'rotate(-2deg)',
+                }}
+              >
+                <span
+                  className="absolute top-1.5 right-2 text-lg leading-none opacity-80 select-none"
+                  aria-hidden
+                >
+                  {catEmojiOf(winnerCard)}
+                </span>
+                <div
+                  style={{
+                    fontFamily: '"Anton", sans-serif',
+                    lineHeight: 0.92,
+                    fontSize: fitBig(winnerCard?.t || ''),
+                  }}
+                  className="uppercase"
+                >
+                  {winnerCard?.t || '?'}
+                </div>
+              </div>
+
+              <div
+                style={{ fontFamily: '"Space Mono", monospace' }}
+                className="text-[10px] uppercase tracking-widest opacity-60 mb-3"
+              >
+                Posée par
+              </div>
+              <div
+                style={{
+                  fontFamily: '"Anton", sans-serif',
+                  lineHeight: 1.05,
+                  fontSize: fitBig(winnerP?.name || ''),
+                  color: colorHex(winnerP?.color) || '#000',
+                  WebkitTextStroke: '5px #000',
+                  paintOrder: 'stroke fill',
+                  letterSpacing: '0.08em',
+                }}
+                className="uppercase mb-6 break-words"
+              >
+                {winnerP?.name || '?'} {iAmWinner && '🎉'}
+              </div>
               <div
                 style={{
                   fontFamily: '"Anton", sans-serif',
