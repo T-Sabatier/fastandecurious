@@ -8,13 +8,15 @@ import {
   getStoredParty,
   setStoredParty,
   setStoredAperoUnlock,
+  getStoredAperoConsent,
+  setStoredAperoConsent,
   ROOM_TTL_MS,
   openExternal,
 } from '../utils';
 import { CATEGORIES, YELLOW, AMBER, PINK, APERO_ACCENT, MAX_PLAYERS } from '../cards';
 import { useBilling, PRODUCT_APERO, PRODUCT_ULTRA } from '../purchases';
 import { bumpStats } from '../stats';
-import { ChevronRight, Lock, X } from 'lucide-react';
+import { ChevronRight, Lock, X, ClipboardPaste } from 'lucide-react';
 import InstallButton from './InstallButton.jsx';
 import InstallCta from './InstallCta.jsx';
 
@@ -53,10 +55,24 @@ export default function Home({ playerId, onJoin, initialError }) {
   } = useBilling();
   // Mode apero reellement actif = voulu ET possede.
   const partyActive = party && aperoOwned;
+  // Avertissement 18+ / alcool : affiche AVANT la premiere activation du mode.
+  const [aperoWarning, setAperoWarning] = useState(false);
   function toggleParty() {
+    // Passage de OFF a ON sans avoir jamais consenti → on montre l'avertissement
+    // et on active seulement apres confirmation.
+    if (!party && !getStoredAperoConsent()) {
+      setAperoWarning(true);
+      return;
+    }
     const v = !party;
     setParty(v);
     setStoredParty(v);
+  }
+  function confirmAperoWarning() {
+    setStoredAperoConsent();
+    setAperoWarning(false);
+    setParty(true);
+    setStoredParty(true);
   }
   function unlockAperoForTest() {
     setStoredAperoUnlock(true);
@@ -73,6 +89,25 @@ export default function Home({ playerId, onJoin, initialError }) {
       setShopError('Erreur : ' + (e?.message || e?.code || String(e)));
     }
   }
+  // Nettoie un code colle/tape : garde seulement les 4 caracteres valides
+  // (le lien partage colle parfois "https://...?room=ABCD" → on extrait ABCD).
+  function cleanCode(raw) {
+    const s = (raw || '').toUpperCase();
+    const fromUrl = s.match(/ROOM=([A-HJ-NP-Z2-9]{4})/);
+    if (fromUrl) return fromUrl[1];
+    return s.replace(/[^A-HJ-NP-Z2-9]/g, '').slice(0, 4);
+  }
+
+  async function pasteCode() {
+    try {
+      const txt = await navigator.clipboard.readText();
+      const c = cleanCode(txt);
+      if (c) setJoinCode(c);
+    } catch {
+      /* presse-papier inaccessible (permissions) : l'utilisateur colle a la main */
+    }
+  }
+
   async function restorePurchases() {
     setShopError('');
     try {
@@ -425,15 +460,30 @@ export default function Home({ playerId, onJoin, initialError }) {
         <div className="flex items-stretch gap-2">
           <input
             value={joinCode}
-            onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+            onChange={(e) => setJoinCode(cleanCode(e.target.value))}
+            onPaste={(e) => {
+              e.preventDefault();
+              setJoinCode(cleanCode(e.clipboardData.getData('text')));
+            }}
             placeholder="CODE"
             maxLength={4}
+            inputMode="text"
+            autoCapitalize="characters"
             className="flex-1 min-w-0 border-4 border-black bg-white px-2 py-2 outline-none placeholder-black/30 text-center text-2xl tracking-widest"
             style={{
               boxShadow: '4px 4px 0 #000',
               fontFamily: '"Anton", sans-serif',
             }}
           />
+          <button
+            onClick={pasteCode}
+            aria-label="Coller le code"
+            title="Coller"
+            className="border-4 border-black bg-white px-3 active:translate-x-[2px] active:translate-y-[2px] flex items-center justify-center"
+            style={{ boxShadow: '4px 4px 0 #000' }}
+          >
+            <ClipboardPaste size={20} />
+          </button>
           <button
             onClick={joinRoom}
             disabled={busy || joinCode.trim().length !== 4}
@@ -630,6 +680,58 @@ export default function Home({ playerId, onJoin, initialError }) {
                 className="text-[10px] uppercase tracking-widest opacity-50"
               >
                 Ou créer une partie à la place
+              </span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Avertissement 18+ / alcool — affiche une seule fois, avant la
+          premiere activation du Mode Apero. Protege l'editeur (diligence) et
+          l'utilisateur : rappel majeur, alcool non obligatoire, moderation. */}
+      {aperoWarning && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-6"
+          style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}
+        >
+          <div
+            className="relative border-4 border-black bg-white w-full max-w-sm p-6 text-center"
+            style={{ boxShadow: '8px 8px 0 #000' }}
+          >
+            <div className="text-4xl mb-2">🔞</div>
+            <div
+              style={{ fontFamily: '"Anton", sans-serif' }}
+              className="text-2xl uppercase leading-none mb-3"
+            >
+              Mode Apéro
+            </div>
+            <ul className="text-sm leading-relaxed text-left space-y-2 mb-5">
+              <li>• Réservé aux <b>18 ans et plus</b>.</li>
+              <li>• Le jeu se joue avec <b>la boisson de ton choix</b> — <b>sans alcool, c'est encore mieux</b>.</li>
+              <li>• Bois de façon <b>responsable</b> : chaque règle est une suggestion, jamais une obligation.</li>
+              <li className="opacity-70">L'abus d'alcool est dangereux pour la santé, à consommer avec modération.</li>
+            </ul>
+            <button
+              onClick={confirmAperoWarning}
+              className="w-full border-4 border-black py-3 active:translate-x-[2px] active:translate-y-[2px]"
+              style={{ backgroundColor: APERO_ACCENT, color: '#FFF', boxShadow: '4px 4px 0 #000' }}
+            >
+              <span
+                style={{ fontFamily: '"Anton", sans-serif' }}
+                className="text-xl uppercase"
+              >
+                J'ai 18 ans et j'ai compris
+              </span>
+            </button>
+            <button
+              onClick={() => setAperoWarning(false)}
+              className="mt-3 w-full text-center"
+            >
+              <span
+                style={{ fontFamily: '"Space Mono", monospace' }}
+                className="text-[10px] uppercase tracking-widest opacity-50"
+              >
+                Annuler
               </span>
             </button>
           </div>
