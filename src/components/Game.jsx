@@ -1555,14 +1555,14 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                         <div
                           style={{
                             fontFamily: '"Anton", sans-serif',
-                            backgroundColor: YELLOW,
-                            color: '#000',
+                            backgroundColor: '#000',
+                            color: YELLOW,
                             boxShadow: '4px 4px 0 #000',
                             transform: 'rotate(-2deg)',
                           }}
-                          className="inline-block border-4 border-black px-4 py-1.5 text-2xl uppercase mb-3"
+                          className="inline-block border-4 border-black px-5 py-1.5 text-2xl uppercase mb-3 tracking-wide"
                         >
-                          Tout le monde vote
+                          Votez !
                         </div>
                       )}
                       <div
