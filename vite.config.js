@@ -11,7 +11,7 @@ export default defineConfig({
       manifest: {
         name: 'Snap Tap',
         short_name: 'Snap Tap',
-        description: 'Le jeu de cartes Snap Tap — chacun sur son tel.',
+        description: 'Snap Tap, le jeu de soirée : devine ce que tes amis aiment ou détestent. Chacun sur son tel.',
         lang: 'fr',
         theme_color: '#FFE600',
         background_color: '#FFE600',
