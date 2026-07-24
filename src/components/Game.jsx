@@ -99,10 +99,10 @@ function GageRoulette({ players, targetId, onDone }) {
   if (done) {
     const tColor = colorHex(target?.color);
     return (
-      <div className="flex flex-col items-center mb-3 gage-pop">
+      <div className="flex flex-col items-center mb-4 gage-pop">
         <div
           style={{ fontFamily: '"Space Mono", monospace' }}
-          className="text-[11px] uppercase tracking-widest opacity-70 mb-1"
+          className="text-[11px] uppercase tracking-widest opacity-70 mb-4"
         >
           🎯 C'est à toi de jouer
         </div>
