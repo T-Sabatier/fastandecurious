@@ -38,7 +38,7 @@ function getCodeFromUrl() {
   return (fromQuery || '').trim().toUpperCase().slice(0, 4);
 }
 
-export default function Home({ playerId, onJoin, initialError }) {
+export default function Home({ playerId, onJoin, initialError, hideDevLink }) {
   const [name, setName] = useState(getStoredName);
   const [joinCode, setJoinCode] = useState(getCodeFromUrl);
   const [error, setError] = useState(initialError || '');
@@ -580,7 +580,7 @@ export default function Home({ playerId, onJoin, initialError }) {
           </div>
         </div>
       </div>
-      {import.meta.env.DEV && (
+      {import.meta.env.DEV && !hideDevLink && (
         <a
           href="?debug"
           className="fixed bottom-3 left-3 z-50 border-2 border-black bg-black text-white px-2 py-1 text-[10px] uppercase tracking-widest"

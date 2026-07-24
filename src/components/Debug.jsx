@@ -158,7 +158,7 @@ export default function Debug() {
 
   function renderScreen() {
     if (scenario.kind === 'home') {
-      return <Home playerId="me" onJoin={noop} />;
+      return <Home playerId="me" onJoin={noop} hideDevLink />;
     }
     const room = liveRoom || scenario.room;
     if (scenario.kind === 'lobby') {
