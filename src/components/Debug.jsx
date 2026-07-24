@@ -43,10 +43,11 @@ const MY_HAND_AFTER_PLAY = { c2: true, c3: true, c4: true, c6: true, c7: true };
 const DECK = ['c8', 'c9', 'c10', 'c11', 'c12', 'c13', 'c14', 'c15', 'c16', 'c17', 'c18'];
 
 const PLAYERS = {
-  me: { name: 'Toi', score: 2, color: 'yellow', joinedAt: 1 },
-  alex: { name: 'Alex', score: 3, color: 'blue', joinedAt: 2 },
-  sam: { name: 'Sam', score: 1, color: 'green', joinedAt: 3 },
-  jo: { name: 'Jo', score: 4, color: 'violet', joinedAt: 4 },
+  me: { name: 'Tim', score: 2, color: 'yellow', joinedAt: 1 },
+  alex: { name: 'Thor', score: 3, color: 'blue', joinedAt: 2 },
+  sam: { name: 'Chloé', score: 1, color: 'green', joinedAt: 3 },
+  jo: { name: 'Adi', score: 4, color: 'violet', joinedAt: 4 },
+  gui: { name: 'Guillaume', score: 2, color: 'orange', joinedAt: 5 },
 };
 
 const SCENARIOS = [
@@ -123,6 +124,7 @@ export default function Debug() {
   const [pick, setPick] = useState(false);
   const [apero, setApero] = useState(false);
   const [special, setSpecial] = useState(null); // null | 'double' | 'chrono' | 'swap'
+  const [capturing, setCapturing] = useState(false); // masque la barre pour screener
   const [liveRoom, setLiveRoom] = useState(null);
 
   const scenario = buildScenario(key, mode, pick, apero, special);
@@ -165,6 +167,17 @@ export default function Debug() {
   const isGamePhase = !['home', 'lobby-host', 'lobby-guest'].includes(key);
   const isReveal = key.startsWith('reveal');
 
+  // Mode capture : la barre disparait 5 s pour un screenshot propre.
+  function startCapture() {
+    setCapturing(true);
+    setTimeout(() => setCapturing(false), 5000);
+  }
+
+  // Pendant la capture : uniquement l'ecran, plein, sans rien de debug.
+  if (capturing) {
+    return <div>{renderScreen()}</div>;
+  }
+
   return (
     <div>
       {/* Barre de controle debug — fixe en haut */}
@@ -182,8 +195,16 @@ export default function Debug() {
             style={{ fontFamily: '"Anton", sans-serif' }}
             className="text-sm uppercase text-yellow-300 shrink-0"
           >
-            🐛 Debug live
+            🐛 Debug
           </span>
+          <button
+            onClick={startCapture}
+            className="shrink-0 px-2 py-1 border-2 border-yellow-300 text-yellow-300 text-[11px] uppercase"
+            style={{ fontFamily: '"Space Mono", monospace' }}
+            title="Masque la barre 5 s pour screenshoter"
+          >
+            📷 Capturer
+          </button>
           {SCENARIOS.map((s) => (
             <button
               key={s.key}
