@@ -1,7 +1,7 @@
 # 🍺 Snap Tap — Règles à boire du Mode Apéro
 
 > La règle s'affiche quand la carte est CHOISIE. Les règles 🎯 sont des défis : l'app désigne au hasard le joueur qui s'y colle.
-> Généré le 24/07/2026 — 304 cartes. Modif live : node scripts/deck-tool.mjs setgage <id> "..."
+> Généré le 24/07/2026 — 304 cartes, 65 défis. Modif live : node scripts/deck-tool.mjs setgage <id> "..."
 
 ## 🤪 Absurde (15)
 
@@ -78,7 +78,7 @@
 | **Open space** | Ceux qui bossent avec un casque sur les oreilles boivent 2 |
 | **Pot de départ** | Trinquez comme à un pot de départ : tout le monde boit 1 |
 | **Réunion caméra off** | Ceux qui sont restés en pyjama en visio boivent 2 |
-| **Réunion inutile** | Ceux qui ont subi une réunion inutile cette semaine boivent 2 |
+| **Réunion inutile** | 🎯 Anime une réunion inutile de 20 secondes ou bois 2 |
 | **Sieste au bureau** | Ceux qui ont déjà dormi au boulot boivent 2 |
 | **Team building** | 🎯 Fais un check à toute la table ou bois 2 |
 | **Télétravail** | Team télétravail boit 1, team bureau boit 2 |
@@ -114,9 +114,9 @@
 | **Clint Eastwood** | Le plus vieux de la table boit 1, respect |
 | **Denzel Washington** | 🎯 Cite un film avec Denzel Washington ou bois 2 |
 | **Emma Watson** | Ceux qui ont lu un Harry Potter en entier boivent 2 |
-| **Jenna Ortega** | Ceux qui ont regardé Mercredi boivent 2 |
-| **Kylian Mbappé** | Ceux qui ont vu un match des Bleus cette année boivent 2 |
-| **Leonardo DiCaprio** | Ceux qui ont pleuré devant Titanic boivent 2 |
+| **Jenna Ortega** | 🎯 Fais la danse de Mercredi ou bois 2 |
+| **Kylian Mbappé** | 🎯 Fais une célébration de but ou bois 2 |
+| **Leonardo DiCaprio** | 🎯 Lève ton verre façon meme DiCaprio ou bois 2 |
 | **Margot Robbie** | Ceux qui ont vu Barbie au ciné boivent 2 |
 | **Omar Sy** | Ceux qui ont vu Intouchables plus de 2 fois boivent 2 |
 | **Pedro Pascal** | Ceux qui ont vu The Last of Us boivent 2 |
@@ -143,9 +143,9 @@
 | **OSS 117** | 🎯 Imite une réplique culte ou bois 2 |
 | **Parler pendant le film** | Les bavards du cinéma boivent 3, on vous entend |
 | **Peaky Blinders** | Ceux qui ont déjà commandé « comme dans la série » boivent 2 |
-| **Seigneur des Anneaux** | Version longue vue en entier ? Bois 1, sinon 2 |
+| **Seigneur des Anneaux** | 🎯 Dis « mon précieux » façon Gollum ou bois 2 |
 | **Squid Game** | Pierre-feuille-ciseaux avec ton voisin, le perdant boit 2 |
-| **Star Wars** | Ceux qui n'ont jamais vu un Star Wars boivent 3 |
+| **Star Wars** | 🎯 Imite Dark Vador ou bois 2 |
 | **Stranger Things** | Ceux qui regardent les séries en accéléré boivent 2 |
 | **Studio Ghibli** | Ceux qui n'ont jamais vu un Ghibli boivent 2, rattrapez ça |
 
@@ -246,7 +246,7 @@
 | **Perceuse du voisin** | Ceux qui ont déjà pesté contre un voisin boivent 2 |
 | **Piercing** | Bois 1 par piercing, max 3 |
 | **Ronron du chat** | Ceux qui parlent à leur animal boivent 2 |
-| **Salle de sport à 18h** | Ceux qui ont un abo de sport inutilisé boivent 2 |
+| **Salle de sport à 18h** | 🎯 Fais 10 fentes ou bois 2 |
 | **Sieste** | Ceux qui ont fait une sieste cette semaine boivent 2 |
 | **Tatouage** | Les tatoués boivent 1 par tatouage, max 3 |
 | **Toujours en retard** | Le dernier arrivé à la soirée boit 2 |
@@ -264,7 +264,7 @@
 | **Look gothique** | Ceux qui ont eu une période sombre ado boivent 2 |
 | **Mocassins sans chaussettes** | Vérifiez les pieds : les sans-chaussettes boivent 2 |
 | **Sac Vuitton** | Le sac le plus cher de la table : son proprio boit 2 |
-| **Streetwear** | Ceux qui sont en survêt ou hoodie là boivent 2 |
+| **Streetwear** | 🎯 Défile comme à la fashion week ou bois 2 |
 | **Survêt assorti** | Vote : le plus stylé de la table distribue 2 |
 
 ## 🎵 Musique (16)
@@ -273,7 +273,7 @@
 |---|---|
 | **ABBA** | 🎯 Fredonne un refrain d'ABBA ou bois 2 |
 | **AC/DC** | 🎯 Air guitar 5 secondes ou bois 2 |
-| **Aya Nakamura** | Ceux qui comprennent « Djadja » boivent 2 |
+| **Aya Nakamura** | 🎯 Chante un passage de « Djadja » ou bois 2 |
 | **Beyoncé** | Vote : la diva de la table boit 2 |
 | **Daft Punk** | Ceux qui les ont vus en vrai boivent 3, chanceux |
 | **Dua Lipa** | Ceux qui l'ont dans une playlist boivent 2 |
@@ -297,13 +297,13 @@
 | **Cascade** | Ceux qui se sont baignés en eau glacée boivent 2 |
 | **Champ de lavande** | Ceux qui sont déjà allés en Provence boivent 2 |
 | **Ciel étoilé** | Ceux qui reconnaissent une constellation boivent 2 |
-| **Coucher de soleil** | Ceux qui en ont un en photo dans leur tel boivent 2 |
+| **Coucher de soleil** | 🎯 Montre un coucher de soleil de ta galerie ou bois 2 |
 | **Désert de sable** | Bois 2 gorgées d'eau, hydratation surprise |
 | **Forêt en automne** | Team automne boit 1, team été boit 2 |
 | **Forêt tropicale** | Ceux qui ont peur des araignées boivent 2 |
 | **Guêpe à l'apéro** | Tout le monde protège son verre et boit 1 |
 | **Lac de montagne** | Ceux qui se sont baignés dans un lac boivent 2 |
-| **Les pigeons** | Ceux qui ont déjà été visés par un pigeon boivent 2 |
+| **Les pigeons** | 🎯 Roucoule comme un pigeon ou bois 2 |
 | **Moustiques en été** | Ceux qui se font toujours piquer boivent 2 |
 | **Neige fraîche** | Ceux qui ont fait un bonhomme de neige adulte boivent 2 |
 | **Pluie d'orage** | Ceux qui aiment dormir avec la pluie boivent 2 |
@@ -336,11 +336,11 @@
 | **Couple aventurier** | Ceux qui ont voyagé en couple boivent 2 |
 | **Couple cocon** | Ceux qui ont annulé une soirée pour rester à deux boivent 2 |
 | **Date Tinder** | Ceux qui ont une appli de rencontre installée boivent 2 |
-| **Lettre d'amour** | Ceux qui en ont déjà écrit une boivent 2, poètes |
-| **Mariage** | Ceux qui ont déjà pleuré à un mariage boivent 2 |
+| **Lettre d'amour** | 🎯 Fais une déclaration théâtrale à ton voisin ou bois 2 |
+| **Mariage** | 🎯 Porte un toast comme un témoin de mariage ou bois 2 |
 | **PACS** | Les pacsés et fiancés boivent 2 |
 | **Pizza-Netflix** | Ceux dont c'est le date idéal boivent 2 |
-| **Premier baiser** | Ceux qui se souviennent de leur premier baiser boivent 2 |
+| **Premier baiser** | 🎯 Raconte ton premier baiser en 10 secondes ou bois 2 |
 | **Rencontre IRL** | Ceux qui ont rencontré leur crush en vrai boivent 2 |
 | **Rupture par SMS** | Ceux qui ont déjà rompu par message boivent 3 |
 | **Saint-Valentin** | Team Saint-Valentin boit 1, team arnaque boit 2 |
@@ -372,19 +372,19 @@
 | **Batterie à 1%** | Sortez vos tels : la batterie la plus faible boit 2 |
 | **ChatGPT** | Ceux qui ont déjà demandé un truc gênant à une IA boivent 2 |
 | **Haut-parleur en public** | Ceux qui écoutent leurs vocaux en haut-parleur boivent 3 |
-| **Instagram** | Ton dernier post date d'aujourd'hui ? Bois 2 |
+| **Instagram** | 🎯 Montre la dernière photo de ta galerie ou bois 3 |
 | **LinkedIn** | Ceux qui ont déjà écrit « ravi d'annoncer » boivent 3 |
-| **Netflix** | Ceux qui squattent le compte de quelqu'un boivent 2 |
+| **Netflix** | 🎯 Avoue ton plaisir coupable Netflix ou bois 2 |
 | **Scroller au lit** | Plus de 4h d'écran hier ? Bois 2, vérification autorisée |
 | **Shein** | Ceux qui ont déjà commandé chez Shein boivent 2, sans juger |
 | **Snapchat** | Bois 1 par flamme active, max 3 |
-| **Spotify** | Ceux qui écoutent encore avec des pubs boivent 2 |
+| **Spotify** | 🎯 Montre ton artiste le plus écouté ou bois 2 |
 | **Switch** | Ceux qui ont déjà raté une soirée pour un jeu vidéo boivent 2 |
-| **TikTok** | Plus d'1h de TikTok par jour ? Bois 2 |
+| **TikTok** | 🎯 Montre ton dernier TikTok liké ou bois 2 |
 | **Twitter/X** | Ceux qui ont encore l'appli boivent 2 |
 | **UberEats** | Ceux qui ont commandé cette semaine boivent 2 |
 | **Vinted** | Ceux qui ont un colis en cours boivent 2 |
-| **Vocal de 5 minutes** | Ceux qui envoient des vocaux de plus d'une minute boivent 2 |
+| **Vocal de 5 minutes** | 🎯 Envoie un vocal chanté à un pote, là, ou bois 3 |
 
 ## ✈️ Voyages (16)
 
