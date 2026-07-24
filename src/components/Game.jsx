@@ -1442,38 +1442,30 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         <div className="flex-1 flex flex-col items-center justify-center px-6 text-center py-6 max-w-xl mx-auto w-full">
           {partyMode ? (
             <>
-              {/* ---- ZONE 1 : resultat de la manche, COMPACT ---- */}
-              <div
-                className="border-4 border-black px-5 py-3 mb-2 max-w-sm w-full relative"
-                style={{
-                  backgroundColor: '#FFF',
-                  color: '#000',
-                  boxShadow: '5px 5px 0 #000',
-                  transform: 'rotate(-1.5deg)',
-                }}
-              >
+              {/* ---- ZONE 1 : resultat de la manche, COMPACT ----
+                  Carte gagnante en texte "sticker" (contour noir), pas de
+                  boite : plus leger sur le fond biere. */}
+              <div className="mb-2 flex items-center justify-center gap-2">
                 <span
-                  className="absolute top-1 right-2 text-base leading-none opacity-80 select-none"
-                  aria-hidden
-                >
-                  {catEmojiOf(winnerCard)}
-                </span>
-                <div
                   style={{
                     fontFamily: '"Anton", sans-serif',
-                    lineHeight: 0.95,
-                    fontSize: fitCard(winnerCard?.t || ''),
+                    ...NAME_STYLE,
+                    fontSize: fitBig(winnerCard?.t || ''),
+                    lineHeight: 1,
                   }}
-                  className="uppercase"
+                  className="uppercase break-words text-center"
                 >
                   {winnerCard?.t || '?'}
-                </div>
+                </span>
+                <span className="text-xl leading-none select-none" aria-hidden>
+                  {catEmojiOf(winnerCard)}
+                </span>
               </div>
               <div
                 style={{ fontFamily: '"Space Mono", monospace' }}
                 className="text-[11px] uppercase tracking-widest mb-6 flex items-center justify-center gap-2 flex-wrap"
               >
-                <span className="opacity-60">Posée par</span>
+                <span className="opacity-70">Posée par</span>
                 <span
                   style={{
                     fontFamily: '"Anton", sans-serif',
@@ -1487,7 +1479,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                   {winnerP?.name || '?'}
                 </span>
                 <span
-                  style={{ backgroundColor: '#FFF', color: '#000', border: '2px solid #000' }}
+                  style={{ backgroundColor: PINK, color: '#FFF', border: '2px solid #000' }}
                   className="px-2 py-0.5 text-[11px]"
                 >
                   +{winnerGain} PT{winnerGain > 1 ? 'S' : ''} {iAmWinner && '🎉'}
