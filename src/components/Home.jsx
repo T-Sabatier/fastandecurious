@@ -11,12 +11,26 @@ import {
   ROOM_TTL_MS,
   openExternal,
 } from '../utils';
-import { CATEGORIES, YELLOW, AMBER, PINK, APERO_ACCENT, MAX_PLAYERS } from '../cards';
+import { CATEGORIES, YELLOW, AMBER, PINK, APERO_ACCENT, MAX_PLAYERS, PLAYER_COLORS } from '../cards';
 import { useBilling, PRODUCT_APERO, PRODUCT_ULTRA } from '../purchases';
 import { bumpStats } from '../stats';
 import { ChevronRight, Lock, X, ClipboardPaste } from 'lucide-react';
 import InstallButton from './InstallButton.jsx';
 import InstallCta from './InstallCta.jsx';
+
+// Couleur libre (non prise par les joueurs deja presents) tiree au hasard,
+// pour que le pseudo soit colore des l'arrivee. Repli sur toutes les couleurs
+// si elles sont toutes prises (>16 joueurs, impossible ici mais robuste).
+function pickFreeColor(playersObj) {
+  const taken = new Set(
+    Object.values(playersObj || {})
+      .map((p) => p.color)
+      .filter(Boolean)
+  );
+  const free = PLAYER_COLORS.filter((c) => !taken.has(c.id));
+  const pool = free.length ? free : PLAYER_COLORS;
+  return pool[Math.floor(Math.random() * pool.length)].id;
+}
 
 function getCodeFromUrl() {
   if (typeof window === 'undefined') return '';
@@ -146,6 +160,7 @@ export default function Home({ playerId, onJoin, initialError }) {
           name: n,
           score: 0,
           joinedAt: Date.now(),
+          color: pickFreeColor(null),
         },
       },
       settings: {
@@ -216,6 +231,8 @@ export default function Home({ playerId, onJoin, initialError }) {
         name: n,
         score: r.players?.[playerId]?.score || 0,
         joinedAt: r.players?.[playerId]?.joinedAt || Date.now(),
+        // Couleur conservee si on revient, sinon une couleur libre au hasard.
+        color: r.players?.[playerId]?.color || pickFreeColor(r.players),
       });
 
       onJoin(code);

@@ -331,42 +331,6 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
           </div>
         </div>
 
-        {/* Regles du Mode Apero — visibles par TOUS les joueurs (pas que l'hote)
-            quand le mode est active. Pliable (bouton titre). */}
-        {partyMode && (
-        <div
-          className="border-4 border-black p-4 mb-6"
-          style={{ backgroundColor: PINK, color: '#FFF', boxShadow: '6px 6px 0 #000' }}
-        >
-          <button
-            onClick={() => setAperoRulesOpen((v) => !v)}
-            className="w-full flex items-center justify-between active:opacity-70"
-          >
-            <span
-              style={{ fontFamily: '"Anton", sans-serif' }}
-              className="text-2xl uppercase"
-            >
-              🍻 Mode Apéro
-            </span>
-            <ChevronDown
-              size={24}
-              strokeWidth={3}
-              style={{
-                transform: aperoRulesOpen ? 'rotate(0deg)' : 'rotate(-90deg)',
-                transition: 'transform 150ms',
-              }}
-            />
-          </button>
-          {aperoRulesOpen && (
-            <ul className="text-sm leading-relaxed space-y-1 mt-2">
-              <li>• Chaque carte choisie déclenche <b>une règle à boire</b></li>
-              <li>• Elle s'affiche à la fin de la manche, <b>appliquez-la</b></li>
-              <li>• <b>Le boss et le gagnant ne boivent jamais</b></li>
-            </ul>
-          )}
-        </div>
-        )}
-
         {/* Saisie du prenom — affichee seulement tant qu'on n'a pas de prenom.
             L'host (et tout joueur deja nomme) ne la voit pas : il l'a deja mis. */}
         {!myName && (
@@ -781,6 +745,42 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
               );
             })}
           </div>
+        </div>
+        )}
+
+        {/* Regles du Mode Apero — en bas, au-dessus de "Telecharger l'app".
+            Visibles par TOUS quand le mode est actif. Pliable (bouton titre). */}
+        {partyMode && (
+        <div
+          className="border-4 border-black p-4 mb-6"
+          style={{ backgroundColor: PINK, color: '#FFF', boxShadow: '6px 6px 0 #000' }}
+        >
+          <button
+            onClick={() => setAperoRulesOpen((v) => !v)}
+            className="w-full flex items-center justify-between active:opacity-70"
+          >
+            <span
+              style={{ fontFamily: '"Anton", sans-serif' }}
+              className="text-2xl uppercase"
+            >
+              🍻 Mode Apéro
+            </span>
+            <ChevronDown
+              size={24}
+              strokeWidth={3}
+              style={{
+                transform: aperoRulesOpen ? 'rotate(0deg)' : 'rotate(-90deg)',
+                transition: 'transform 150ms',
+              }}
+            />
+          </button>
+          {aperoRulesOpen && (
+            <ul className="text-sm leading-relaxed space-y-1 mt-2">
+              <li>• Chaque carte choisie déclenche <b>une règle à boire</b></li>
+              <li>• Elle s'affiche à la fin de la manche, <b>appliquez-la</b></li>
+              <li>• <b>Le boss et le gagnant ne boivent jamais</b></li>
+            </ul>
+          )}
         </div>
         )}
 
