@@ -104,7 +104,7 @@ function GageRoulette({ players, targetId, onDone }) {
           style={{ fontFamily: '"Space Mono", monospace' }}
           className="text-[11px] uppercase tracking-widest opacity-70 mb-4"
         >
-          🎯 C'est à toi de jouer
+          C'est à toi de jouer
         </div>
         <span
           style={{
@@ -1518,7 +1518,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                             style={{ fontFamily: '"Space Mono", monospace' }}
                             className="text-[11px] uppercase tracking-widest opacity-70 mb-2"
                           >
-                            🎯 Qui s'y colle ?
+                            Qui s'y colle ?
                           </div>
                         )}
                         <GageRoulette
@@ -1557,13 +1557,13 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                         }}
                         className="inline-block border-4 border-black px-6 py-5 text-3xl uppercase max-w-sm"
                       >
-                        🍺 {gage.text}
+                        {gage.text}
                       </div>
                       <div
                         style={{ fontFamily: '"Space Mono", monospace' }}
                         className="text-[10px] uppercase tracking-widest opacity-55 mt-4"
                       >
-                        🏅 Le boss et le gagnant ne boivent pas
+                        Le boss et le gagnant ne boivent pas
                       </div>
                     </>
                   );
