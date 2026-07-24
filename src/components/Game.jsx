@@ -45,12 +45,26 @@ const GENERIC_GAGES = [
   'Le dernier à lever la main boit 2',
 ];
 
-function gageOf(card, cardId, round) {
-  if (card?.g) return card.g;
-  const s = `${cardId}_${round}`;
+function hashStr(s) {
   let h = 0;
   for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
-  return GENERIC_GAGES[Math.abs(h) % GENERIC_GAGES.length];
+  return Math.abs(h);
+}
+
+// Regle de la manche + eventuel joueur designe. Convention : une regle qui
+// commence par '@' est un DEFI INDIVIDUEL → l'app tire au sort qui s'y colle
+// (deterministe : meme joueur affiche sur tous les ecrans, comme Picolo).
+function gageOf(card, cardId, round, playersObj) {
+  let text = card?.g;
+  if (!text) {
+    text = GENERIC_GAGES[hashStr(`${cardId}_${round}`) % GENERIC_GAGES.length];
+  }
+  if (!text.startsWith('@')) return { text, target: null };
+  const ids = Object.keys(playersObj || {}).sort();
+  const target = ids.length
+    ? playersObj[ids[hashStr(`${cardId}_${round}_cible`) % ids.length]]?.name
+    : null;
+  return { text: text.slice(1), target };
 }
 import {
   Heart,
@@ -1372,21 +1386,43 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
           {partyMode ? (
             <>
               {/* LA regle a boire de la manche : celle de la carte choisie
-                  (champ g), sinon une generique tiree de facon DETERMINISTE
-                  (meme regle sur tous les ecrans). */}
-              <div
-                style={{
-                  fontFamily: '"Anton", sans-serif',
-                  backgroundColor: PINK,
-                  color: '#FFF',
-                  boxShadow: '5px 5px 0 #000',
-                  transform: 'rotate(1deg)',
-                  lineHeight: 1.1,
-                }}
-                className="inline-block border-4 border-black px-5 py-4 text-2xl uppercase max-w-sm"
-              >
-                🍺 {gageOf(winnerCard, room.winnerInfo.cardId, room.round || 1)}
-              </div>
+                  (champ g), sinon une generique. Tirage DETERMINISTE (meme
+                  regle et meme joueur designe sur tous les ecrans). */}
+              {(() => {
+                const gage = gageOf(
+                  winnerCard,
+                  room.winnerInfo.cardId,
+                  room.round || 1,
+                  room.players
+                );
+                return (
+                  <div
+                    style={{
+                      fontFamily: '"Anton", sans-serif',
+                      backgroundColor: PINK,
+                      color: '#FFF',
+                      boxShadow: '5px 5px 0 #000',
+                      transform: 'rotate(1deg)',
+                      lineHeight: 1.1,
+                    }}
+                    className="inline-block border-4 border-black px-5 py-4 text-2xl uppercase max-w-sm"
+                  >
+                    {gage.target ? (
+                      <>
+                        <span
+                          style={{ fontFamily: '"Space Mono", monospace' }}
+                          className="block text-[11px] tracking-widest mb-1 opacity-80"
+                        >
+                          🎯 {gage.target} s'y colle
+                        </span>
+                        {gage.text}
+                      </>
+                    ) : (
+                      <>🍺 {gage.text}</>
+                    )}
+                  </div>
+                );
+              })()}
               <div
                 style={{
                   fontFamily: '"Anton", sans-serif',
