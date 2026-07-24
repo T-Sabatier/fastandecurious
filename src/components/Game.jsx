@@ -1446,8 +1446,8 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               <div
                 className="border-4 border-black px-5 py-3 mb-2 max-w-sm w-full relative"
                 style={{
-                  backgroundColor: '#000',
-                  color: YELLOW,
+                  backgroundColor: '#FFF',
+                  color: '#000',
                   boxShadow: '5px 5px 0 #000',
                   transform: 'rotate(-1.5deg)',
                 }}
@@ -1487,7 +1487,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                   {winnerP?.name || '?'}
                 </span>
                 <span
-                  style={{ backgroundColor: '#000', color: YELLOW }}
+                  style={{ backgroundColor: '#FFF', color: '#000', border: '2px solid #000' }}
                   className="px-2 py-0.5 text-[11px]"
                 >
                   +{winnerGain} PT{winnerGain > 1 ? 'S' : ''} {iAmWinner && '🎉'}
