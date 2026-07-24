@@ -68,6 +68,61 @@ function rollSpecial() {
     : null;
 }
 
+// Annonce PLEIN ECRAN d'une manche speciale, au debut de la manche : ca claque
+// pendant ~2.5 s puis se fond. Se remonte a chaque nouvelle manche (key=round).
+function SpecialAnnounce({ special }) {
+  const s = SPECIALS[special];
+  const [phase, setPhase] = useState('in'); // 'in' → 'out' → hidden
+  useEffect(() => {
+    if (!s) return undefined;
+    const t1 = setTimeout(() => setPhase('out'), 2100);
+    const t2 = setTimeout(() => setPhase('hidden'), 2500);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [s]);
+  if (!s || phase === 'hidden') return null;
+  return (
+    <div
+      className={`fixed inset-0 z-[55] flex items-center justify-center p-6 ${phase === 'out' ? 'special-fade' : ''}`}
+      style={{ backgroundColor: 'rgba(0,0,0,0.85)' }}
+    >
+      <div className="special-slam text-center">
+        <div
+          style={{ fontFamily: '"Space Mono", monospace', color: YELLOW }}
+          className="text-sm uppercase tracking-[0.4em] mb-4"
+        >
+          Manche spéciale
+        </div>
+        <div
+          style={{
+            fontFamily: '"Anton", sans-serif',
+            color: '#fff',
+            WebkitTextStroke: '3px #000',
+            paintOrder: 'stroke fill',
+          }}
+          className="text-6xl uppercase leading-none mb-5"
+        >
+          {s.label}
+        </div>
+        <div
+          style={{
+            fontFamily: '"Anton", sans-serif',
+            backgroundColor: YELLOW,
+            color: '#000',
+            boxShadow: '6px 6px 0 #000',
+            transform: 'rotate(1.5deg)',
+          }}
+          className="inline-block border-4 border-black px-5 py-3 text-xl uppercase"
+        >
+          {s.desc}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Banniere d'annonce d'une manche speciale (affichee en haut des ecrans de jeu).
 function SpecialBanner({ special }) {
   const s = SPECIALS[special];
@@ -760,6 +815,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     if (isBoss) {
       return (
         <div style={baseWrap} className={`text-black flex flex-col ${baseClass}`}>
+          <SpecialAnnounce key={room.round} special={room.special} />
           <TopBar right={`TOUR ${room.round || 1}`} />
           <Scoreboard />
           <SpecialBanner special={room.special} />
@@ -849,6 +905,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     // Non-boss waiting
     return (
       <div style={baseWrap} className={`text-black flex flex-col ${baseClass}`}>
+        <SpecialAnnounce key={room.round} special={room.special} />
         <TopBar right={`TOUR ${room.round || 1}`} />
         <Scoreboard />
         <SpecialBanner special={room.special} />
