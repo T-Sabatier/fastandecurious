@@ -1440,7 +1440,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               {/* ---- ZONE 1 : resultat de la manche, COMPACT ----
                   Carte gagnante ENCADREE (le pseudo designe plus bas est nu). */}
               <div
-                className="border-4 border-black px-5 py-3 mb-2 max-w-sm w-full relative"
+                className="border-4 border-black px-5 py-4 mb-4 max-w-sm w-full relative"
                 style={{
                   backgroundColor: '#FFF',
                   color: '#000',
@@ -1467,7 +1467,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               </div>
               <div
                 style={{ fontFamily: '"Space Mono", monospace' }}
-                className="text-[11px] uppercase tracking-widest mb-6 flex items-center justify-center gap-2 flex-wrap"
+                className="text-[11px] uppercase tracking-widest mb-9 flex items-center justify-center gap-2 flex-wrap"
               >
                 <span className="opacity-70">Posée par</span>
                 <span
@@ -1491,7 +1491,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               </div>
 
               {/* ---- ZONE 2 : la regle a boire, LA VEDETTE ---- */}
-              <div className="w-full border-t-4 border-black/15 pt-5 flex flex-col items-center">
+              <div className="w-full border-t-4 border-black/15 pt-8 flex flex-col items-center gap-2">
                 {(() => {
                   const gage = gageOf(
                     winnerCard,
@@ -1501,7 +1501,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                   );
                   if (gage.targetId) {
                     return (
-                      <div className="flex flex-col items-center">
+                      <div className="flex flex-col items-center gap-3">
                         {!gageRouletteDone && (
                           <div
                             style={{ fontFamily: '"Space Mono", monospace' }}
