@@ -144,16 +144,6 @@ export function setStoredAperoUnlock(on) {
   localStorage.setItem('fc_apero_unlocked', on ? '1' : '0');
 }
 
-// L'utilisateur a-t-il déjà confirmé l'avertissement 18+ / alcool du Mode
-// Apéro ? On ne le montre qu'UNE fois (puis mémorisé localement).
-export function getStoredAperoConsent() {
-  return localStorage.getItem('fc_apero_consent') === '1';
-}
-
-export function setStoredAperoConsent() {
-  localStorage.setItem('fc_apero_consent', '1');
-}
-
 export function getStoredRoom() {
   return localStorage.getItem('fc_currentRoom') || null;
 }

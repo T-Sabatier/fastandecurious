@@ -8,8 +8,6 @@ import {
   getStoredParty,
   setStoredParty,
   setStoredAperoUnlock,
-  getStoredAperoConsent,
-  setStoredAperoConsent,
   ROOM_TTL_MS,
   openExternal,
 } from '../utils';
@@ -19,7 +17,6 @@ import { bumpStats } from '../stats';
 import { ChevronRight, Lock, X, ClipboardPaste } from 'lucide-react';
 import InstallButton from './InstallButton.jsx';
 import InstallCta from './InstallCta.jsx';
-import AperoWarning from './AperoWarning.jsx';
 
 function getCodeFromUrl() {
   if (typeof window === 'undefined') return '';
@@ -56,24 +53,10 @@ export default function Home({ playerId, onJoin, initialError }) {
   } = useBilling();
   // Mode apero reellement actif = voulu ET possede.
   const partyActive = party && aperoOwned;
-  // Avertissement 18+ / alcool : affiche AVANT la premiere activation du mode.
-  const [aperoWarning, setAperoWarning] = useState(false);
   function toggleParty() {
-    // Passage de OFF a ON sans avoir jamais consenti → on montre l'avertissement
-    // et on active seulement apres confirmation.
-    if (!party && !getStoredAperoConsent()) {
-      setAperoWarning(true);
-      return;
-    }
     const v = !party;
     setParty(v);
     setStoredParty(v);
-  }
-  function confirmAperoWarning() {
-    setStoredAperoConsent();
-    setAperoWarning(false);
-    setParty(true);
-    setStoredParty(true);
   }
   function unlockAperoForTest() {
     setStoredAperoUnlock(true);
@@ -685,15 +668,6 @@ export default function Home({ playerId, onJoin, initialError }) {
             </button>
           </div>
         </div>
-      )}
-
-      {/* Avertissement 18+ / alcool — affiche une seule fois, avant la
-          premiere activation du Mode Apero sur l'accueil. */}
-      {aperoWarning && (
-        <AperoWarning
-          onConfirm={confirmAperoWarning}
-          onCancel={() => setAperoWarning(false)}
-        />
       )}
 
       {/* Teaser Mode Apero (produit paye). En natif : achat reel (RevenueCat) ;
