@@ -1544,8 +1544,27 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                       </div>
                     );
                   }
+                  // Regle de VOTE (« Vote : ... ») → badge dedie + texte epure.
+                  const isVote = /^vote\s*:/i.test(gage.text);
+                  const ruleText = isVote
+                    ? gage.text.replace(/^vote\s*:\s*/i, '')
+                    : gage.text;
                   return (
                     <>
+                      {isVote && (
+                        <div
+                          style={{
+                            fontFamily: '"Anton", sans-serif',
+                            backgroundColor: YELLOW,
+                            color: '#000',
+                            boxShadow: '4px 4px 0 #000',
+                            transform: 'rotate(-2deg)',
+                          }}
+                          className="inline-block border-4 border-black px-4 py-1.5 text-2xl uppercase mb-3"
+                        >
+                          Tout le monde vote
+                        </div>
+                      )}
                       <div
                         style={{
                           fontFamily: '"Anton", sans-serif',
@@ -1557,7 +1576,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                         }}
                         className="inline-block border-4 border-black px-6 py-5 text-3xl uppercase max-w-sm"
                       >
-                        {gage.text}
+                        {ruleText}
                       </div>
                       <div
                         style={{ fontFamily: '"Space Mono", monospace' }}
