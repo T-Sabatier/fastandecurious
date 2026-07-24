@@ -57,8 +57,9 @@ const REACTIONS = ['😂', '😱', '😍', '🔥', '👎', '💀'];
 // Manches speciales (mode normal comme apero) : twist annonce en debut de
 // manche. Choisi par le host (writer unique) au passage a la manche suivante.
 const SPECIALS = {
-  double: { label: '⚡ Manche double', desc: 'Le gagnant marque 2 points !' },
-  chrono: { label: '⏱ Manche chrono', desc: '10 s pour poser, sinon carte au hasard !' },
+  double: { label: 'Manche double', desc: 'Le gagnant marque 2 points !' },
+  chrono: { label: 'Manche chrono', desc: '10 s pour poser, sinon carte au hasard !' },
+  swap: { label: 'Manche échange', desc: 'Tu joues avec la main de ton voisin !' },
 };
 const SPECIAL_KEYS = Object.keys(SPECIALS);
 // ~30% de chance qu'une manche soit speciale.
@@ -488,7 +489,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     if (!isBoss || busy) return;
     setBusy(true);
     try {
-      await update(ref(db, `rooms/${roomCode}`), {
+      const updates = {
         mode: m,
         phase: 'play',
         played: null,
@@ -497,7 +498,21 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         bets: null, // nettoyage d'anciennes parties (systeme de mise retire)
         // Depart du timer par tour (si active dans les reglages du salon)
         playStartedAt: Date.now(),
-      });
+      };
+      // MANCHE ÉCHANGE : les mains des non-boss tournent d'un cran (chacun
+      // joue la main de son voisin). Le boss ne pose pas → sa main est intacte.
+      if (room.special === 'swap') {
+        const nonBoss = Object.keys(room.players || {}).filter(
+          (id) => id !== room.bossId
+        );
+        if (nonBoss.length >= 2) {
+          const hands = nonBoss.map((id) => room.hands?.[id] || {});
+          nonBoss.forEach((id, i) => {
+            updates[`hands/${id}`] = hands[(i + 1) % nonBoss.length];
+          });
+        }
+      }
+      await update(ref(db, `rooms/${roomCode}`), updates);
     } finally {
       setBusy(false);
     }
