@@ -913,6 +913,37 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                 <HeartCrack size={36} color="#FFF" strokeWidth={2.5} />
               </button>
             </div>
+
+            {/* Outil DEV (absent en prod) : force la manche speciale courante. */}
+            {import.meta.env.DEV && (
+              <div className="mt-8 border-2 border-dashed border-black/40 p-2">
+                <div
+                  style={{ fontFamily: '"Space Mono", monospace' }}
+                  className="text-[9px] uppercase tracking-widest opacity-50 mb-1"
+                >
+                  🔧 DEV · forcer une manche spéciale
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {Object.keys(SPECIALS).concat('none').map((k) => (
+                    <button
+                      key={k}
+                      onClick={() =>
+                        update(ref(db, `rooms/${roomCode}`), {
+                          special: k === 'none' ? null : k,
+                        }).catch(() => {})
+                      }
+                      className="border-2 border-black bg-white px-2 py-1 text-[10px] uppercase active:opacity-60"
+                      style={{
+                        fontFamily: '"Space Mono", monospace',
+                        backgroundColor: room.special === k ? YELLOW : '#FFF',
+                      }}
+                    >
+                      {k}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       );
