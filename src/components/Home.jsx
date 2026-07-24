@@ -14,7 +14,7 @@ import {
 import { CATEGORIES, YELLOW, AMBER, PINK, APERO_ACCENT, MAX_PLAYERS, PLAYER_COLORS } from '../cards';
 import { useBilling, PRODUCT_APERO, PRODUCT_ULTRA } from '../purchases';
 import { bumpStats } from '../stats';
-import { ChevronRight, Lock, X, ClipboardPaste } from 'lucide-react';
+import { ChevronRight, Lock, X } from 'lucide-react';
 import InstallButton from './InstallButton.jsx';
 import InstallCta from './InstallCta.jsx';
 
@@ -94,16 +94,6 @@ export default function Home({ playerId, onJoin, initialError }) {
     const fromUrl = s.match(/ROOM=([A-HJ-NP-Z2-9]{4})/);
     if (fromUrl) return fromUrl[1];
     return s.replace(/[^A-HJ-NP-Z2-9]/g, '').slice(0, 4);
-  }
-
-  async function pasteCode() {
-    try {
-      const txt = await navigator.clipboard.readText();
-      const c = cleanCode(txt);
-      if (c) setJoinCode(c);
-    } catch {
-      /* presse-papier inaccessible (permissions) : l'utilisateur colle a la main */
-    }
   }
 
   async function restorePurchases() {
@@ -476,15 +466,6 @@ export default function Home({ playerId, onJoin, initialError }) {
               fontFamily: '"Anton", sans-serif',
             }}
           />
-          <button
-            onClick={pasteCode}
-            aria-label="Coller le code"
-            title="Coller"
-            className="border-4 border-black bg-white px-3 active:translate-x-[2px] active:translate-y-[2px] flex items-center justify-center"
-            style={{ boxShadow: '4px 4px 0 #000' }}
-          >
-            <ClipboardPaste size={20} />
-          </button>
           <button
             onClick={joinRoom}
             disabled={busy || joinCode.trim().length !== 4}
