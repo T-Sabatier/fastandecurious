@@ -7,7 +7,7 @@ import { subscribeCards } from '../cardsStore';
 import { subscribeCategories } from '../categoriesStore';
 import { useBilling } from '../purchases';
 import { bumpStats } from '../stats';
-import { ChevronRight, X, LogOut, Copy, Check, Lock } from 'lucide-react';
+import { ChevronRight, ChevronDown, X, LogOut, Copy, Check, Lock } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useState, useEffect } from 'react';
 import InstallButton from './InstallButton.jsx';
@@ -22,6 +22,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
   const baseColor = partyMode ? AMBER : YELLOW;
   const players = Object.entries(room.players || {}).map(([id, p]) => ({ id, ...p }));
   const [linkCopied, setLinkCopied] = useState(false);
+  const [aperoRulesOpen, setAperoRulesOpen] = useState(true);
   const me = room.players?.[playerId];
   const myName = (me?.name || '').trim();
   const [nameInput, setNameInput] = useState(() => me?.name || getStoredName());
@@ -331,24 +332,38 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
         </div>
 
         {/* Regles du Mode Apero — visibles par TOUS les joueurs (pas que l'hote)
-            quand le mode est active, pour que chacun connaisse la regle a boire. */}
+            quand le mode est active. Pliable (bouton titre). */}
         {partyMode && (
         <div
           className="border-4 border-black p-4 mb-6"
           style={{ backgroundColor: PINK, color: '#FFF', boxShadow: '6px 6px 0 #000' }}
         >
-          <div
-            style={{ fontFamily: '"Anton", sans-serif' }}
-            className="text-2xl uppercase mb-2"
+          <button
+            onClick={() => setAperoRulesOpen((v) => !v)}
+            className="w-full flex items-center justify-between active:opacity-70"
           >
-            🍻 Mode Apéro
-          </div>
-          <ul className="text-sm leading-relaxed space-y-1">
-            <li>• On joue normalement... mais <b>chaque carte choisie déclenche une règle à boire</b></li>
-            <li>• « Ceux qui ont Spotify boivent 2 », « le gagnant distribue 3 »...</li>
-            <li>• La règle s'affiche à la fin de chaque manche : <b>appliquez-la à la table</b> 🍻</li>
-            <li>• <b>Le boss et le gagnant ne boivent jamais</b> — c'est la récompense</li>
-          </ul>
+            <span
+              style={{ fontFamily: '"Anton", sans-serif' }}
+              className="text-2xl uppercase"
+            >
+              🍻 Mode Apéro
+            </span>
+            <ChevronDown
+              size={24}
+              strokeWidth={3}
+              style={{
+                transform: aperoRulesOpen ? 'rotate(0deg)' : 'rotate(-90deg)',
+                transition: 'transform 150ms',
+              }}
+            />
+          </button>
+          {aperoRulesOpen && (
+            <ul className="text-sm leading-relaxed space-y-1 mt-2">
+              <li>• Chaque carte choisie déclenche <b>une règle à boire</b></li>
+              <li>• Elle s'affiche à la fin de la manche, <b>appliquez-la</b></li>
+              <li>• <b>Le boss et le gagnant ne boivent jamais</b></li>
+            </ul>
+          )}
         </div>
         )}
 
@@ -799,7 +814,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
                   style={{ fontFamily: '"Space Mono", monospace' }}
                   className="text-[10px] uppercase tracking-widest mb-2 text-center"
                 >
-                  Pas assez de cartes — coche plus de catégories
+                  Pas assez de cartes, coche plus de catégories
                 </div>
               )}
               {enoughPlayers && enoughCards && !allNamed && (

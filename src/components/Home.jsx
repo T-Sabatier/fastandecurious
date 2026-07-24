@@ -520,11 +520,9 @@ export default function Home({ playerId, onJoin, initialError }) {
           {partyActive ? (
             <ul className="text-sm leading-relaxed space-y-1">
               <li>• 3 joueurs minimum, chacun sur son appareil</li>
-              <li>• Main de <b>7 cartes</b> chacun</li>
-              <li>• Un joueur tiré au sort annonce <b>J'AIME</b> ou <b>J'AIME PAS</b></li>
-              <li>• Il choisit sa carte préférée → <b>+1 point</b> pour son auteur</li>
-              <li>• Et la carte choisie <b>déclenche une règle à boire</b> pour la table</li>
-              <li>• « Ceux qui ont Spotify boivent 2 », « le gagnant distribue 3 »…</li>
+              <li>• Un joueur annonce <b>J'AIME</b> ou <b>J'AIME PAS</b></li>
+              <li>• Il choisit sa carte préférée → <b>+1 point</b></li>
+              <li>• La carte choisie déclenche <b>une règle à boire</b></li>
               <li>• <b>Le boss et le gagnant ne boivent jamais</b></li>
             </ul>
           ) : (
