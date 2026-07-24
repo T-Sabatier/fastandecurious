@@ -19,6 +19,7 @@ import { bumpStats } from '../stats';
 import { ChevronRight, Lock, X, ClipboardPaste } from 'lucide-react';
 import InstallButton from './InstallButton.jsx';
 import InstallCta from './InstallCta.jsx';
+import AperoWarning from './AperoWarning.jsx';
 
 function getCodeFromUrl() {
   if (typeof window === 'undefined') return '';
@@ -687,55 +688,12 @@ export default function Home({ playerId, onJoin, initialError }) {
       )}
 
       {/* Avertissement 18+ / alcool — affiche une seule fois, avant la
-          premiere activation du Mode Apero. Protege l'editeur (diligence) et
-          l'utilisateur : rappel majeur, alcool non obligatoire, moderation. */}
+          premiere activation du Mode Apero sur l'accueil. */}
       {aperoWarning && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-6"
-          style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}
-        >
-          <div
-            className="relative border-4 border-black bg-white w-full max-w-sm p-6 text-center"
-            style={{ boxShadow: '8px 8px 0 #000' }}
-          >
-            <div className="text-4xl mb-2">🔞</div>
-            <div
-              style={{ fontFamily: '"Anton", sans-serif' }}
-              className="text-2xl uppercase leading-none mb-3"
-            >
-              Mode Apéro
-            </div>
-            <ul className="text-sm leading-relaxed text-left space-y-2 mb-5">
-              <li>• Réservé aux <b>18 ans et plus</b>.</li>
-              <li>• Le jeu se joue avec <b>la boisson de ton choix</b> — <b>sans alcool, c'est encore mieux</b>.</li>
-              <li>• Bois de façon <b>responsable</b> : chaque règle est une suggestion, jamais une obligation.</li>
-              <li className="opacity-70">L'abus d'alcool est dangereux pour la santé, à consommer avec modération.</li>
-            </ul>
-            <button
-              onClick={confirmAperoWarning}
-              className="w-full border-4 border-black py-3 active:translate-x-[2px] active:translate-y-[2px]"
-              style={{ backgroundColor: APERO_ACCENT, color: '#FFF', boxShadow: '4px 4px 0 #000' }}
-            >
-              <span
-                style={{ fontFamily: '"Anton", sans-serif' }}
-                className="text-xl uppercase"
-              >
-                J'ai 18 ans et j'ai compris
-              </span>
-            </button>
-            <button
-              onClick={() => setAperoWarning(false)}
-              className="mt-3 w-full text-center"
-            >
-              <span
-                style={{ fontFamily: '"Space Mono", monospace' }}
-                className="text-[10px] uppercase tracking-widest opacity-50"
-              >
-                Annuler
-              </span>
-            </button>
-          </div>
-        </div>
+        <AperoWarning
+          onConfirm={confirmAperoWarning}
+          onCancel={() => setAperoWarning(false)}
+        />
       )}
 
       {/* Teaser Mode Apero (produit paye). En natif : achat reel (RevenueCat) ;

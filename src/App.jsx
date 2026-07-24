@@ -8,6 +8,8 @@ import {
   getStoredRoom,
   setStoredRoom,
   ROOM_TTL_MS,
+  getStoredAperoConsent,
+  setStoredAperoConsent,
 } from './utils';
 import Home from './components/Home.jsx';
 import Lobby from './components/Lobby.jsx';
@@ -15,6 +17,7 @@ import Game from './components/Game.jsx';
 import Announcement from './components/Announcement.jsx';
 import Admin from './components/Admin.jsx';
 import Debug from './components/Debug.jsx';
+import AperoWarning from './components/AperoWarning.jsx';
 
 // Routeur SANS hooks : les early-returns avant les hooks de jeu violaient les
 // Rules of Hooks (ça marchait car les flags sont constants, mais c'est fragile).
@@ -49,6 +52,9 @@ function GameApp() {
   const [loading, setLoading] = useState(false);
   const [autoJoining, setAutoJoining] = useState(false);
   const [joinError, setJoinError] = useState('');
+  // Consentement 18+/alcool : requis pour TOUT joueur qui entre dans une
+  // partie en Mode Apero (l'hote comme les invites, acheteurs ou non).
+  const [aperoConsent, setAperoConsent] = useState(getStoredAperoConsent);
 
   useEffect(() => {
     if (!roomCode) {
@@ -211,10 +217,25 @@ function GameApp() {
     );
   }
 
+  // Barriere Mode Apero : si la partie active est en Mode Apero et que ce
+  // joueur n'a jamais confirme l'avertissement, on le montre par-dessus tout
+  // (avant de voir la moindre carte/regle a boire). Quitter la room = sortie.
+  const inAperoRoom = !!room?.settings?.partyMode && !!room?.players?.[playerId];
+  const showAperoGate = inAperoRoom && !aperoConsent;
+
   return (
     <>
       {screen}
       <Announcement />
+      {showAperoGate && (
+        <AperoWarning
+          onConfirm={() => {
+            setStoredAperoConsent();
+            setAperoConsent(true);
+          }}
+          onCancel={leaveRoom}
+        />
+      )}
     </>
   );
 }
