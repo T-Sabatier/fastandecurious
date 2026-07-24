@@ -1749,7 +1749,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                               transform: 'rotate(1deg)',
                               lineHeight: 1.1,
                             }}
-                            className="inline-block border-4 border-black px-6 py-5 text-3xl uppercase max-w-sm gage-pop"
+                            className="inline-block border-4 border-black px-6 py-5 text-2xl uppercase max-w-sm gage-pop"
                           >
                             {gage.text}
                           </div>
@@ -1787,7 +1787,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                           transform: 'rotate(1deg)',
                           lineHeight: 1.1,
                         }}
-                        className="inline-block border-4 border-black px-6 py-5 text-3xl uppercase max-w-sm"
+                        className="inline-block border-4 border-black px-6 py-5 text-2xl uppercase max-w-sm"
                       >
                         {ruleText}
                       </div>
