@@ -17,11 +17,11 @@ const POOL = {
   // g = regle a boire (Mode Apero). c1 = collective, c3 = defi (@).
   c1: { t: 'Dua Lipa', cat: 'musique', spicy: false, g: "Ceux qui l'ont dans une playlist boivent 2" },
   c2: { t: 'Tokyo', cat: 'voyages', spicy: false },
-  c3: { t: 'Michael Jackson', cat: 'musique', spicy: false, g: '@Tente le moonwalk ou bois 2' },
+  c3: { t: 'Guêpe à l\'apéro', cat: 'nature', spicy: false, g: '@Chasse une guêpe imaginaire ou bois 2' },
   c4: { t: 'Raclette', cat: 'bouffe', spicy: false },
   c5: { t: 'Pizza ananas', cat: 'bouffe', spicy: false, g: 'Team ananas boit 1, les puristes boivent 2' },
   c6: { t: 'Appeler ton ex', cat: 'bourre', spicy: false },
-  c7: { t: 'Guêpe à l\'apéro', cat: 'nature', spicy: false },
+  c7: { t: 'Chaussettes-claquettes', cat: 'mode', spicy: false },
   c8: { t: 'Sushis', cat: 'bouffe', spicy: false },
   c9: { t: 'New York', cat: 'voyages', spicy: false },
   c10: { t: 'Messi', cat: 'sport', spicy: false },
