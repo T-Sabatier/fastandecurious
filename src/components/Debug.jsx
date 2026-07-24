@@ -108,8 +108,8 @@ function buildScenario(key, mode, pick, apero, special, sorts) {
     case 'reveal-guest':
       return { kind: 'game', room: { ...base, phase: 'reveal', bossId: 'alex', mode, hands: { me: MY_HAND_AFTER_PLAY }, played: { me: 'c1', sam: 'c20', jo: 'c5' }, bossPick: pick ? 'c20' : null } };
     case 'result':
-      // Carte gagnante c1 (regle collective) — le gagnant n'est PAS le boss.
-      return { kind: 'game', room: { ...base, host: 'me', phase: 'result', bossId: 'alex', mode, played: { me: 'c1', sam: 'c20', jo: 'c5' }, winnerInfo: { playerId: 'jo', cardId: 'c1' } } };
+      // Carte gagnante c5 = Pizza ananas (regle collective fun). Gagnant != boss.
+      return { kind: 'game', room: { ...base, host: 'me', phase: 'result', bossId: 'alex', mode, played: { me: 'c1', sam: 'c20', jo: 'c5' }, winnerInfo: { playerId: 'jo', cardId: 'c5' } } };
     case 'result-defi':
       // Carte gagnante c3 (defi @) → roulette de designation (hors boss/gagnant).
       return { kind: 'game', room: { ...base, host: 'me', phase: 'result', bossId: 'alex', mode, played: { me: 'c1', sam: 'c20', jo: 'c3' }, winnerInfo: { playerId: 'jo', cardId: 'c3' } } };
