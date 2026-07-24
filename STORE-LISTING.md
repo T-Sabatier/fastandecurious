@@ -20,7 +20,7 @@ Plutôt pastis ou bubble tea ? Devine ce que tes amis aiment... ou détestent.
 Cette personne que tu viens de rencontrer en soirée : plutôt palace 5 étoiles ou camping sauvage ?
 Ton meilleur pote, celui que tu crois connaître par cœur : plutôt pastis ou bubble tea ?
 
-Snap Tap, c'est le jeu qui met vos certitudes à l'épreuve. À chaque manche, un joueur annonce s'il veut ce qu'il AIME ou ce qu'il DÉTESTE. Les autres posent la carte qui, selon eux, lui correspond le mieux. Il choisit sa préférée sans savoir qui l'a posée. Si c'est la tienne, tu marques. Si tu pensais le connaître... surprise.
+Snap Tap, c'est le jeu qui met vos certitudes à l'épreuve. À chaque manche, un joueur annonce s'il veut ce qu'il AIME ou ce qu'il DÉTESTE. Les autres posent la carte qui, selon eux, lui correspond le mieux. Il choisit sa préférée sans savoir qui l'a posée. Si c'est la tienne, tu marques un point. Sinon, c'est que tu le connais moins bien que tu croyais.
 
 🎮 COMMENT ÇA MARCHE
 • Crée un salon, tes amis scannent le QR code
@@ -37,8 +37,8 @@ Bouffe, Ciné, Musique, Voyages, Boulot, Absurde... des catégories pour toutes 
 ⚡ MANCHES SPÉCIALES ET RÉACTIONS
 Manche double, manche chrono, manche échange : des twists surgissent pour pimenter la partie. Et chacun réagit en direct pendant la révélation.
 
-🍻 MODE APÉRO (jeu à boire, contenu adulte)
-Transforme la partie en jeu à boire : chaque carte choisie déclenche une règle liée à son sujet, des défis, des votes. Le boss et le gagnant ne boivent jamais, c'est la récompense. À consommer avec modération, une boisson sans alcool est préférable.
+🍻 MODE APÉRO (jeu à boire)
+Transforme la partie en jeu à boire : chaque carte choisie déclenche une règle liée à son sujet, des défis, des votes. Le boss et le gagnant ne boivent jamais, c'est la récompense. Alcool à consommer avec modération, une boisson sans alcool est préférable.
 
 🏆 COMPTEUR DE VICTOIRES
 Enchaîne les revanches, le trophée compte les victoires de la soirée.

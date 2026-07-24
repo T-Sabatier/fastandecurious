@@ -14,11 +14,12 @@ import Game from './Game.jsx';
 // ============================================================
 
 const POOL = {
-  c1: { t: 'Pizza', cat: 'bouffe', spicy: false },
+  // g = regle a boire (Mode Apero). c1 = collective, c3 = defi (@).
+  c1: { t: 'Pizza ananas', cat: 'bouffe', spicy: false, g: 'Team ananas boit 1, les puristes boivent 2' },
   c2: { t: 'Tokyo', cat: 'voyages', spicy: false },
-  c3: { t: 'Mbappé', cat: 'sport', spicy: false },
+  c3: { t: 'Kylian Mbappé', cat: 'celebrite', spicy: false, g: '@Fais une célébration de but ou bois 2' },
   c4: { t: 'Nutella', cat: 'bouffe', spicy: false },
-  c5: { t: 'Lingerie noire fine', cat: 'coquin', spicy: true },
+  c5: { t: 'Lingerie fine', cat: 'coquin', spicy: true, g: 'Ceux qui portent leurs beaux sous-vêtements ce soir boivent 2' },
   c6: { t: 'Mario Kart', cat: 'gaming', spicy: false },
   c7: { t: 'Coucher de soleil', cat: 'nature', spicy: false },
   c8: { t: 'Sushis', cat: 'bouffe', spicy: false },
@@ -60,22 +61,25 @@ const SCENARIOS = [
   { key: 'reveal-boss', label: 'Choix · boss' },
   { key: 'reveal-guest', label: 'Choix · joueur' },
   { key: 'result', label: 'Résultat' },
+  { key: 'result-defi', label: 'Résultat · défi' },
   { key: 'game_over', label: 'Fin de partie' },
 ];
 
 const noop = () => {};
 
-function buildScenario(key, mode, pick) {
+function buildScenario(key, mode, pick, apero, special) {
   const base = {
     host: null,
     round: 3,
     pool: POOL,
     deck: DECK,
     discard: [],
+    special: special || null,
     settings: {
       winningScore: 5,
       cats: {},
       sorts: { reroll: true, espion: true, vatout: true },
+      ...(apero ? { partyMode: true } : {}),
     },
     players: PLAYERS,
   };
@@ -101,7 +105,11 @@ function buildScenario(key, mode, pick) {
     case 'reveal-guest':
       return { kind: 'game', room: { ...base, phase: 'reveal', bossId: 'alex', mode, hands: { me: MY_HAND_AFTER_PLAY }, played: { me: 'c1', sam: 'c20', jo: 'c5' }, bossPick: pick ? 'c20' : null } };
     case 'result':
-      return { kind: 'game', room: { ...base, host: 'me', phase: 'result', bossId: 'alex', mode, played: { me: 'c1', sam: 'c20', jo: 'c5' }, winnerInfo: { playerId: 'jo', cardId: 'c5' } } };
+      // Carte gagnante c1 (regle collective) — le gagnant n'est PAS le boss.
+      return { kind: 'game', room: { ...base, host: 'me', phase: 'result', bossId: 'alex', mode, played: { me: 'c1', sam: 'c20', jo: 'c5' }, winnerInfo: { playerId: 'jo', cardId: 'c1' } } };
+    case 'result-defi':
+      // Carte gagnante c3 (defi @) → roulette de designation (hors boss/gagnant).
+      return { kind: 'game', room: { ...base, host: 'me', phase: 'result', bossId: 'alex', mode, played: { me: 'c1', sam: 'c20', jo: 'c3' }, winnerInfo: { playerId: 'jo', cardId: 'c3' } } };
     case 'game_over':
       return { kind: 'game', room: { ...base, host: 'me', phase: 'game_over', bossId: 'jo' } };
     default:
@@ -113,9 +121,12 @@ export default function Debug() {
   const [key, setKey] = useState('play-hand');
   const [mode, setMode] = useState('like');
   const [pick, setPick] = useState(false);
+  const [apero, setApero] = useState(false);
+  const [special, setSpecial] = useState(null); // null | 'double' | 'chrono' | 'swap'
   const [liveRoom, setLiveRoom] = useState(null);
 
-  const scenario = buildScenario(key, mode, pick);
+  const scenario = buildScenario(key, mode, pick, apero, special);
+  const SPECIAL_CYCLE = [null, 'double', 'chrono', 'swap'];
 
   // Abonnement permanent a la room debug
   useEffect(() => {
@@ -127,9 +138,9 @@ export default function Debug() {
     };
   }, []);
 
-  // (Re)seed la room a chaque changement de scenario / mode / choix boss
+  // (Re)seed la room a chaque changement de scenario / mode / choix boss / options
   useEffect(() => {
-    const sc = buildScenario(key, mode, pick);
+    const sc = buildScenario(key, mode, pick, apero, special);
     if (sc.kind === 'home') {
       setLiveRoom(null);
       remove(ref(db, 'rooms/DEBG')).catch(() => {});
@@ -138,7 +149,7 @@ export default function Debug() {
     setLiveRoom(sc.room); // optimiste, evite le flash
     set(ref(db, 'rooms/DEBG'), sc.room).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, mode, pick]);
+  }, [key, mode, pick, apero, special]);
 
   function renderScreen() {
     if (scenario.kind === 'home') {
@@ -190,13 +201,41 @@ export default function Debug() {
           ))}
         </div>
         {isGamePhase && (
-          <div className="flex items-center gap-2 px-2 pb-1.5">
+          <div className="flex items-center gap-2 px-2 pb-1.5 overflow-x-auto">
             <button
               onClick={() => setMode(mode === 'like' ? 'dislike' : 'like')}
               className="shrink-0 px-2 py-1 border-2 border-white text-[11px] uppercase"
               style={{ fontFamily: '"Space Mono", monospace' }}
             >
               Mode : {mode === 'like' ? "J'aime" : "J'aime pas"}
+            </button>
+            <button
+              onClick={() => setApero((a) => !a)}
+              className="shrink-0 px-2 py-1 border-2 text-[11px] uppercase"
+              style={{
+                fontFamily: '"Space Mono", monospace',
+                backgroundColor: apero ? '#FBB417' : 'transparent',
+                color: apero ? '#000' : '#FFF',
+                borderColor: apero ? '#FBB417' : '#FFF',
+              }}
+            >
+              🍻 Apéro : {apero ? 'ON' : 'OFF'}
+            </button>
+            <button
+              onClick={() =>
+                setSpecial(
+                  SPECIAL_CYCLE[(SPECIAL_CYCLE.indexOf(special) + 1) % SPECIAL_CYCLE.length]
+                )
+              }
+              className="shrink-0 px-2 py-1 border-2 text-[11px] uppercase"
+              style={{
+                fontFamily: '"Space Mono", monospace',
+                backgroundColor: special ? '#FFE600' : 'transparent',
+                color: special ? '#000' : '#FFF',
+                borderColor: special ? '#FFE600' : '#FFF',
+              }}
+            >
+              ⚡ Spécial : {special || 'off'}
             </button>
             {isReveal && (
               <button
@@ -211,12 +250,6 @@ export default function Debug() {
                 Choix boss : {pick ? 'oui' : 'non'}
               </button>
             )}
-            <span
-              style={{ fontFamily: '"Space Mono", monospace' }}
-              className="shrink-0 text-[9px] uppercase tracking-widest opacity-50"
-            >
-              sorts ON · room live
-            </span>
           </div>
         )}
       </div>
