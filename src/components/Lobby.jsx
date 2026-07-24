@@ -347,6 +347,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
             <li>• On joue normalement... mais <b>chaque carte choisie déclenche une règle à boire</b></li>
             <li>• « Ceux qui ont Spotify boivent 2 », « le gagnant distribue 3 »...</li>
             <li>• La règle s'affiche à la fin de chaque manche : <b>appliquez-la à la table</b> 🍻</li>
+            <li>• <b>Le boss et le gagnant ne boivent jamais</b> — c'est la récompense</li>
           </ul>
         </div>
         )}

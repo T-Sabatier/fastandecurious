@@ -525,6 +525,7 @@ export default function Home({ playerId, onJoin, initialError }) {
               <li>• Il choisit sa carte préférée → <b>+1 point</b> pour son auteur</li>
               <li>• Et la carte choisie <b>déclenche une règle à boire</b> pour la table</li>
               <li>• « Ceux qui ont Spotify boivent 2 », « le gagnant distribue 3 »…</li>
+              <li>• <b>Le boss et le gagnant ne boivent jamais</b></li>
             </ul>
           ) : (
             <ul className="text-sm leading-relaxed space-y-1">

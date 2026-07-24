@@ -1545,19 +1545,27 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                     );
                   }
                   return (
-                    <div
-                      style={{
-                        fontFamily: '"Anton", sans-serif',
-                        backgroundColor: PINK,
-                        color: '#FFF',
-                        boxShadow: '6px 6px 0 #000',
-                        transform: 'rotate(1deg)',
-                        lineHeight: 1.1,
-                      }}
-                      className="inline-block border-4 border-black px-6 py-5 text-3xl uppercase max-w-sm"
-                    >
-                      🍺 {gage.text}
-                    </div>
+                    <>
+                      <div
+                        style={{
+                          fontFamily: '"Anton", sans-serif',
+                          backgroundColor: PINK,
+                          color: '#FFF',
+                          boxShadow: '6px 6px 0 #000',
+                          transform: 'rotate(1deg)',
+                          lineHeight: 1.1,
+                        }}
+                        className="inline-block border-4 border-black px-6 py-5 text-3xl uppercase max-w-sm"
+                      >
+                        🍺 {gage.text}
+                      </div>
+                      <div
+                        style={{ fontFamily: '"Space Mono", monospace' }}
+                        className="text-[10px] uppercase tracking-widest opacity-55 mt-4"
+                      >
+                        🏅 Le boss et le gagnant ne boivent pas
+                      </div>
+                    </>
                   );
                 })()}
               </div>
