@@ -57,6 +57,20 @@ input {
   animation: gage-pop 0.35s ease-out;
 }
 
+/* Reactions emoji qui montent et s'estompent (moment reveal). */
+@keyframes reaction-float {
+  0%   { opacity: 0; transform: translateY(0) scale(0.5); }
+  15%  { opacity: 1; transform: translateY(-40px) scale(1.15); }
+  100% { opacity: 0; transform: translateY(-320px) scale(1); }
+}
+.reaction-float {
+  position: absolute;
+  bottom: 90px;
+  animation: reaction-float 3.4s ease-out forwards;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
 /* Fond Mode Apero (jeu a boire) : texture biere. Applique sur la racine des
    ecrans quand le mode est actif. `fixed` = le fond ne defile pas avec le
    contenu ; sur mobile ou fixed est ignore, il defile simplement (ok). La

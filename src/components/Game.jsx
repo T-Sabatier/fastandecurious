@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { ref, update, runTransaction, remove, set } from 'firebase/database';
+import { ref, update, runTransaction, remove, set, push } from 'firebase/database';
 import { db } from '../firebase';
 import {
   shuffle,
@@ -49,6 +49,36 @@ function hashStr(s) {
   let h = 0;
   for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
   return Math.abs(h);
+}
+
+// Reactions emoji disponibles pendant la revelation.
+const REACTIONS = ['😂', '😱', '😍', '🔥', '👎', '💀'];
+
+// Couche d'affichage des reactions : chaque reaction recente (< 3.5 s) monte
+// et s'estompe. Position horizontale deterministe (hash de la cle) → placee
+// pareil sur tous les ecrans. reactions = objet Firebase { key: {e, t} }.
+function ReactionsLayer({ reactions }) {
+  const now = Date.now();
+  const items = Object.entries(reactions || {}).filter(
+    ([, r]) => r && now - r.t < 3500
+  );
+  if (!items.length) return null;
+  return (
+    <div className="pointer-events-none absolute inset-0 z-40 overflow-hidden">
+      {items.map(([key, r]) => {
+        const left = 6 + (hashStr(key) % 88); // 6%..94%
+        return (
+          <div
+            key={key}
+            className="reaction-float"
+            style={{ left: `${left}%`, fontSize: 52 }}
+          >
+            {r.e}
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 // Roulette de designation : un halo balaie les pseudos de plus en plus
@@ -448,6 +478,13 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     }
   }
 
+  // Reaction emoji ephemere (pendant la revelation). Se supprime toute seule.
+  function sendReaction(e) {
+    const r = push(ref(db, `rooms/${roomCode}/reactions`));
+    set(r, { e, t: Date.now() }).catch(() => {});
+    setTimeout(() => remove(r).catch(() => {}), 3600);
+  }
+
   async function bossPickWinner(entry) {
     if (!isBoss || busy) return;
     setBusy(true);
@@ -499,6 +536,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
 
       updates['deck'] = currentDeck;
       updates['discard'] = currentDiscard;
+      updates['reactions'] = null; // on repart avec un ecran propre
 
       const targetScore = room.settings?.winningScore ?? WINNING_SCORE;
       if (winnerNewScore >= targetScore) {
@@ -1157,7 +1195,8 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   if (room.phase === 'reveal') {
     if (isBoss) {
       return (
-        <div style={baseWrap} className={`text-black flex flex-col ${baseClass}`}>
+        <div style={baseWrap} className={`relative text-black flex flex-col ${baseClass}`}>
+          <ReactionsLayer reactions={room.reactions} />
           <TopBar right={`${playedEntries.length} CARTES`} />
           <Scoreboard />
           <div className="px-5 pt-3 pb-2 max-w-xl mx-auto w-full">
@@ -1266,7 +1305,8 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     const revealIsLike = room.mode === 'like';
     const modeColor = revealIsLike ? LIKE_GREEN : DISLIKE_RED;
     return (
-      <div style={{ minHeight: '100vh', backgroundColor: '#0a0a0a' }} className="text-white flex flex-col">
+      <div style={{ minHeight: '100vh', backgroundColor: '#0a0a0a' }} className="relative text-white flex flex-col">
+        <ReactionsLayer reactions={room.reactions} />
         <TopBar right={`${playedEntries.length} CARTES`} />
         <Scoreboard />
 
@@ -1421,6 +1461,24 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               })}
             </div>
           </div>
+        </div>
+
+        {/* Barre de reactions : les spectateurs animent le moment reveal. */}
+        <div
+          className="sticky bottom-0 left-0 right-0 z-30 flex justify-center gap-2 px-4 py-3 border-t border-white/10"
+          style={{ backgroundColor: 'rgba(10,10,10,0.85)' }}
+        >
+          {REACTIONS.map((e) => (
+            <button
+              key={e}
+              onClick={() => sendReaction(e)}
+              className="text-3xl leading-none active:scale-90 transition-transform"
+              style={{ transition: 'transform 80ms' }}
+              aria-label={`Réagir ${e}`}
+            >
+              {e}
+            </button>
+          ))}
         </div>
       </div>
     );
