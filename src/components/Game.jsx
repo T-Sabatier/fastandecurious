@@ -94,37 +94,32 @@ function GageRoulette({ players, targetId, onDone }) {
 
   const target = players[targetIdx];
 
-  // Une fois la roulette arretee : on montre EN GROS le joueur designe.
+  // Une fois la roulette arretee : on montre EN GROS le joueur designe,
+  // en texte "sticker" nu (le cadre est reserve a la carte + a la regle).
   if (done) {
     const tColor = colorHex(target?.color);
     return (
-      <div className="flex flex-col items-center mb-4 gage-pop">
+      <div className="flex flex-col items-center mb-3 gage-pop">
         <div
           style={{ fontFamily: '"Space Mono", monospace' }}
-          className="text-[11px] uppercase tracking-widest opacity-70 mb-2"
+          className="text-[11px] uppercase tracking-widest opacity-70 mb-1"
         >
           🎯 C'est à toi de jouer
         </div>
-        <div
+        <span
           style={{
-            backgroundColor: tColor || '#000',
-            boxShadow: '7px 7px 0 #000',
-            transform: 'rotate(-2deg)',
+            fontFamily: '"Anton", sans-serif',
+            color: tColor || '#FFF',
+            WebkitTextStroke: '0.14em #000',
+            paintOrder: 'stroke fill',
+            letterSpacing: '0.05em',
+            fontSize: fitBig(target?.name || ''),
+            lineHeight: 1,
           }}
-          className="border-4 border-black px-6 py-3"
+          className="uppercase break-words text-center"
         >
-          <span
-            style={{
-              fontFamily: '"Anton", sans-serif',
-              ...NAME_STYLE,
-              fontSize: fitBig(target?.name || ''),
-              lineHeight: 1,
-            }}
-            className="uppercase break-words"
-          >
-            {target?.name || '?'}
-          </span>
-        </div>
+          {target?.name || '?'}
+        </span>
       </div>
     );
   }
@@ -1443,23 +1438,32 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
           {partyMode ? (
             <>
               {/* ---- ZONE 1 : resultat de la manche, COMPACT ----
-                  Carte gagnante en texte "sticker" (contour noir), pas de
-                  boite : plus leger sur le fond biere. */}
-              <div className="mb-2 flex items-center justify-center gap-2">
+                  Carte gagnante ENCADREE (le pseudo designe plus bas est nu). */}
+              <div
+                className="border-4 border-black px-5 py-3 mb-2 max-w-sm w-full relative"
+                style={{
+                  backgroundColor: '#FFF',
+                  color: '#000',
+                  boxShadow: '5px 5px 0 #000',
+                  transform: 'rotate(-1.5deg)',
+                }}
+              >
                 <span
-                  style={{
-                    fontFamily: '"Anton", sans-serif',
-                    ...NAME_STYLE,
-                    fontSize: fitBig(winnerCard?.t || ''),
-                    lineHeight: 1,
-                  }}
-                  className="uppercase break-words text-center"
+                  className="absolute top-1 right-2 text-base leading-none opacity-80 select-none"
+                  aria-hidden
                 >
-                  {winnerCard?.t || '?'}
-                </span>
-                <span className="text-xl leading-none select-none" aria-hidden>
                   {catEmojiOf(winnerCard)}
                 </span>
+                <div
+                  style={{
+                    fontFamily: '"Anton", sans-serif',
+                    lineHeight: 0.95,
+                    fontSize: fitCard(winnerCard?.t || ''),
+                  }}
+                  className="uppercase"
+                >
+                  {winnerCard?.t || '?'}
+                </div>
               </div>
               <div
                 style={{ fontFamily: '"Space Mono", monospace' }}
