@@ -74,11 +74,10 @@ function rollSpecial() {
 function SpecialAnnounce({ special }) {
   const s = SPECIALS[special];
   const [phase, setPhase] = useState('in'); // 'in' → 'out' → hidden
-  const [hasCat, setHasCat] = useState(true); // masque l'image si absente/erreur
   useEffect(() => {
     if (!s) return undefined;
-    const t1 = setTimeout(() => setPhase('out'), 2400);
-    const t2 = setTimeout(() => setPhase('hidden'), 2800);
+    const t1 = setTimeout(() => setPhase('out'), 2100);
+    const t2 = setTimeout(() => setPhase('hidden'), 2500);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
@@ -91,37 +90,11 @@ function SpecialAnnounce({ special }) {
       style={{ backgroundColor: 'rgba(0,0,0,0.85)' }}
     >
       <div className="special-slam text-center flex flex-col items-center">
-        {/* Mascotte "Le Chat-os" : sticker encadre. Masque si le fichier
-            /chat-os.png n'est pas (encore) present. */}
-        {hasCat && (
-          <div
-            className="mb-5"
-            style={{
-              border: '5px solid #000',
-              boxShadow: '8px 8px 0 #000',
-              transform: 'rotate(-3deg)',
-              backgroundColor: '#fff',
-              padding: 6,
-            }}
-          >
-            <img
-              src="/chat-os.png"
-              alt="Le Chat-os"
-              onError={() => setHasCat(false)}
-              style={{ width: 190, height: 190, objectFit: 'cover', display: 'block' }}
-            />
-          </div>
-        )}
         <div
-          style={{
-            fontFamily: '"Anton", sans-serif',
-            color: YELLOW,
-            WebkitTextStroke: '2px #000',
-            paintOrder: 'stroke fill',
-          }}
-          className="text-3xl uppercase leading-none mb-3"
+          style={{ fontFamily: '"Space Mono", monospace', color: YELLOW }}
+          className="text-sm uppercase tracking-[0.4em] mb-4"
         >
-          Le Chat-os débarque
+          Manche spéciale
         </div>
         <div
           style={{
@@ -130,7 +103,7 @@ function SpecialAnnounce({ special }) {
             WebkitTextStroke: '3px #000',
             paintOrder: 'stroke fill',
           }}
-          className="text-5xl uppercase leading-none mb-4"
+          className="text-6xl uppercase leading-none mb-5"
         >
           {s.label}
         </div>
