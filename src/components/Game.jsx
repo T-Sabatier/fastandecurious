@@ -156,15 +156,17 @@ function GageRoulette({ players, targetId, onDone }) {
 // Regle de la manche + eventuel joueur designe. Convention : une regle qui
 // commence par '@' est un DEFI INDIVIDUEL → l'app tire au sort qui s'y colle
 // (deterministe : meme joueur affiche sur tous les ecrans, comme Picolo).
-// Le GAGNANT de la manche est EXCLU du tirage : il a gagne, il ne boit pas.
-function gageOf(card, cardId, round, playersObj, winnerId) {
+// Sont EXCLUS du tirage du defi : le GAGNANT (il a gagne, il ne boit pas) et
+// le BOSS (c'est lui qui menait la manche). Le defi tombe donc sur un
+// "perdant". Si aucun eligible (cas degenere), pas de cible → texte simple.
+function gageOf(card, cardId, round, playersObj, excludeIds = []) {
   let text = card?.g;
   if (!text) {
     text = GENERIC_GAGES[hashStr(`${cardId}_${round}`) % GENERIC_GAGES.length];
   }
   if (!text.startsWith('@')) return { text, targetId: null };
   const ids = Object.keys(playersObj || {})
-    .filter((id) => id !== winnerId)
+    .filter((id) => !excludeIds.includes(id))
     .sort();
   const targetId = ids.length
     ? ids[hashStr(`${cardId}_${round}_cible`) % ids.length]
@@ -1496,16 +1498,17 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
               {/* ---- ZONE 2 : la regle a boire, LA VEDETTE ---- */}
               <div className="w-full border-t-4 border-black/15 pt-8 flex flex-col items-center gap-2">
                 {(() => {
+                  // Exclus du defi : le gagnant (il ne boit pas) et le boss.
+                  const excluded = [room.winnerInfo.playerId, room.bossId];
                   const gage = gageOf(
                     winnerCard,
                     room.winnerInfo.cardId,
                     room.round || 1,
                     room.players,
-                    room.winnerInfo.playerId
+                    excluded
                   );
-                  // Roulette : le gagnant est EXCLU (il ne boit pas).
                   const eligible = players.filter(
-                    (p) => p.id !== room.winnerInfo.playerId
+                    (p) => !excluded.includes(p.id)
                   );
                   if (gage.targetId) {
                     return (
