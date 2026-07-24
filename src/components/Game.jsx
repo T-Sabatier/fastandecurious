@@ -51,6 +51,77 @@ function hashStr(s) {
   return Math.abs(h);
 }
 
+// Roulette de designation : un halo balaie les pseudos de plus en plus
+// lentement puis s'arrete sur le joueur cible (targetId). Deterministe (meme
+// cible partout), l'animation est locale mais finit toujours sur le meme nom.
+function GageRoulette({ players, targetId, onDone }) {
+  const targetIdx = Math.max(0, players.findIndex((p) => p.id === targetId));
+  const [active, setActive] = useState(0);
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    const n = players.length;
+    if (n <= 1) {
+      setActive(targetIdx);
+      setDone(true);
+      onDone && onDone();
+      return;
+    }
+    // Sequence : ~2 tours + arrivee sur la cible, avec deceleration cubique.
+    const loops = 2;
+    const totalSteps = loops * n + targetIdx;
+    const MIN = 55; // ms au depart (rapide)
+    const MAX = 320; // ms a l'arrivee (suspense)
+    let step = 0;
+    let timer;
+    const tick = () => {
+      step++;
+      setActive(step % n);
+      if (step >= totalSteps) {
+        setDone(true);
+        onDone && onDone();
+        return;
+      }
+      const t = step / totalSteps;
+      const delay = MIN + (MAX - MIN) * t * t * t;
+      timer = setTimeout(tick, delay);
+    };
+    timer = setTimeout(tick, MIN);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <div className="flex flex-wrap justify-center gap-2 mb-4 max-w-sm">
+      {players.map((p, i) => {
+        const on = i === active;
+        const isTarget = done && i === targetIdx;
+        const pColor = colorHex(p.color);
+        return (
+          <div
+            key={p.id}
+            style={{
+              backgroundColor: isTarget ? pColor || '#000' : on ? YELLOW : '#FFF',
+              boxShadow: on || isTarget ? '4px 4px 0 #000' : '2px 2px 0 #000',
+              transform: on || isTarget ? 'scale(1.12)' : 'scale(1)',
+              transition: 'all 60ms',
+              opacity: done && !isTarget ? 0.4 : 1,
+            }}
+            className="border-2 border-black px-3 py-1.5"
+          >
+            <span
+              style={{ fontFamily: '"Anton", sans-serif', ...NAME_STYLE }}
+              className="uppercase text-base leading-none"
+            >
+              {p.name}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // Regle de la manche + eventuel joueur designe. Convention : une regle qui
 // commence par '@' est un DEFI INDIVIDUEL → l'app tire au sort qui s'y colle
 // (deterministe : meme joueur affiche sur tous les ecrans, comme Picolo).
@@ -59,12 +130,12 @@ function gageOf(card, cardId, round, playersObj) {
   if (!text) {
     text = GENERIC_GAGES[hashStr(`${cardId}_${round}`) % GENERIC_GAGES.length];
   }
-  if (!text.startsWith('@')) return { text, target: null };
+  if (!text.startsWith('@')) return { text, targetId: null };
   const ids = Object.keys(playersObj || {}).sort();
-  const target = ids.length
-    ? playersObj[ids[hashStr(`${cardId}_${round}_cible`) % ids.length]]?.name
+  const targetId = ids.length
+    ? ids[hashStr(`${cardId}_${round}_cible`) % ids.length]
     : null;
-  return { text: text.slice(1), target };
+  return { text: text.slice(1), targetId };
 }
 import {
   Heart,
@@ -88,6 +159,8 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   const [espionReveal, setEspionReveal] = useState({});
   const [espionDone, setEspionDone] = useState(false);
   const [sortsOpen, setSortsOpen] = useState(false);
+  // Mode Apero : la roulette de designation d'un defi a-t-elle fini de tourner ?
+  const [gageRouletteDone, setGageRouletteDone] = useState(false);
 
   const isHost = room.host === playerId;
   const isBoss = room.bossId === playerId;
@@ -244,6 +317,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
     setEspionReveal({});
     setEspionDone(false);
     setSortsOpen(false);
+    setGageRouletteDone(false);
   }, [room.phase, room.round, room.bossId]);
 
   async function bossChooseMode(m) {
@@ -1385,9 +1459,8 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
           </div>
           {partyMode ? (
             <>
-              {/* LA regle a boire de la manche : celle de la carte choisie
-                  (champ g), sinon une generique. Tirage DETERMINISTE (meme
-                  regle et meme joueur designe sur tous les ecrans). */}
+              {/* Regle a boire de la manche. Defi individuel (targetId) → une
+                  ROULETTE designe le joueur, puis le texte du defi apparait. */}
               {(() => {
                 const gage = gageOf(
                   winnerCard,
@@ -1395,6 +1468,49 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                   room.round || 1,
                   room.players
                 );
+                const targetName = gage.targetId
+                  ? playerById[gage.targetId]?.name
+                  : null;
+                if (gage.targetId) {
+                  return (
+                    <div className="flex flex-col items-center">
+                      {!gageRouletteDone && (
+                        <div
+                          style={{ fontFamily: '"Space Mono", monospace' }}
+                          className="text-[11px] uppercase tracking-widest opacity-70 mb-2"
+                        >
+                          🎯 Qui s'y colle ?
+                        </div>
+                      )}
+                      <GageRoulette
+                        players={players}
+                        targetId={gage.targetId}
+                        onDone={() => setGageRouletteDone(true)}
+                      />
+                      {gageRouletteDone && (
+                        <div
+                          style={{
+                            fontFamily: '"Anton", sans-serif',
+                            backgroundColor: PINK,
+                            color: '#FFF',
+                            boxShadow: '5px 5px 0 #000',
+                            transform: 'rotate(1deg)',
+                            lineHeight: 1.1,
+                          }}
+                          className="inline-block border-4 border-black px-5 py-4 text-2xl uppercase max-w-sm gage-pop"
+                        >
+                          <span
+                            style={{ fontFamily: '"Space Mono", monospace' }}
+                            className="block text-[11px] tracking-widest mb-1 opacity-80"
+                          >
+                            🎯 {targetName} s'y colle
+                          </span>
+                          {gage.text}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
                 return (
                   <div
                     style={{
@@ -1407,19 +1523,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                     }}
                     className="inline-block border-4 border-black px-5 py-4 text-2xl uppercase max-w-sm"
                   >
-                    {gage.target ? (
-                      <>
-                        <span
-                          style={{ fontFamily: '"Space Mono", monospace' }}
-                          className="block text-[11px] tracking-widest mb-1 opacity-80"
-                        >
-                          🎯 {gage.target} s'y colle
-                        </span>
-                        {gage.text}
-                      </>
-                    ) : (
-                      <>🍺 {gage.text}</>
-                    )}
+                    🍺 {gage.text}
                   </div>
                 );
               })()}

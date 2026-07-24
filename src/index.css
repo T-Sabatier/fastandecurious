@@ -47,6 +47,16 @@ input {
   animation: boss-glow 2.2s ease-in-out infinite;
 }
 
+/* Apparition du defi apres l'arret de la roulette de designation. */
+@keyframes gage-pop {
+  0%   { opacity: 0; transform: scale(0.6) rotate(1deg); }
+  70%  { transform: scale(1.08) rotate(1deg); }
+  100% { opacity: 1; transform: scale(1) rotate(1deg); }
+}
+.gage-pop {
+  animation: gage-pop 0.35s ease-out;
+}
+
 /* Fond Mode Apero (jeu a boire) : texture biere. Applique sur la racine des
    ecrans quand le mode est actif. `fixed` = le fond ne defile pas avec le
    contenu ; sur mobile ou fixed est ignore, il defile simplement (ok). La
