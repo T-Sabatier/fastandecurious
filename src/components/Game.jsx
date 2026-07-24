@@ -67,11 +67,12 @@ function GageRoulette({ players, targetId, onDone }) {
       onDone && onDone();
       return;
     }
-    // Sequence : ~2 tours + arrivee sur la cible, avec deceleration cubique.
-    const loops = 2;
+    // Sequence : ~4 tours + arrivee sur la cible, deceleration cubique.
+    // Plus long (~5-6 s) pour le suspense et pour que tout le monde suive.
+    const loops = 4;
     const totalSteps = loops * n + targetIdx;
-    const MIN = 55; // ms au depart (rapide)
-    const MAX = 320; // ms a l'arrivee (suspense)
+    const MIN = 60; // ms au depart (rapide)
+    const MAX = 520; // ms a l'arrivee (gros suspense final)
     let step = 0;
     let timer;
     const tick = () => {
@@ -91,27 +92,62 @@ function GageRoulette({ players, targetId, onDone }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const target = players[targetIdx];
+
+  // Une fois la roulette arretee : on montre EN GROS le joueur designe.
+  if (done) {
+    const tColor = colorHex(target?.color);
+    return (
+      <div className="flex flex-col items-center mb-4 gage-pop">
+        <div
+          style={{ fontFamily: '"Space Mono", monospace' }}
+          className="text-[11px] uppercase tracking-widest opacity-70 mb-2"
+        >
+          🎯 C'est à toi de jouer
+        </div>
+        <div
+          style={{
+            backgroundColor: tColor || '#000',
+            boxShadow: '7px 7px 0 #000',
+            transform: 'rotate(-2deg)',
+          }}
+          className="border-4 border-black px-6 py-3"
+        >
+          <span
+            style={{
+              fontFamily: '"Anton", sans-serif',
+              ...NAME_STYLE,
+              fontSize: fitBig(target?.name || ''),
+              lineHeight: 1,
+            }}
+            className="uppercase break-words"
+          >
+            {target?.name || '?'}
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  // Pendant que ca tourne : tous les pseudos, halo qui balaie.
   return (
     <div className="flex flex-wrap justify-center gap-2 mb-4 max-w-sm">
       {players.map((p, i) => {
         const on = i === active;
-        const isTarget = done && i === targetIdx;
-        const pColor = colorHex(p.color);
         return (
           <div
             key={p.id}
             style={{
-              backgroundColor: isTarget ? pColor || '#000' : on ? YELLOW : '#FFF',
-              boxShadow: on || isTarget ? '4px 4px 0 #000' : '2px 2px 0 #000',
-              transform: on || isTarget ? 'scale(1.12)' : 'scale(1)',
+              backgroundColor: on ? YELLOW : '#FFF',
+              boxShadow: on ? '5px 5px 0 #000' : '2px 2px 0 #000',
+              transform: on ? 'scale(1.18)' : 'scale(1)',
               transition: 'all 60ms',
-              opacity: done && !isTarget ? 0.4 : 1,
             }}
             className="border-2 border-black px-3 py-1.5"
           >
             <span
               style={{ fontFamily: '"Anton", sans-serif', ...NAME_STYLE }}
-              className="uppercase text-base leading-none"
+              className="uppercase text-lg leading-none"
             >
               {p.name}
             </span>
@@ -1468,9 +1504,6 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                   room.round || 1,
                   room.players
                 );
-                const targetName = gage.targetId
-                  ? playerById[gage.targetId]?.name
-                  : null;
                 if (gage.targetId) {
                   return (
                     <div className="flex flex-col items-center">
@@ -1499,12 +1532,6 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
                           }}
                           className="inline-block border-4 border-black px-5 py-4 text-2xl uppercase max-w-sm gage-pop"
                         >
-                          <span
-                            style={{ fontFamily: '"Space Mono", monospace' }}
-                            className="block text-[11px] tracking-widest mb-1 opacity-80"
-                          >
-                            🎯 {targetName} s'y colle
-                          </span>
                           {gage.text}
                         </div>
                       )}
