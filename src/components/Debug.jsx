@@ -68,7 +68,7 @@ const SCENARIOS = [
 
 const noop = () => {};
 
-function buildScenario(key, mode, pick, apero, special) {
+function buildScenario(key, mode, pick, apero, special, sorts) {
   const base = {
     host: null,
     round: 3,
@@ -79,7 +79,9 @@ function buildScenario(key, mode, pick, apero, special) {
     settings: {
       winningScore: 5,
       cats: {},
-      sorts: { reroll: true, espion: true, vatout: true },
+      sorts: sorts
+        ? { reroll: true, espion: true, vatout: true }
+        : { reroll: false, espion: false, vatout: false },
       ...(apero ? { partyMode: true } : {}),
     },
     players: PLAYERS,
@@ -124,10 +126,11 @@ export default function Debug() {
   const [pick, setPick] = useState(false);
   const [apero, setApero] = useState(false);
   const [special, setSpecial] = useState(null); // null | 'double' | 'chrono' | 'swap'
+  const [sorts, setSorts] = useState(true);
   const [capturing, setCapturing] = useState(false); // masque la barre pour screener
   const [liveRoom, setLiveRoom] = useState(null);
 
-  const scenario = buildScenario(key, mode, pick, apero, special);
+  const scenario = buildScenario(key, mode, pick, apero, special, sorts);
   const SPECIAL_CYCLE = [null, 'double', 'chrono', 'swap'];
 
   // Abonnement permanent a la room debug
@@ -142,7 +145,7 @@ export default function Debug() {
 
   // (Re)seed la room a chaque changement de scenario / mode / choix boss / options
   useEffect(() => {
-    const sc = buildScenario(key, mode, pick, apero, special);
+    const sc = buildScenario(key, mode, pick, apero, special, sorts);
     if (sc.kind === 'home') {
       setLiveRoom(null);
       remove(ref(db, 'rooms/DEBG')).catch(() => {});
@@ -151,7 +154,7 @@ export default function Debug() {
     setLiveRoom(sc.room); // optimiste, evite le flash
     set(ref(db, 'rooms/DEBG'), sc.room).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, mode, pick, apero, special]);
+  }, [key, mode, pick, apero, special, sorts]);
 
   function renderScreen() {
     if (scenario.kind === 'home') {
@@ -257,6 +260,18 @@ export default function Debug() {
               }}
             >
               ⚡ Spécial : {special || 'off'}
+            </button>
+            <button
+              onClick={() => setSorts((s) => !s)}
+              className="shrink-0 px-2 py-1 border-2 text-[11px] uppercase"
+              style={{
+                fontFamily: '"Space Mono", monospace',
+                backgroundColor: sorts ? '#FFF' : 'transparent',
+                color: sorts ? '#000' : '#FFF',
+                borderColor: '#FFF',
+              }}
+            >
+              Sorts : {sorts ? 'ON' : 'OFF'}
             </button>
             {isReveal && (
               <button
