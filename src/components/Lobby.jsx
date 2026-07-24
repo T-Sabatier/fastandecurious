@@ -204,6 +204,7 @@ export default function Lobby({ room, roomCode, playerId, onLeave }) {
       mode: null,
       bossId: randomBoss,
       round: 1,
+      special: null, // la 1re manche n'est jamais speciale
       players: playersUpdate,
     };
 

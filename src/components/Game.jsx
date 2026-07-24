@@ -54,6 +54,47 @@ function hashStr(s) {
 // Reactions emoji disponibles pendant la revelation.
 const REACTIONS = ['😂', '😱', '😍', '🔥', '👎', '💀'];
 
+// Manches speciales (mode normal comme apero) : twist annonce en debut de
+// manche. Choisi par le host (writer unique) au passage a la manche suivante.
+const SPECIALS = {
+  double: { label: '⚡ Manche double', desc: 'Le gagnant marque 2 points !' },
+  chrono: { label: '⏱ Manche chrono', desc: '10 s pour poser, sinon carte au hasard !' },
+};
+const SPECIAL_KEYS = Object.keys(SPECIALS);
+// ~30% de chance qu'une manche soit speciale.
+function rollSpecial() {
+  return Math.random() < 0.3
+    ? SPECIAL_KEYS[Math.floor(Math.random() * SPECIAL_KEYS.length)]
+    : null;
+}
+
+// Banniere d'annonce d'une manche speciale (affichee en haut des ecrans de jeu).
+function SpecialBanner({ special }) {
+  const s = SPECIALS[special];
+  if (!s) return null;
+  return (
+    <div className="px-4 pt-3 max-w-xl mx-auto w-full">
+      <div
+        className="border-4 border-black px-4 py-2 text-center"
+        style={{ backgroundColor: '#000', color: YELLOW, boxShadow: '5px 5px 0 #000' }}
+      >
+        <div
+          style={{ fontFamily: '"Anton", sans-serif' }}
+          className="text-xl uppercase leading-none"
+        >
+          {s.label}
+        </div>
+        <div
+          style={{ fontFamily: '"Space Mono", monospace' }}
+          className="text-[10px] uppercase tracking-widest mt-1 opacity-80"
+        >
+          {s.desc}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Couche d'affichage des reactions : chaque reaction recente (< 3.5 s) monte
 // et s'estompe. Position horizontale deterministe (hash de la cle) → placee
 // pareil sur tous les ecrans. reactions = objet Firebase { key: {e, t} }.
@@ -295,7 +336,9 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   // Demarre quand le VIP annonce j'aime/j'aime pas (playStartedAt). A zero,
   // le client du retardataire joue sa PREMIERE carte (tri par id : choix
   // deterministe → idempotent meme si le host enforce en parallele).
-  const turnTimer = room.settings?.turnTimer || 0;
+  // La Manche Chrono force un timer de 10 s, meme si le timer du salon est off.
+  const turnTimer =
+    room.special === 'chrono' ? 10 : room.settings?.turnTimer || 0;
   const timerActive =
     turnTimer > 0 && room.phase === 'play' && !!room.playStartedAt;
   const [nowTs, setNowTs] = useState(Date.now());
@@ -506,8 +549,9 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
       const updates = {};
       const winnerId = room.winnerInfo.playerId;
       const winnerCurrentScore = playerById[winnerId]?.score || 0;
-      // SORT Va-tout : si le gagnant avait parie, sa carte vaut +2.
-      const gain = room.vatout?.[winnerId] ? 2 : 1;
+      // Gain = 1, +1 si Va-tout (sort), +1 si Manche Double (special).
+      const gain =
+        1 + (room.vatout?.[winnerId] ? 1 : 0) + (room.special === 'double' ? 1 : 0);
       const winnerNewScore = winnerCurrentScore + gain;
       updates[`players/${winnerId}/score`] = winnerNewScore;
       // Le va-tout est valable un seul tour → on le remet a zero.
@@ -551,6 +595,8 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         updates['played'] = null;
         updates['winnerInfo'] = null;
         updates['round'] = (room.round || 1) + 1;
+        // Tirage de la manche speciale suivante (host = writer unique).
+        updates['special'] = rollSpecial();
       }
 
       await update(ref(db, `rooms/${roomCode}`), updates);
@@ -716,6 +762,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
         <div style={baseWrap} className={`text-black flex flex-col ${baseClass}`}>
           <TopBar right={`TOUR ${room.round || 1}`} />
           <Scoreboard />
+          <SpecialBanner special={room.special} />
           <div className="flex-1 px-5 py-6 flex flex-col max-w-xl mx-auto w-full text-center">
             <div
               style={{ fontFamily: '"Space Mono", monospace' }}
@@ -804,6 +851,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
       <div style={baseWrap} className={`text-black flex flex-col ${baseClass}`}>
         <TopBar right={`TOUR ${room.round || 1}`} />
         <Scoreboard />
+        <SpecialBanner special={room.special} />
         <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
           <Clock size={64} strokeWidth={2.5} />
           <div
@@ -986,6 +1034,7 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
       <div style={baseWrap} className={`text-black flex flex-col ${baseClass}`}>
         <TopBar right={`${playedCount}/${nonBossCount}`} />
         <Scoreboard />
+        <SpecialBanner special={room.special} />
         <div className="px-4 pt-3 pb-6 max-w-xl mx-auto w-full">
           <div
             className="border-4 border-black p-4 flex items-center justify-between gap-3"
@@ -1488,7 +1537,10 @@ export default function Game({ room, roomCode, playerId, onLeave }) {
   if (room.phase === 'result' && room.winnerInfo) {
     const winnerP = playerById[room.winnerInfo.playerId];
     const winnerCard = pool[room.winnerInfo.cardId];
-    const winnerGain = room.vatout?.[room.winnerInfo.playerId] ? 2 : 1;
+    const winnerGain =
+      1 +
+      (room.vatout?.[room.winnerInfo.playerId] ? 1 : 0) +
+      (room.special === 'double' ? 1 : 0);
     const winnerNewScore = (winnerP?.score || 0) + winnerGain;
     const willWinGame = winnerNewScore >= (room.settings?.winningScore ?? WINNING_SCORE);
     const iAmWinner = room.winnerInfo.playerId === playerId;
